@@ -8,6 +8,11 @@ void Inode::SetHiddenFlag() { _flags |= HIDDEN; }
 void Inode::SetArchiveFlag() { _flags |= ARCHIVE; }
 void Inode::SetDirectoryFlag() { _flags |= DIRECTORY; }
 
+bool Inode::IsSystemFlag() { return (_flags & SYSTEM) != 0; }
+bool Inode::IsHiddenFlag() { return (_flags & HIDDEN) != 0; }
+bool Inode::IsArchiveFlag() { return (_flags & ARCHIVE) != 0; }
+bool Inode::IsDirectoryFlag() { return (_flags & DIRECTORY) != 0; }
+
 void Inode::UnsetSystemFlag() { _flags &= ~SYSTEM; }
 void Inode::UnsetHiddenFlag() { _flags &= ~HIDDEN; }
 void Inode::UnsetArchiveFlag() { _flags &= ~ARCHIVE; }

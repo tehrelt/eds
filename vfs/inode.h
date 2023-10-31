@@ -47,6 +47,11 @@ public:
 	void SetArchiveFlag();
 	void SetDirectoryFlag();
 
+	bool IsSystemFlag();
+	bool IsHiddenFlag();
+	bool IsArchiveFlag();
+	bool IsDirectoryFlag();
+
 	void UnsetSystemFlag();
 	void UnsetHiddenFlag();
 	void UnsetArchiveFlag();
