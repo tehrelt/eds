@@ -4,8 +4,11 @@
 
 class Directory
 {
+	Inode* _inode;
 
 public:
+	Directory(Inode*);
+
 	void CreateDirectory(std::string name);
 	void CreateFile(std::string name);
 	void Start();

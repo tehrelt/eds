@@ -1,5 +1,14 @@
 #include "directory.h"
 
+Directory::Directory(Inode* inode)
+{
+    if (!inode->IsDirectoryFlag()) {
+        throw new std::exception();
+    }
+
+    _inode = inode;
+}
+
 void Directory::CreateDirectory(std::string name)
 {
 }

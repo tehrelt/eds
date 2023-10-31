@@ -20,7 +20,6 @@ void FileSystem::write(char* source, int offset, int size)
 
     stream.close();
 }
-
 void FileSystem::read(char* destination, int offset, int size)
 {
     std::ifstream stream;
@@ -51,7 +50,6 @@ void FileSystem::saveInode(int index)
     uint_fast64_t part = _imap.part(index);
     write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
 }
-
 void FileSystem::saveInode(Inode* inode)
 {
     write((char*)inode, (_superblock.num_of_first_imap_block() * _superblock.block_size()) + (inode->id() * sizeof(Inode)), sizeof(Inode));
@@ -106,9 +104,7 @@ Inode* FileSystem::allocateDir()
 
 void FileSystem::generateStruct()
 {
-    Inode* root = allocateDir();
-    root->SetSystemFlag();
-    saveInode(root);
+    
 }
 
 int FileSystem::findFreeBlockNum()
@@ -138,7 +134,7 @@ FileSystem::FileSystem(std::string name, Superblock* superblock, FAT* fat, IMap*
     _superblock = *superblock;
     _fat = *fat;
     _imap = *ilist;
-    terminal = Terminal();
+    _terminal = Terminal();
 }
 
 FileSystem* FileSystem::Create(int size, std::string name)
@@ -209,7 +205,11 @@ FileSystem* FileSystem::Create(int size, std::string name)
 
     stream.close();
 
-     fs->generateStruct();
+    Inode* root = fs->allocateDir();
+    root->SetSystemFlag();
+    fs->saveInode(root);
+
+    fs->_current_directory = new Directory(root);
 
     return fs;
 }
@@ -260,35 +260,36 @@ FileSystem* FileSystem::Mount(std::string name)
     return fs;
 }
 
+std::string FileSystem::file_name() { return _file_name; }
+Superblock* FileSystem::superblock() { return &_superblock; }
+FAT* FileSystem::fat() { return &_fat; }
+IMap* FileSystem::imap() { return &_imap; }
+
+int FileSystem::Run()
+{
+    return _terminal.Listen();
+}
+
 std::string FileSystem::ToString()
 { 
     std::stringstream stream;
 
-    int inodes_count = _imap.capacity();
-    int blocks_count = _fat.capacity();
-
     stream << "######## SUPERBLOCK ########" << std::endl;
-    stream << "\tfile system name: " << _superblock.fs_name() << std::endl; 
-    stream << "\tblock size: " << _superblock.block_size() << std::endl;
-    stream << "\tFAT\tcapacity: " << _superblock.fat_capacity() << "\tsize: " << _superblock.fat_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_fat_block() << std::endl;
-    stream << "\tIMap\tcapacity: " << _superblock.imap_capacity() << "\tsize: " << _superblock.imap_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_imap_block() << std::endl;
-    stream << "\tIBitmap\tparts: " << _superblock.imap_parts_count() << "\tsize: " << _superblock.imap_parts_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_part_block() << std::endl;
-    stream << "\tBlocks\tcapacity: " << _superblock.data_blocks_count() << "\t\t\tfirst block: " << _superblock.num_of_first_data_block() << std::endl;
-    stream << "\tSpace\tfree space: " << _superblock.free_space_in_bytes() << " bytes" << std::endl;
-    stream << "\t\ttotal space: " << _superblock.total_space_in_bytes() << " bytes" << std::endl;
+    stream << _superblock;
 
     stream << "######## INODES ########" << std::endl;
     stream << "id\tflags\tlock\tcreation date\t\tfirst block" << std::endl;
-    for (int i = 0; i < inodes_count; i++) {
+    for (int i = 0; i < _imap.capacity(); i++) {
         int id = _imap[i].id();
         stream << id << " \t " << std::to_string(_imap[id].flags()) << "\t" << std::to_string(_imap.IsLocked(id)) << "\t" << timeToString(_imap[i].create_date()) << "\t" << _imap[i].block_num() << std::endl;
     }
 
     stream << "######## BLOCKS ########" << std::endl;
     stream << "id\tnext" << std::endl;
-    for (int i = 0; i < blocks_count; i++) {
+    for (int i = 0; i < _fat.capacity(); i++) {
         stream << i << "\t" << _fat[i] << std::endl;
     }
 
+    
     return stream.str();
 }

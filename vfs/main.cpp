@@ -12,7 +12,7 @@ int main()
     std::cout << "[2] - Mount" << std::endl;
 
     int choice;
-    std::cout << "enter a option: ";
+    std::cout << "Enter an option: ";
     std::cin >> choice;
 
     if (choice == 1) {
@@ -46,8 +46,5 @@ int main()
 
     std::cout << fs->ToString();
 
-    system("pause");
-
-
-    return 0;
+    return fs->Run();
 }

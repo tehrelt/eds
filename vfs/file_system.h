@@ -6,15 +6,16 @@
 #include "imap.h"
 #include "block.h"
 #include "terminal.h"
+#include "directory.h"
 
 class FileSystem
 {
 	std::string _file_name;
-
 	Superblock _superblock;
 	FAT _fat;
 	IMap _imap;
-	Terminal terminal;
+	Terminal _terminal;
+	Directory* _current_directory;
 	
 
 	void write(char* source, int offset, int size);
@@ -43,6 +44,14 @@ public:
 
 	static FileSystem* Create(int size, std::string name);
 	static FileSystem* Mount(std::string name);
+
+	std::string file_name();
+
+	Superblock* superblock();
+	FAT* fat();
+	IMap* imap();
+
+	int Run();
 
 	void GetRoot();
 	void GetSuperBlock();

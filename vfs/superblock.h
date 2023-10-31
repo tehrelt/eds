@@ -44,5 +44,17 @@ public:
 	uint64_t total_space_in_bytes();
 
 	char* fs_name();
+
+	friend std::ostream& operator<<(std::ostream& stream, const Superblock& sb) {
+		stream << "\tfile system name: " << sb._fs_name << std::endl;
+		stream << "\tblock size: " << sb._block_size << std::endl;
+		stream << "\tFAT\tcapacity: " << sb._fat_capacity << "\tsize: " << sb._fat_size << " bytes" << "\tfirst block: " << sb._num_of_first_fat_block << std::endl;
+		stream << "\tIMap\tcapacity: " << sb._imap_capacity << "\tsize: " << sb._imap_size << " bytes" << "\tfirst block: " << sb._num_of_first_imap_block << std::endl;
+		stream << "\tIBitmap\tparts: " << sb._imap_parts_count << "\tsize: " << sb._imap_parts_size << " bytes" << "\tfirst block: " << sb._num_of_first_part_block << std::endl;
+		stream << "\tBlocks\tcapacity: " << sb._data_blocks_count << "\t\t\tfirst block: " << sb._num_of_first_data_block << std::endl;
+		stream << "\tSpace\tfree space: " << sb._free_space_in_bytes << " bytes" << std::endl;
+		stream << "\t\ttotal space: " << sb._total_space_in_bytes << " bytes" << std::endl;
+		return stream;
+	}
 };
 
