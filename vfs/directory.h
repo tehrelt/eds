@@ -1,5 +1,6 @@
 #pragma once
 #include "file.h"
+#include "dentry.h"
 
 class Directory
 {
@@ -12,6 +13,6 @@ public:
 	File Open(std::string name);
 	void Move(std::string source, std::string destination);
 	void RemoveFile();
-	void First();
+	DEntry First();
 };
 

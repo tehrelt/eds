@@ -52,6 +52,15 @@ void FileSystem::saveInode(int index)
     write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
 }
 
+void FileSystem::saveInode(Inode* inode)
+{
+    write((char*)inode, (_superblock.num_of_first_imap_block() * _superblock.block_size()) + (inode->id() * sizeof(Inode)), sizeof(Inode));
+
+    uint_fast32_t part_idx = _imap.get_part_index(inode->id());
+    uint_fast64_t part = _imap.part(inode->id());
+    write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
+}
+
 void FileSystem::saveFAT(int index)
 {
     int_fast32_t record = _fat[index];
@@ -61,28 +70,45 @@ void FileSystem::saveFAT(int index)
     write((char*)&record, offset, sizeof(int_fast32_t));
 }
 
-Inode* FileSystem::allocateInode(int index)
-{
-    Inode* inode = &_imap[index];
-
-    _imap.Lock(inode->id());
-    inode->set_create_date(getCurrentDate());
-
-    return inode;
-}
-
-void FileSystem::allocateFile()
+Inode* FileSystem::allocateInode()
 {
     int block_idx = findFreeBlockNum();
     int inode_idx = findFreeInodeNum();
 
-    Inode* inode = allocateInode(inode_idx);
+    Inode* inode = &_imap[inode_idx];
+
+    _imap.Lock(inode->id());
+    inode->set_create_date(getCurrentDate());
 
     inode->set_block_num(block_idx);
     _fat[block_idx] = -2;
 
     saveInode(inode_idx);
     saveFAT(block_idx);
+    
+    return inode;
+}
+
+void FileSystem::allocateFile()
+{
+    
+}
+
+Inode* FileSystem::allocateDir()
+{
+    Inode* inode = allocateInode();
+    inode->SetDirectoryFlag();
+
+    saveInode(inode);
+
+    return inode;
+}
+
+void FileSystem::generateStruct()
+{
+    Inode* root = allocateDir();
+    root->SetSystemFlag();
+    saveInode(root);
 }
 
 int FileSystem::findFreeBlockNum()
@@ -112,6 +138,7 @@ FileSystem::FileSystem(std::string name, Superblock* superblock, FAT* fat, IMap*
     _superblock = *superblock;
     _fat = *fat;
     _imap = *ilist;
+    terminal = Terminal();
 }
 
 FileSystem* FileSystem::Create(int size, std::string name)
@@ -119,6 +146,22 @@ FileSystem* FileSystem::Create(int size, std::string name)
     Superblock sb = Superblock(size);
     FAT fat = FAT(sb.fat_capacity());
     IMap imap = IMap(sb.imap_capacity());
+
+
+    for (int i = 0; i < sb.num_of_first_data_block(); i++) {
+        if (i >= sb.num_of_first_fat_block() && i < sb.num_of_first_imap_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else if (i >= sb.num_of_first_imap_block() && i < sb.num_of_first_part_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else if (i >= sb.num_of_first_part_block() && i < sb.num_of_first_data_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else {
+            fat[i] = -2;
+        }
+    }
 
     FileSystem* fs = new FileSystem(name, &sb, &fat, &imap);
 
@@ -166,8 +209,7 @@ FileSystem* FileSystem::Create(int size, std::string name)
 
     stream.close();
 
-
-    fs->allocateFile();
+     fs->generateStruct();
 
     return fs;
 }
@@ -184,6 +226,8 @@ FileSystem* FileSystem::Mount(std::string name)
     int block_size = sb.block_size();
 
     FAT fat = FAT(sb.fat_capacity());
+
+
     IMap imap = IMap(sb.imap_capacity());
 
     stream.seekg(sb.num_of_first_fat_block() * block_size);
@@ -228,16 +272,16 @@ std::string FileSystem::ToString()
     stream << "\tblock size: " << _superblock.block_size() << std::endl;
     stream << "\tFAT\tcapacity: " << _superblock.fat_capacity() << "\tsize: " << _superblock.fat_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_fat_block() << std::endl;
     stream << "\tIMap\tcapacity: " << _superblock.imap_capacity() << "\tsize: " << _superblock.imap_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_imap_block() << std::endl;
-    stream << "\tIBitmap\tparts: " << _superblock.imap_parts_count() << "\tsize: " << _superblock.imap_parts_size() << " bytes" << std::endl;
-    stream << "\tBlocks\tcapacity: " << _superblock.data_blocks_count() << std::endl;
+    stream << "\tIBitmap\tparts: " << _superblock.imap_parts_count() << "\tsize: " << _superblock.imap_parts_size() << " bytes" << "\tfirst block: " << _superblock.num_of_first_part_block() << std::endl;
+    stream << "\tBlocks\tcapacity: " << _superblock.data_blocks_count() << "\t\t\tfirst block: " << _superblock.num_of_first_data_block() << std::endl;
     stream << "\tSpace\tfree space: " << _superblock.free_space_in_bytes() << " bytes" << std::endl;
     stream << "\t\ttotal space: " << _superblock.total_space_in_bytes() << " bytes" << std::endl;
 
     stream << "######## INODES ########" << std::endl;
-    stream << "id\tlock\tcreation date\tfirst block" << std::endl;
+    stream << "id\tflags\tlock\tcreation date\t\tfirst block" << std::endl;
     for (int i = 0; i < inodes_count; i++) {
         int id = _imap[i].id();
-        stream << id << " \t " << std::to_string(_imap.IsLocked(id)) << "\t" << timeToString(_imap[i].create_date()) << "\t" << _imap[i].block_num() << std::endl;
+        stream << id << " \t " << std::to_string(_imap[id].flags()) << "\t" << std::to_string(_imap.IsLocked(id)) << "\t" << timeToString(_imap[i].create_date()) << "\t" << _imap[i].block_num() << std::endl;
     }
 
     stream << "######## BLOCKS ########" << std::endl;

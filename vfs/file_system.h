@@ -5,6 +5,7 @@
 #include "fat.h"
 #include "imap.h"
 #include "block.h"
+#include "terminal.h"
 
 class FileSystem
 {
@@ -13,20 +14,28 @@ class FileSystem
 	Superblock _superblock;
 	FAT _fat;
 	IMap _imap;
+	Terminal terminal;
 	
 
 	void write(char* source, int offset, int size);
 	void read(char* destination, int offset, int size);
 
 	void saveBlock(Block block, int index);
+
 	void saveInode(int index);
+	void saveInode(Inode* inode);
+
 	void saveFAT(int index);
 
-	Inode* allocateInode(int index);
+	Inode* allocateInode();
+
 	void allocateFile();
+	Inode* allocateDir();
+
+	void generateStruct();
+
 	int findFreeBlockNum();
 	int findFreeInodeNum();
-
 
 
 public:

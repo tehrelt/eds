@@ -47,14 +47,7 @@ int main()
     std::cout << fs->ToString();
 
     system("pause");
+
+
     return 0;
-
-    //std::ofstream stream;
-    //
-    //stream.open("i_test");
-    //stream.close();
-
-    //Inode inode;
-
-
 }

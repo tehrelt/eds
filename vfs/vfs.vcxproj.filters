@@ -31,11 +31,11 @@
     <Filter Include="Файлы заголовков\io">
       <UniqueIdentifier>{2500fee9-a8e1-4bf3-bb5e-198d0ebc2fd9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\app">
+      <UniqueIdentifier>{9a0a6e46-fa52-436c-84f0-effa37f8f825}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="file_system.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
@@ -65,6 +65,12 @@
     </ClCompile>
     <ClCompile Include="dentry.cpp">
       <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="terminal.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы\app</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -103,6 +109,9 @@
     </ClInclude>
     <ClInclude Include="list_head.h">
       <Filter>Файлы заголовков\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="terminal.h">
+      <Filter>Файлы заголовков\io</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

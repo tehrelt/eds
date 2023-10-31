@@ -137,6 +137,7 @@
     <ClCompile Include="imap.cpp" />
     <ClCompile Include="superblock.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="terminal.cpp" />
     <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -151,6 +152,7 @@
     <ClInclude Include="list_head.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="superblock.h" />
+    <ClInclude Include="terminal.h" />
     <ClInclude Include="tools.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
