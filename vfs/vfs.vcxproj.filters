@@ -1,0 +1,108 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Исходные файлы">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;c++;cppm;ixx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Файлы заголовков">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;h++;hm;inl;inc;ipp;xsd</Extensions>
+    </Filter>
+    <Filter Include="Файлы ресурсов">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Исходные файлы\tools">
+      <UniqueIdentifier>{9d5e1a3c-7855-45ca-a9f2-cb3df6438b68}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\tools">
+      <UniqueIdentifier>{741d6677-ad54-4a46-9514-bd6293ef4f1c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\core">
+      <UniqueIdentifier>{7d095fe2-20b6-47ed-98f5-2bf70b8937c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\core">
+      <UniqueIdentifier>{a03aaf7b-4fb4-4577-98c5-7f18c3d44f91}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\io">
+      <UniqueIdentifier>{f70a2c85-15cd-42ce-85b7-767635196952}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\io">
+      <UniqueIdentifier>{2500fee9-a8e1-4bf3-bb5e-198d0ebc2fd9}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="file_system.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="file.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="directory.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="tools.cpp">
+      <Filter>Исходные файлы\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="block.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="fat.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="imap.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="inode.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="superblock.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+    <ClCompile Include="dentry.cpp">
+      <Filter>Исходные файлы\core</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="resource.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="file_system.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="directory.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="tools.h">
+      <Filter>Файлы заголовков\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="block.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="fat.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="imap.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="inode.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="dentry.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="superblock.h">
+      <Filter>Файлы заголовков\core</Filter>
+    </ClInclude>
+    <ClInclude Include="list_head.h">
+      <Filter>Файлы заголовков\tools</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
