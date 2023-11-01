@@ -2,7 +2,7 @@
 #include "dentry.h"
 
 
-DEntry::DEntry(Inode* inode, std::string name)
+DEntry::DEntry(INode* inode, std::string name)
 {
 	_inode = inode;
 	strncpy(_name, name.c_str(), 16);

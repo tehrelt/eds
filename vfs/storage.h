@@ -16,10 +16,18 @@ private:
 	IMap _imap;
 
 	Block* read_block(int id);
-	Inode* read_inode(int id);
+	INode* read_inode(int id);
 	
-	Inode* find_free_inode();
+	INode* find_free_inode();
 	Block* find_free_block();
+
+	Block* find_relative_block(INode* inode, int pos);
+
+	void save_block(Block* block);
+	void save_inode(INode* inode);
+
+	void lock_inode(INode* inode);
+	void set_fat_record(int idx, int value);
 
 	void write(char* source, int offset, int size);
 	void read(char* destination, int offset, int size);
@@ -34,13 +42,16 @@ public:
 	IMap*		imap()			{ return &_imap; }
 
 	int_fast32_t	get_fat_record(int i)	{ return _fat[i]; }
-	Inode*			get_imap_record(int i)	{ return &_imap[i]; }
+	INode*			get_imap_record(int i)	{ return &_imap[i]; }
 
-	Inode* AllocateInode();
-	Inode* UpdateInode(Inode* inode);
-
+	INode* AllocateInode();
+	Block* AllocateBlock();
+	INode* UpdateInode(INode* inode);
 
 	Block* GetBlock(int id);
-	Inode* GetInode(int id);
+	INode* GetInode(int id);
+
+	void WriteBytes(INode* inode, int pos, char* content, int size);
+	void WriteByte(INode* inode, int pos, char byte);
 };
 

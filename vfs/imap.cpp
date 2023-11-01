@@ -8,7 +8,7 @@ int IMap::get_part_index(int index)
 
 IMap::IMap()
 { 
-	_inodes = new Inode[0];
+	_inodes = new INode[0];
 	_capacity = 0;
 	
 	_parts_count = 0;
@@ -17,7 +17,7 @@ IMap::IMap()
 IMap::IMap(int capacity) 
 {
 	_capacity = capacity;
-	_inodes = new Inode[_capacity];
+	_inodes = new INode[_capacity];
 
 	_parts_count = (capacity + (8*sizeof(uint_fast64_t)) - 1) / (sizeof(uint_fast64_t) * 8);
 	_parts = new uint_fast64_t[_parts_count];
@@ -27,7 +27,7 @@ IMap::IMap(int capacity)
 	}
 }
 
-Inode& IMap::operator[](int index) 
+INode& IMap::operator[](int index) 
 { 
 	if (index >= _capacity) {
 		throw new imap_exception("Индекс за пределами массива");
@@ -69,7 +69,7 @@ bool IMap::IsLocked(int index)
 	return (_parts[part] & 1 << i) != 0;
 }
 
-void IMap::set_inode(int index, Inode* inode) 
+void IMap::set_inode(int index, INode* inode) 
 { 
 	if (index >= _capacity) {
 		throw new imap_exception("Индекс за пределами массива");

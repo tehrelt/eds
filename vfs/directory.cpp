@@ -2,11 +2,13 @@
 
 bool Directory::_ROOT_EXISTS = false;
 
-Directory::Directory(Inode* inode, std::string name)
+Directory::Directory(INode* inode, std::string name)
 {
     if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
     }
+
+    _path = Path("");
 
     _ROOT_EXISTS = true;
 
@@ -16,8 +18,7 @@ Directory::Directory(Inode* inode, std::string name)
     _dentries = std::vector<DEntry*>();
     _dentries.push_back(new DEntry(inode, "./"));
 }
-
-Directory::Directory(Inode* inode, std::string name, Inode* parent)
+Directory::Directory(INode* inode, std::string name, INode* parent)
 {
     if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
@@ -29,4 +30,26 @@ Directory::Directory(Inode* inode, std::string name, Inode* parent)
     _dentries = std::vector<DEntry*>();
     _dentries.push_back(new DEntry(inode,  "./"));
     _dentries.push_back(new DEntry(parent, "../"));
+}
+
+Dir Directory::Convert()
+{
+    Dir dir;
+
+    if (_parent != nullptr) {
+        dir.parent_id = _parent->id();
+    }
+    else {
+        dir.parent_id = -1;
+    }
+
+    dir.inode_id = _inode->id();
+    dir.dentires_count = _dentries.size();
+    dir.dentries = new int[_dentries.size()];
+
+    for (int i = 0; i < _dentries_count; i++) {
+        dir.dentries[i] = _dentries[i]->inode_id();
+    }
+
+    return dir;
 }

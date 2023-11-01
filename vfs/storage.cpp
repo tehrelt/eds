@@ -1,6 +1,7 @@
 #include "storage.h"
 
 #include <fstream>
+#include "tools.h"
 
 Block* Storage::read_block(int id)
 {
@@ -15,15 +16,76 @@ Block* Storage::read_block(int id)
 
 	return block;
 }
-Inode* Storage::read_inode(int id)
+INode* Storage::read_inode(int id)
 {
-	Inode* inode = new Inode();
+	INode* inode = new INode();
 
 	read((char*)inode,
-		(_superblock.num_of_first_imap_block() * _superblock.block_size()) + (id * sizeof(Inode)),
-		sizeof(Inode));
+		(_superblock.num_of_first_imap_block() * _superblock.block_size()) + (id * sizeof(INode)),
+		sizeof(INode));
 
 	return inode;
+}
+
+INode* Storage::find_free_inode()
+{
+	for (int i = 0; i < _imap.capacity(); i++) {
+		if (!_imap.IsLocked(i)) {
+			return &_imap[i];
+		}
+	}
+	return nullptr;
+}
+
+Block* Storage::find_free_block()
+{
+	for (int i = 0; i < _fat.capacity(); i++) {
+		if (_fat[i] == -1) {
+			return read_block(i);
+		}
+	}
+	return nullptr;
+}
+
+Block* Storage::find_relative_block(INode* inode, int pos)
+{
+	int block_num = inode->block_num();
+	while (pos >= _superblock.block_size()) {
+		block_num = _fat[block_num];
+		pos -= _superblock.block_size();
+	}
+
+	return read_block(block_num);
+}
+
+void Storage::save_block(Block* block)
+{
+	char* content = block->data();
+	write(content, block->id() * _superblock.block_size(), _superblock.block_size());
+}
+void Storage::save_inode(INode* inode)
+{
+	write((char*)inode, 
+		_superblock.num_of_first_imap_block() * _superblock.block_size() + inode->id() * sizeof(INode),
+		sizeof(INode));
+}
+
+void Storage::lock_inode(INode* inode)
+{
+	_imap.Lock(inode->id());
+	auto part = _imap.part(inode->id());
+	auto part_idx = _imap.get_part_index(inode->id());
+	write((char*)&part,
+		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
+		sizeof(part));
+}
+
+void Storage::set_fat_record(int idx, int value)
+{
+	_fat[idx] = value;
+	write((char*)&_fat[idx],
+		_superblock.num_of_first_fat_block() * _superblock.block_size() + idx * sizeof(int_fast32_t),
+		sizeof(int_fast32_t));
 }
 
 void Storage::write(char* source, int offset, int size)
@@ -73,15 +135,86 @@ Storage::Storage(std::string name, Superblock* sb, FAT* fat, IMap* imap)
 	_superblock = *sb;
 }
 
+INode* Storage::AllocateInode()
+{
+	INode* inode = find_free_inode();
+	Block* free_block = AllocateBlock();
+
+	inode->set_create_date(getCurrentDate());
+	inode->set_block_num(free_block->id());
+
+	lock_inode(inode);
+
+	save_inode(inode);
+
+	return inode;
+}
+
+Block* Storage::AllocateBlock()
+{
+	Block* block = find_free_block();
+
+	set_fat_record(block->id(), -2);
+
+	return block;
+}
+
 Block* Storage::GetBlock(int id)
 {
 	if (id < _superblock.num_of_first_data_block()) {
 		throw new std::exception("Ќельз€ просмотреть блоки зарезервированные под систему");
 	}
+	else if (id >= _superblock.fat_capacity()) {
+		throw new std::exception("«аданный id уходит за пределы FAT");
+	}
+
 	return read_block(id);
 }
 
-Inode* Storage::GetInode(int id)
+INode* Storage::GetInode(int id)
 {
+	if (id >= _superblock.imap_capacity()) {
+		throw new std::exception("«аданный id уходит за пределы IMap");
+		return nullptr;
+	}
 	return read_inode(id);
+}
+
+void Storage::WriteBytes(INode* inode, int pos, char* content, int size)
+{
+	Block* block = find_relative_block(inode, pos);
+	
+	int start_pos = pos % _superblock.block_size();
+	int end_pos = pos + size;
+	int blocks_affected = (end_pos + _superblock.block_size() - 1) / _superblock.block_size();	
+	int written_bytes = 0;
+
+	for(int i = 0; i < blocks_affected; i++, block = read_block(_fat[block->id()])) {
+
+		int sp = (start_pos + written_bytes) % _superblock.block_size();
+		int ep = 0;
+
+		if (i == blocks_affected - 1) {
+			ep = end_pos % _superblock.block_size();
+		}
+		else {
+			ep = _superblock.block_size();
+		}
+
+		for (int j = sp; j < ep; j++) {
+			block->set_char(j, content[written_bytes]);
+			written_bytes++;
+		}
+
+		save_block(block);
+	}
+}
+void Storage::WriteByte(INode* inode, int pos, char byte)
+{
+	Block* block = find_relative_block(inode, pos);
+
+	pos %= _superblock.block_size();
+	block->set_char(pos, byte);
+
+	save_block(block);
 }

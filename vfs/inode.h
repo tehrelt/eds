@@ -8,7 +8,7 @@ constexpr uint_fast8_t HIDDEN = 0b0010;
 constexpr uint_fast8_t ARCHIVE = 0b0100;
 constexpr uint_fast8_t DIRECTORY = 0b1000;
 
-class Inode
+class INode
 {
 
 	int_fast32_t _id;
@@ -22,8 +22,8 @@ class Inode
 	int_fast32_t _block_num;
 
 public:
-	Inode();
-	Inode(int id);
+	INode();
+	INode(int id);
 
 	int_fast32_t id();
 	uint_fast8_t flags();
@@ -58,6 +58,6 @@ public:
 	void UnsetArchiveFlag();
 	void UnsetDirectoryFlag();
 
-	friend std::ostream& operator<<(std::ostream& os, const Inode& inode);
+	friend std::ostream& operator<<(std::ostream& os, const INode& inode);
 };
 

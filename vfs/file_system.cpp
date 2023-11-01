@@ -78,9 +78,16 @@ Block* FileSystem::GetBlock(int id)
     return _services->block_service()->Get(id);
 }
 
-Inode* FileSystem::GetInode(int id)
+INode* FileSystem::GetInode(int id)
 {
-    return _services->inode_service()->Get(id);
+    try
+    {
+        return _services->inode_service()->Get(id);
+    }
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
 }
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
@@ -138,8 +145,8 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     stream.seekp(sb.num_of_first_imap_block() * block_size);
     int imap_capacity = sb.imap_capacity();
     for (int i = 0; i < imap_capacity; i++) {
-        Inode* inode = new Inode(i);
-        stream.write((char*)inode, sizeof(Inode));
+        INode* inode = new INode(i);
+        stream.write((char*)inode, sizeof(INode));
         imap[i] = *inode;
         
         delete inode;
@@ -153,6 +160,8 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     }
 
     stream.close();
+
+    fs->_root = fs->_services->directory_service()->CreateRoot();
 
     return fs;
 }
@@ -182,8 +191,8 @@ FileSystem* FileSystem::Mount(std::string name)
     stream.seekg(sb.num_of_first_imap_block() * block_size);
     int imap_capacity = sb.imap_capacity();
     for (int i = 0; i < imap_capacity; i++) {
-        Inode *inode = new Inode(i);
-        stream.read((char*)inode, sizeof(Inode));
+        INode *inode = new INode(i);
+        stream.read((char*)inode, sizeof(INode));
         imap.set_inode(i, inode);
         delete inode;
     }

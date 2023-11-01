@@ -1,6 +1,6 @@
 #include "file.h"
 
-File::File(Inode* inode)
+File::File(INode* inode)
 {
 	_inode = inode;
 }

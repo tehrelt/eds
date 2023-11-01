@@ -5,13 +5,13 @@
 
 class DEntry
 {
-	Inode*	_inode;
+	INode*	_inode;
 	char	_name[16];
 
 public:
-	DEntry(Inode* inode, std::string name);
+	DEntry(INode* inode, std::string name);
 
-	Inode* inode()				{ return _inode; }
+	INode* inode()				{ return _inode; }
 	uint_fast32_t inode_id()	{ return _inode->id(); }
 
 	char* name()				{ return _name; }

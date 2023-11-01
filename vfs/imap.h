@@ -12,7 +12,7 @@ public:
 
 class IMap
 {
-	Inode* _inodes;
+	INode* _inodes;
 	uint_fast32_t _capacity;
 
 	uint_fast64_t* _parts;
@@ -23,13 +23,13 @@ public:
 	IMap();
 	IMap(int capacity);
 
-	Inode& operator[](int index);
+	INode& operator[](int index);
 	
 	void Lock(int index);
 	void Unlock(int index);
 	bool IsLocked(int index);
 
-	void set_inode(int index, Inode* inode);
+	void set_inode(int index, INode* inode);
 
 	int get_part_index(int index);
 	uint_fast64_t part(int index);

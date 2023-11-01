@@ -3,31 +3,31 @@
 #include <chrono>
 #include "tools.h"
 
-void Inode::SetSystemFlag() { _flags |= SYSTEM; }
-void Inode::SetHiddenFlag() { _flags |= HIDDEN; }
-void Inode::SetArchiveFlag() { _flags |= ARCHIVE; }
-void Inode::SetDirectoryFlag() { _flags |= DIRECTORY; }
+void INode::SetSystemFlag() { _flags |= SYSTEM; }
+void INode::SetHiddenFlag() { _flags |= HIDDEN; }
+void INode::SetArchiveFlag() { _flags |= ARCHIVE; }
+void INode::SetDirectoryFlag() { _flags |= DIRECTORY; }
 
-bool Inode::IsSystemFlag() { return (_flags & SYSTEM) != 0; }
-bool Inode::IsHiddenFlag() { return (_flags & HIDDEN) != 0; }
-bool Inode::IsArchiveFlag() { return (_flags & ARCHIVE) != 0; }
-bool Inode::IsDirectoryFlag() { return (_flags & DIRECTORY) != 0; }
+bool INode::IsSystemFlag() { return (_flags & SYSTEM) != 0; }
+bool INode::IsHiddenFlag() { return (_flags & HIDDEN) != 0; }
+bool INode::IsArchiveFlag() { return (_flags & ARCHIVE) != 0; }
+bool INode::IsDirectoryFlag() { return (_flags & DIRECTORY) != 0; }
 
-void Inode::UnsetSystemFlag() { _flags &= ~SYSTEM; }
-void Inode::UnsetHiddenFlag() { _flags &= ~HIDDEN; }
-void Inode::UnsetArchiveFlag() { _flags &= ~ARCHIVE; }
-void Inode::UnsetDirectoryFlag() { _flags &= ~DIRECTORY; }
+void INode::UnsetSystemFlag() { _flags &= ~SYSTEM; }
+void INode::UnsetHiddenFlag() { _flags &= ~HIDDEN; }
+void INode::UnsetArchiveFlag() { _flags &= ~ARCHIVE; }
+void INode::UnsetDirectoryFlag() { _flags &= ~DIRECTORY; }
 
-void Inode::set_mode(uint_fast8_t mode) { _mode = mode; }
-void Inode::set_flags(uint_fast8_t flags) { _flags = flags; }
+void INode::set_mode(uint_fast8_t mode) { _mode = mode; }
+void INode::set_flags(uint_fast8_t flags) { _flags = flags; }
 
-void Inode::set_create_date(time_t date) { _create_date = date; }
-void Inode::set_access_date(time_t date) { _access_date = date; }
-void Inode::set_modify_date(time_t date) { _modify_date = date; }
+void INode::set_create_date(time_t date) { _create_date = date; }
+void INode::set_access_date(time_t date) { _access_date = date; }
+void INode::set_modify_date(time_t date) { _modify_date = date; }
 
-void Inode::set_block_num(int_fast32_t index) { _block_num = index; }
+void INode::set_block_num(int_fast32_t index) { _block_num = index; }
 
-Inode::Inode()
+INode::INode()
 {
 	_id = 0;
 	_flags = 0;
@@ -40,7 +40,7 @@ Inode::Inode()
 	_access_date = 0;
 }
 
-Inode::Inode(int id)
+INode::INode(int id)
 {
 	_id = id;
 	_flags = 0;
@@ -53,20 +53,20 @@ Inode::Inode(int id)
 	_access_date = 0;
 }
 
-uint_fast8_t Inode::flags() { return _flags; }
-uint_fast8_t Inode::mode() { return _mode; }
+uint_fast8_t INode::flags() { return _flags; }
+uint_fast8_t INode::mode() { return _mode; }
 
-uint_fast16_t Inode::uid() { return _uid; }
+uint_fast16_t INode::uid() { return _uid; }
 
-int_fast32_t Inode::id() { return _id; }
+int_fast32_t INode::id() { return _id; }
 
-time_t Inode::create_date() { return _create_date; }
-time_t Inode::modify_date() { return _modify_date; }
-time_t Inode::access_date() { return _access_date; }
+time_t INode::create_date() { return _create_date; }
+time_t INode::modify_date() { return _modify_date; }
+time_t INode::access_date() { return _access_date; }
 
-int_fast32_t Inode::block_num() { return _block_num; }
+int_fast32_t INode::block_num() { return _block_num; }
 
-std::ostream& operator<<(std::ostream& os, const Inode& inode)
+std::ostream& operator<<(std::ostream& os, const INode& inode)
 {
 	os << inode._id << "\t";
 	os << std::to_string(inode._flags) << "\t";

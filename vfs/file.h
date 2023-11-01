@@ -4,9 +4,9 @@
 
 class File
 {
-	Inode* _inode;
+	INode* _inode;
 public:
-	File(Inode* inode);
+	File(INode* inode);
 
 	void Open(std::string path, uint_fast8_t flags);
 	void Close();

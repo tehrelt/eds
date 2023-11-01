@@ -49,6 +49,9 @@ int Terminal::Listen()
             std::cout << "Shutdowning...";
             return 0;
         }
+        else if (cmd == "cls") {
+            system("cls");
+        }
         else {
             std::cout << "Invalid command" << std::endl;
         }
@@ -93,7 +96,7 @@ int Terminal::get_inode(int id)
 {
     try
     {
-        Inode* inode = _file_system->GetInode(id);
+        INode* inode = _file_system->GetInode(id);
         std::cout << "INODE INFO: " << std::endl;
         std::cout << *inode << std::endl;
     }

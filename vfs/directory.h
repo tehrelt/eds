@@ -2,25 +2,39 @@
 #include "file.h"
 #include "dentry.h"
 #include <vector>
+#include "path.h"
+
+class Dir 
+{
+public:
+	int  parent_id;
+	int  inode_id;
+	int* dentries;
+	int  dentires_count;
+};
 
 class Directory
 {
-	Inode*					_parent;
-	Inode*					_inode;
+	INode*					_parent;
+	INode*					_inode;
 	std::vector<DEntry*>	_dentries;
 	int						_dentries_count;
 
 	static bool				_ROOT_EXISTS;
 
-public:
-	Directory(Inode*, std::string name);
-	Directory(Inode* inode, std::string name, Inode* parent);
+	Path					_path;
 
-	Inode* parent()					{ return _parent; }
-	Inode* inode()					{ return _inode; }
+public:
+	Directory(INode*, std::string name);
+	Directory(INode* inode, std::string name, INode* parent);
+
+	INode* parent()					{ return _parent; }
+	INode* inode()					{ return _inode; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
 	int dentries_count()			{ return _dentries_count; }
 
-	std::string GetPath();
+	std::string path()				{ return _path.ToString(); }
+
+	Dir Convert();
 };
 

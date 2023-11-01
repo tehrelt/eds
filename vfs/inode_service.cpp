@@ -1,6 +1,13 @@
 #include "inode_service.h"
 
-Inode* InodeService::Get(int id)
+INode* InodeService::Get(int id)
 {
-    return _storage->GetInode(id);
+	try
+	{
+		return _storage->GetInode(id);
+	}
+	catch (const std::exception& e)
+	{
+		throw e;
+	}
 }

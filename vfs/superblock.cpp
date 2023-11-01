@@ -37,13 +37,13 @@ Superblock::Superblock(uint_fast64_t size) : Superblock()
 	_fat_size = sizeof(uint_fast32_t) * _fat_capacity;
 	block_reserved += (_fat_size + _block_size - 1) / _block_size;
 
-	// Inode list allocation
+	// INode list allocation
 	_num_of_first_imap_block = block_reserved;
 	_imap_capacity = size / 1000;
-	_imap_size = sizeof(Inode) * _imap_capacity;
+	_imap_size = sizeof(INode) * _imap_capacity;
 	block_reserved += (_imap_size + _block_size - 1) / _block_size;
 	
-	// Inode bitmap allocation
+	// INode bitmap allocation
 	_num_of_first_part_block = block_reserved;
 	_imap_parts_count = (_imap_capacity + (8 * sizeof(uint_fast64_t)) - 1) / (sizeof(uint_fast64_t) * 8);
 	_imap_parts_size = sizeof(uint_fast64_t) * _imap_parts_count;

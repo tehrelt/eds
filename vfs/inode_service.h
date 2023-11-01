@@ -7,6 +7,6 @@ public:
 	InodeService() : BaseService() {}
 	InodeService(Storage* storage) : BaseService(storage) {}
 
-	Inode* Get(int id);
+	INode* Get(int id);
 };
 
