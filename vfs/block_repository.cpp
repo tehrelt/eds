@@ -2,7 +2,7 @@
 
 Block* BlockRepository::read_block(int id)
 {
-	Block* block;
+	Block* block = new Block(0, _record_size);
 	Repository::read((char*)block, _location + _record_size * id, _record_size);
 	return block;
 }
@@ -35,7 +35,7 @@ BlockRepository::BlockRepository(std::string name, Superblock* sb, FAT fat)
 
 void BlockRepository::Save(Block* block)
 {
-	write((char*)block, _location + (block->id() * _record_size), _record_size);
+	write((char*)block, (block->id() * _record_size), _record_size);
 }
 
 Block* BlockRepository::GetById(int id)

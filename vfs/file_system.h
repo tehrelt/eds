@@ -14,12 +14,11 @@ public:
 	FileSystem(std::string, Superblock);
 	FileSystem(std::string, Superblock, Storage);
 
-	static FileSystem* Create(int size, std::string name);
-	static FileSystem* Mount(std::string name);
+	//static FileSystem* Create(int size, std::string name);
+	//static FileSystem* Mount(std::string name);
 
-	std::string file_name() { return _file_name; }
-	Superblock* superblock() { return &_superblock; }
-
-	std::string ToString();
+	std::string file_name()		{ return _file_name; }
+	Superblock* superblock()	{ return &_superblock; }
+	Storage* storage()			{ return &_storage; }
 };
 

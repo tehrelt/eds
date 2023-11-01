@@ -25,14 +25,6 @@
 //    uint_fast64_t part = _imap.part(inode->id());
 //    write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
 //}
-//void FileSystem::saveFAT(int index)
-//{
-//    int_fast32_t record = _fat[index];
-//
-//    int offset = (_superblock.num_of_first_fat_block() * _superblock.block_size()) + index * sizeof(int_fast32_t);
-//
-//    write((char*)&record, offset, sizeof(int_fast32_t));
-//}
 //
 //Inode* FileSystem::AllocateInode()
 //{

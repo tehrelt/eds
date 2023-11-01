@@ -12,7 +12,7 @@ public:
 	Storage(std::string name, Superblock* sb);
 	Storage(std::string name, BlockRepository block_repo, INodeRepository inode_repo);
 
-	BlockRepository block_repository() { return _block_repository; }
-	INodeRepository inode_repository() { return _inode_repository; }
+	BlockRepository* block_repository() { return &_block_repository; }
+	INodeRepository* inode_repository() { return &_inode_repository; }
 };
 

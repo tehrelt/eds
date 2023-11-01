@@ -49,6 +49,8 @@ int main()
         return -1;
     }
 
+    
+
     Terminal terminal = Terminal(services);
 
     return terminal.Listen();
@@ -122,7 +124,11 @@ Service* create_file_system(uint_fast64_t size, std::string name)
 
     stream.close();
 
-    return new Service(fs);
+    Service* s = new Service(fs);
+
+    s->set_directory(s->directory_service().CreateRoot());
+
+    return s;
 }
 Service* mount_file_system(std::string name)
 {
@@ -165,8 +171,8 @@ Service* mount_file_system(std::string name)
 
     stream.close();
 
-    BlockRepository block_repo = BlockRepository(name, &sb, &fat);
-    INodeRepository inode_repo = INodeRepository(name, &sb, &imap);
+    BlockRepository block_repo = BlockRepository(name, &sb, fat);
+    INodeRepository inode_repo = INodeRepository(name, &sb, imap);
     Storage storage = Storage(name, block_repo, inode_repo);
 
     FileSystem* fs = new FileSystem(name, sb, storage);

@@ -15,7 +15,7 @@ int Terminal::Listen()
 {
     std::string cmd;
     while (true) {
-        std::cout << "user@eds " << "path_placeholder" << ": ";
+        std::cout << "user@eds " << _services->current_directory() << ": ";
         std::cin >> cmd;
 
         if (cmd == "ls") {
@@ -32,6 +32,18 @@ int Terminal::Listen()
             std::cout << "dir name: ";
             std::cin >> name;
             mkdir(name);
+        }
+        else if (cmd == "gi") {
+            int id;
+            std::cout << "id: ";
+            std::cin >> id;
+            get_inode(id);
+        }
+        else if (cmd == "gb") {
+            int id;
+            std::cout << "id: ";
+            std::cin >> id;
+            get_block(id);
         }
         else if (cmd == "shutdown") {
             std::cout << "Shutdowning...";
@@ -53,7 +65,6 @@ int Terminal::mkfile(std::string name)
 
     return 0;
 }
-
 int Terminal::mkdir(std::string name)
 {
     if (name.length() == 0) {
@@ -63,8 +74,17 @@ int Terminal::mkdir(std::string name)
 
     return 0;
 }
+int Terminal::get_block(int id)
+{
 
+    return 0;
+}
+int Terminal::get_inode(int id)
+{
+    return 0;
+}
 int Terminal::ls()
 {
+    _services->directory_service()->
     return 0;
 }

@@ -12,6 +12,7 @@ public:
 	FileService(FileSystem* file_system);
 
 	File Create(std::string name);
+	File Read();
 	File Update();
 	void Delete();
 };

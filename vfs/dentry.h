@@ -5,16 +5,14 @@
 
 class DEntry
 {
-	Inode* _inode;
-	char* _name;
-	uint_fast32_t _name_length;
-	
-	list_head _items;
+	Inode*	_inode;
+	char	_name[16];
 
 public:
 	DEntry(Inode* inode, std::string name);
-	void add(DEntry* dentry);
-	list_head items();
 
+	uint_fast32_t inode_id()	{ return _inode->id(); }
+
+	char* name()				{ return _name; }
 };
 

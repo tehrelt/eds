@@ -4,7 +4,7 @@ bool Directory::_ROOT_EXISTS = false;
 
 Directory::Directory(Inode* inode, std::string name)
 {
-    if (!inode->IsDirectoryFlag() && !_ROOT_EXISTS) {
+    if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
     }
 
@@ -13,22 +13,20 @@ Directory::Directory(Inode* inode, std::string name)
     _parent = nullptr;
     _inode = inode;
 
-    dentries = new DEntry(inode, name);
+    _dentries = std::vector<DEntry*>();
+    _dentries.push_back(new DEntry(inode, "./"));
 }
 
 Directory::Directory(Inode* inode, std::string name, Inode* parent)
 {
-    if (!inode->IsDirectoryFlag() && !_ROOT_EXISTS) {
+    if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
     }
 
     _parent = parent;
     _inode = inode;
 
-    dentries = new DEntry(inode, name);
-}
-
-DEntry* Directory::dentry()
-{
-    return dentries;
+    _dentries = std::vector<DEntry*>();
+    _dentries.push_back(new DEntry(inode,  "./"));
+    _dentries.push_back(new DEntry(parent, "../"));
 }
