@@ -1,12 +1,14 @@
 #pragma once
 #include <string>
 #include <iostream>
-#include "file_explorer.h"
+#include "service.h"
 
 class Terminal
 {
-
+	Service* _services;
 public:
+	Terminal();
+	Terminal(Service* services);
 
 	int Listen();
 

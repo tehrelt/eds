@@ -1,6 +1,16 @@
 #include "terminal.h"
 
 
+Terminal::Terminal()
+{
+    _services = nullptr;
+}
+
+Terminal::Terminal(Service* services)
+{
+    _services = services;
+}
+
 int Terminal::Listen()
 {
     std::string cmd;
@@ -49,6 +59,8 @@ int Terminal::mkdir(std::string name)
     if (name.length() == 0) {
         return -1;
     }
+
+
     return 0;
 }
 
