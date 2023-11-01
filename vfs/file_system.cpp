@@ -40,7 +40,6 @@ void FileSystem::saveBlock(Block block, int index)
     int offset = (_superblock.num_of_first_data_block() + index) * _superblock.block_size();
     write(block.data(), offset, _superblock.block_size());
 }
-
 void FileSystem::saveInode(int index)
 {
     Inode inode = _imap[index];
@@ -58,7 +57,6 @@ void FileSystem::saveInode(Inode* inode)
     uint_fast64_t part = _imap.part(inode->id());
     write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
 }
-
 void FileSystem::saveFAT(int index)
 {
     int_fast32_t record = _fat[index];
@@ -68,7 +66,7 @@ void FileSystem::saveFAT(int index)
     write((char*)&record, offset, sizeof(int_fast32_t));
 }
 
-Inode* FileSystem::allocateInode()
+Inode* FileSystem::AllocateInode()
 {
     int block_idx = findFreeBlockNum();
     int inode_idx = findFreeInodeNum();
@@ -86,15 +84,9 @@ Inode* FileSystem::allocateInode()
     
     return inode;
 }
-
-void FileSystem::allocateFile()
+Inode* FileSystem::AllocateDir()
 {
-    
-}
-
-Inode* FileSystem::allocateDir()
-{
-    Inode* inode = allocateInode();
+    Inode* inode = AllocateInode();
     inode->SetDirectoryFlag();
 
     saveInode(inode);
@@ -102,9 +94,10 @@ Inode* FileSystem::allocateDir()
     return inode;
 }
 
-void FileSystem::generateStruct()
+void FileSystem::WriteIntoBlock(char* content, int block_idx)
 {
-    
+    int offset = (_superblock.num_of_first_data_block() + block_idx) * _superblock.block_size();
+    write(content, offset, strlen(content));
 }
 
 int FileSystem::findFreeBlockNum()
@@ -134,7 +127,6 @@ FileSystem::FileSystem(std::string name, Superblock* superblock, FAT* fat, IMap*
     _superblock = *superblock;
     _fat = *fat;
     _imap = *ilist;
-    _terminal = Terminal();
 }
 
 FileSystem* FileSystem::Create(int size, std::string name)
@@ -172,7 +164,7 @@ FileSystem* FileSystem::Create(int size, std::string name)
     int block_size = sb.block_size();
     int fs_size_in_blocks = sb.fs_size_in_blocks();
     for (int i = 0; i < fs_size_in_blocks; i++) {
-        Block* b = new Block(block_size);
+        Block* b = new Block(i, block_size);
         stream.write((char*)b, block_size);
         delete b;
     }
@@ -205,11 +197,11 @@ FileSystem* FileSystem::Create(int size, std::string name)
 
     stream.close();
 
-    Inode* root = fs->allocateDir();
+    Inode* root = fs->AllocateDir();
     root->SetSystemFlag();
     fs->saveInode(root);
 
-    fs->_current_directory = new Directory(root);
+    fs->_root = new Directory(root, "/");
 
     return fs;
 }
@@ -261,14 +253,13 @@ FileSystem* FileSystem::Mount(std::string name)
 }
 
 std::string FileSystem::file_name() { return _file_name; }
+
 Superblock* FileSystem::superblock() { return &_superblock; }
 FAT* FileSystem::fat() { return &_fat; }
 IMap* FileSystem::imap() { return &_imap; }
+Directory* FileSystem::root() { return _root; }
 
-int FileSystem::Run()
-{
-    return _terminal.Listen();
-}
+// int FileSystem::Run() { return _terminal.Listen(); }
 
 std::string FileSystem::ToString()
 { 

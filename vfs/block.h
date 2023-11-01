@@ -1,11 +1,13 @@
 #pragma once
+#include <cstdint>
 class Block
 {
+	uint_fast32_t _id;
 	char* _data;
 
 public:
 	Block();
-	Block(int size);
+	Block(int id, int size);
 
 	char* data();
 

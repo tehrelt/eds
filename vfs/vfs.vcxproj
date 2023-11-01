@@ -132,6 +132,7 @@
     <ClCompile Include="directory.cpp" />
     <ClCompile Include="fat.cpp" />
     <ClCompile Include="file.cpp" />
+    <ClCompile Include="file_explorer.cpp" />
     <ClCompile Include="file_system.cpp" />
     <ClCompile Include="inode.cpp" />
     <ClCompile Include="imap.cpp" />
@@ -146,6 +147,7 @@
     <ClInclude Include="directory.h" />
     <ClInclude Include="fat.h" />
     <ClInclude Include="file.h" />
+    <ClInclude Include="file_explorer.h" />
     <ClInclude Include="file_system.h" />
     <ClInclude Include="inode.h" />
     <ClInclude Include="imap.h" />

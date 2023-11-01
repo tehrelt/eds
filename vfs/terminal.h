@@ -1,12 +1,17 @@
 #pragma once
 #include <string>
 #include <iostream>
+#include "file_explorer.h"
 
 class Terminal
 {
-	std::string _current_path;
+
 public:
-	Terminal();
+
 	int Listen();
+
+	int mkfile(std::string);
+	int mkdir(std::string);
+	int ls();
 };
 

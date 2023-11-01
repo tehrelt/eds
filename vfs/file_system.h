@@ -14,30 +14,19 @@ class FileSystem
 	Superblock _superblock;
 	FAT _fat;
 	IMap _imap;
-	Terminal _terminal;
-	Directory* _current_directory;
-	
 
+	Directory* _root;
+	
 	void write(char* source, int offset, int size);
 	void read(char* destination, int offset, int size);
 
 	void saveBlock(Block block, int index);
-
 	void saveInode(int index);
 	void saveInode(Inode* inode);
-
 	void saveFAT(int index);
-
-	Inode* allocateInode();
-
-	void allocateFile();
-	Inode* allocateDir();
-
-	void generateStruct();
 
 	int findFreeBlockNum();
 	int findFreeInodeNum();
-
 
 public:
 	FileSystem(std::string, Superblock*, FAT*, IMap*);
@@ -46,17 +35,17 @@ public:
 	static FileSystem* Mount(std::string name);
 
 	std::string file_name();
-
 	Superblock* superblock();
 	FAT* fat();
 	IMap* imap();
+	Directory* root();
 
 	int Run();
 
-	void GetRoot();
-	void GetSuperBlock();
-	void GetUID();
-	void GetInode();
+	Inode* AllocateInode();
+	Inode* AllocateDir();
+
+	void WriteIntoBlock(char* content, int block_idx);
 
 	std::string ToString();
 };

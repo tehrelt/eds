@@ -4,18 +4,17 @@
 
 class Directory
 {
+	Inode* _parent;
 	Inode* _inode;
+	DEntry* dentries;
+
+	static bool _ROOT_EXISTS;
 
 public:
-	Directory(Inode*);
+	Directory(Inode*, std::string name);
+	Directory(Inode* inode, std::string name, Inode* parent);
 
-	void CreateDirectory(std::string name);
-	void CreateFile(std::string name);
-	void Start();
-	bool Exists(std::string name);
-	File Open(std::string name);
-	void Move(std::string source, std::string destination);
-	void RemoveFile();
-	DEntry First();
+	DEntry* dentry();
+	std::string GetPath();
 };
 

@@ -1,8 +1,13 @@
 #pragma once
 #include <string>
+#include "inode.h"
+
 class File
 {
+	Inode* _inode;
 public:
+	File(Inode* inode);
+
 	void Open(std::string path, uint_fast8_t flags);
 	void Close();
 

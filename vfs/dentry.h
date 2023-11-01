@@ -1,4 +1,5 @@
 #pragma once
+#include <string>
 #include "inode.h"
 #include "list_head.h"
 
@@ -8,9 +9,12 @@ class DEntry
 	char* _name;
 	uint_fast32_t _name_length;
 	
-	struct list_head _items;
+	list_head _items;
 
 public:
-	void add(Inode* inode);
+	DEntry(Inode* inode, std::string name);
+	void add(DEntry* dentry);
+	list_head items();
+
 };
 

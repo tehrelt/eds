@@ -2,11 +2,13 @@
 
 Block::Block()
 {
+	_id = 0;
 	_data = new char[0];
 }
 
-Block::Block(int size)
+Block::Block(int id, int size)
 {
+	_id = id;
 	_data = new char[size];
 }
 

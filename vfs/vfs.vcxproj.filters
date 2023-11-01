@@ -34,17 +34,14 @@
     <Filter Include="Исходные файлы\app">
       <UniqueIdentifier>{9a0a6e46-fa52-436c-84f0-effa37f8f825}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\fs">
+      <UniqueIdentifier>{186c3733-7f8e-4a84-b49a-32e7195de000}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\fs">
+      <UniqueIdentifier>{e2c36ed9-e940-470a-8e49-b1af388ebfc8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="file_system.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="file.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
-    <ClCompile Include="directory.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="tools.cpp">
       <Filter>Исходные файлы\tools</Filter>
     </ClCompile>
@@ -72,18 +69,21 @@
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
+    <ClCompile Include="file.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="directory.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="file_explorer.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="file_system.cpp">
+      <Filter>Исходные файлы\fs</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="file_system.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="file.h">
-      <Filter>Файлы заголовков</Filter>
-    </ClInclude>
-    <ClInclude Include="directory.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="tools.h">
@@ -112,6 +112,18 @@
     </ClInclude>
     <ClInclude Include="terminal.h">
       <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="directory.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="file_explorer.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="file_system.h">
+      <Filter>Файлы заголовков\fs</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

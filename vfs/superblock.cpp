@@ -22,7 +22,6 @@ Superblock::Superblock()
 	_total_space_in_bytes = 0;
 	strcpy_s(_fs_name, "");
 }
-
 Superblock::Superblock(uint_fast64_t size) : Superblock()
 {
 	if (size < 64 << 20)		{ _block_size = 512;  }
