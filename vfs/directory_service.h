@@ -9,5 +9,8 @@ public:
 	DirectoryService(Storage* storage) : BaseService(storage) { }
 
 	Directory* CreateRoot();
+	Directory* ReadRoot();
+
+	std::vector<DEntry*> GetInfo(Directory* dir);
 };
 

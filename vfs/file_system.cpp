@@ -10,60 +10,6 @@
 #include "superblock.h"
 #include "storage.h"
 
-//void FileSystem::saveInode(int index)
-//{
-//    Inode inode = _imap[index];
-//    write((char*)&inode, (_superblock.num_of_first_imap_block() * _superblock.block_size()) + (index * sizeof(Inode)), sizeof(Inode));
-//    
-//    uint_fast32_t part_idx = _imap.get_part_index(index);
-//    uint_fast64_t part = _imap.part(index);
-//    write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
-//}
-//void FileSystem::saveInode(Inode* inode)
-//{
-//    write((char*)inode, (_superblock.num_of_first_imap_block() * _superblock.block_size()) + (inode->id() * sizeof(Inode)), sizeof(Inode));
-//
-//    uint_fast32_t part_idx = _imap.get_part_index(inode->id());
-//    uint_fast64_t part = _imap.part(inode->id());
-//    write((char*)&part, (_superblock.num_of_first_part_block() * _superblock.block_size()) + part_idx * sizeof(uint_fast64_t), sizeof(uint_fast64_t));
-//}
-//
-//Inode* FileSystem::AllocateInode()
-//{
-//    int block_idx = findFreeBlockNum();
-//    int inode_idx = findFreeInodeNum();
-//
-//    Inode* inode = &_imap[inode_idx];
-//
-//    _imap.Lock(inode->id());
-//    inode->set_create_date(getCurrentDate());
-//
-//    inode->set_block_num(block_idx);
-//    _fat[block_idx] = -2;
-//
-//    saveInode(inode_idx);
-//    saveFAT(block_idx);
-//    
-//    return inode;
-//}
-//Inode* FileSystem::AllocateDir()
-//{
-//    Inode* inode = AllocateInode();
-//    inode->SetDirectoryFlag();
-//
-//    saveInode(inode);
-//
-//    return inode;
-//}
-//
-//void FileSystem::WriteIntoBlock(char* content, int block_idx)
-//{
-//    int offset = (_superblock.num_of_first_data_block() + block_idx) * _superblock.block_size();
-//    write(content, offset, strlen(content));
-//}
-
-
-
 FileSystem::FileSystem()
 {
     _services = nullptr;
@@ -88,6 +34,11 @@ INode* FileSystem::GetInode(int id)
     {
         throw e;
     }
+}
+
+std::vector<DEntry*> FileSystem::ls()
+{
+    return _services->directory_service()->GetInfo(_current_directory);
 }
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
@@ -162,7 +113,8 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     stream.close();
 
     fs->_root = fs->_services->directory_service()->CreateRoot();
-
+    fs->_current_directory = fs->_root;
+    
     return fs;
 }
 FileSystem* FileSystem::Mount(std::string name)
@@ -210,7 +162,7 @@ FileSystem* FileSystem::Mount(std::string name)
     Service* service = new Service(storage);
     FileSystem* fs = new FileSystem(service);
 
+
+
     return fs;
 }
-
-// int FileSystem::Run() { return _terminal.Listen(); }

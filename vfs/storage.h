@@ -46,10 +46,10 @@ public:
 
 	INode* AllocateInode();
 	Block* AllocateBlock();
-	INode* UpdateInode(INode* inode);
+	void SaveINode(INode* inode);
 
 	Block* GetBlock(int id);
-	INode* GetInode(int id);
+	INode* GetINode(int id);
 
 	void WriteBytes(INode* inode, int pos, char* content, int size);
 	void WriteByte(INode* inode, int pos, char byte);

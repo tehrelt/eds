@@ -159,6 +159,11 @@ Block* Storage::AllocateBlock()
 	return block;
 }
 
+void Storage::SaveINode(INode* inode)
+{
+	save_inode(inode);
+}
+
 Block* Storage::GetBlock(int id)
 {
 	if (id < _superblock.num_of_first_data_block()) {
@@ -171,7 +176,7 @@ Block* Storage::GetBlock(int id)
 	return read_block(id);
 }
 
-INode* Storage::GetInode(int id)
+INode* Storage::GetINode(int id)
 {
 	if (id >= _superblock.imap_capacity()) {
 		throw new std::exception("Заданный id уходит за пределы IMap");

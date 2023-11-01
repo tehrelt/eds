@@ -15,7 +15,7 @@ int Terminal::Listen()
 {
     std::string cmd;
     while (true) {
-        std::cout << "user@eds " << "(path)" << ": ";
+        std::cout << "user@eds " << _file_system->current_directory()->path() << "/" << ": ";
         std::cin >> cmd;
 
         if (cmd == "ls") {
@@ -109,5 +109,12 @@ int Terminal::get_inode(int id)
 }
 int Terminal::ls()
 {
+    auto vector = _file_system->ls();
+
+    for (int i = 0; i < vector.size(); i++) {
+        INode* inode = _file_system->GetInode(vector[i]->inode()->id());
+        std::cout << *inode << "\t" << vector[i]->name() << std::endl;
+    }
+
     return 0;
 }

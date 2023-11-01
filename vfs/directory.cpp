@@ -4,7 +4,7 @@ bool Directory::_ROOT_EXISTS = false;
 
 Directory::Directory(INode* inode, std::string name)
 {
-    if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
+    if (!inode->IsDirectoryFlag() || _ROOT_EXISTS) {
         throw new std::exception();
     }
 
@@ -47,7 +47,7 @@ Dir Directory::Convert()
     dir.dentires_count = _dentries.size();
     dir.dentries = new int[_dentries.size()];
 
-    for (int i = 0; i < _dentries_count; i++) {
+    for (int i = 0; i < _dentries.size(); i++) {
         dir.dentries[i] = _dentries[i]->inode_id();
     }
 

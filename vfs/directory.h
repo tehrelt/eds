@@ -18,7 +18,6 @@ class Directory
 	INode*					_parent;
 	INode*					_inode;
 	std::vector<DEntry*>	_dentries;
-	int						_dentries_count;
 
 	static bool				_ROOT_EXISTS;
 
@@ -31,7 +30,6 @@ public:
 	INode* parent()					{ return _parent; }
 	INode* inode()					{ return _inode; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
-	int dentries_count()			{ return _dentries_count; }
 
 	std::string path()				{ return _path.ToString(); }
 

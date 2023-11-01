@@ -4,7 +4,7 @@ INode* InodeService::Get(int id)
 {
 	try
 	{
-		return _storage->GetInode(id);
+		return _storage->GetINode(id);
 	}
 	catch (const std::exception& e)
 	{
