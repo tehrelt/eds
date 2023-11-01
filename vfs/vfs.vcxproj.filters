@@ -52,6 +52,12 @@
     <Filter Include="Файлы заголовков\service">
       <UniqueIdentifier>{eb2849cf-043a-439f-b8e3-7b1a9652bf1f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\service\models">
+      <UniqueIdentifier>{5dccce64-4eb8-4041-ab88-9c8a4478e469}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\service\models">
+      <UniqueIdentifier>{62a97c20-faa6-4e3e-abcf-57563e1c07f9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tools.cpp">
@@ -81,12 +87,6 @@
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы\app</Filter>
     </ClCompile>
-    <ClCompile Include="file.cpp">
-      <Filter>Исходные файлы\io</Filter>
-    </ClCompile>
-    <ClCompile Include="directory.cpp">
-      <Filter>Исходные файлы\io</Filter>
-    </ClCompile>
     <ClCompile Include="file_system.cpp">
       <Filter>Исходные файлы\fs</Filter>
     </ClCompile>
@@ -110,6 +110,12 @@
     </ClCompile>
     <ClCompile Include="service.cpp">
       <Filter>Исходные файлы\service</Filter>
+    </ClCompile>
+    <ClCompile Include="file.cpp">
+      <Filter>Исходные файлы\service\models</Filter>
+    </ClCompile>
+    <ClCompile Include="directory.cpp">
+      <Filter>Исходные файлы\service\models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -143,12 +149,6 @@
     <ClInclude Include="terminal.h">
       <Filter>Файлы заголовков\io</Filter>
     </ClInclude>
-    <ClInclude Include="directory.h">
-      <Filter>Файлы заголовков\io</Filter>
-    </ClInclude>
-    <ClInclude Include="file.h">
-      <Filter>Файлы заголовков\io</Filter>
-    </ClInclude>
     <ClInclude Include="file_system.h">
       <Filter>Файлы заголовков\fs</Filter>
     </ClInclude>
@@ -172,6 +172,12 @@
     </ClInclude>
     <ClInclude Include="service.h">
       <Filter>Файлы заголовков\service</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>Файлы заголовков\service\models</Filter>
+    </ClInclude>
+    <ClInclude Include="directory.h">
+      <Filter>Файлы заголовков\service\models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
