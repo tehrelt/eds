@@ -128,14 +128,20 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="block.cpp" />
+    <ClCompile Include="block_repository.cpp" />
     <ClCompile Include="dentry.cpp" />
     <ClCompile Include="directory.cpp" />
+    <ClCompile Include="directory_service.cpp" />
     <ClCompile Include="fat.cpp" />
     <ClCompile Include="file.cpp" />
-    <ClCompile Include="file_explorer.cpp" />
+    <ClCompile Include="file_service.cpp" />
     <ClCompile Include="file_system.cpp" />
     <ClCompile Include="inode.cpp" />
     <ClCompile Include="imap.cpp" />
+    <ClCompile Include="inode_repository.cpp" />
+    <ClCompile Include="repository.cpp" />
+    <ClCompile Include="service.cpp" />
+    <ClCompile Include="storage.cpp" />
     <ClCompile Include="superblock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="terminal.cpp" />
@@ -143,16 +149,22 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="block.h" />
+    <ClInclude Include="block_repository.h" />
     <ClInclude Include="dentry.h" />
     <ClInclude Include="directory.h" />
+    <ClInclude Include="directory_service.h" />
     <ClInclude Include="fat.h" />
     <ClInclude Include="file.h" />
-    <ClInclude Include="file_explorer.h" />
+    <ClInclude Include="file_service.h" />
     <ClInclude Include="file_system.h" />
     <ClInclude Include="inode.h" />
     <ClInclude Include="imap.h" />
+    <ClInclude Include="inode_repository.h" />
     <ClInclude Include="list_head.h" />
+    <ClInclude Include="repository.h" />
     <ClInclude Include="resource.h" />
+    <ClInclude Include="service.h" />
+    <ClInclude Include="storage.h" />
     <ClInclude Include="superblock.h" />
     <ClInclude Include="terminal.h" />
     <ClInclude Include="tools.h" />
