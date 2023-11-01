@@ -10,3 +10,9 @@ BlockRepository::BlockRepository(std::string name, Superblock* sb)
 {
 	_fat = new FAT(sb->fat_capacity());
 }
+
+BlockRepository::BlockRepository(std::string name, Superblock* sb, FAT* fat)
+	: Repository(name, sb->num_of_first_fat_block()* sb->block_size(), sizeof(_fat[0]))
+{
+	_fat = fat;
+}

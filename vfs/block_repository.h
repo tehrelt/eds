@@ -12,6 +12,7 @@ private:
 public:
 	BlockRepository();
 	BlockRepository(std::string name, Superblock* sb);
+	BlockRepository(std::string name, Superblock* sb, FAT* fat);
 
 	void Save(Block* block);
 	Block* GetById(int id);

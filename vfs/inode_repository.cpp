@@ -15,3 +15,9 @@ INodeRepository::INodeRepository(std::string name, Superblock* sb)
 	_part_location = sb->num_of_first_part_block() * sb->block_size();
 	_part_record_size = sizeof(uint_fast64_t);
 }
+
+INodeRepository::INodeRepository(std::string name, Superblock* sb, IMap* imap) 
+	: Repository(name, sb->num_of_first_imap_block()* sb->block_size(), sizeof(imap[0]))
+{
+	_imap = imap;
+}

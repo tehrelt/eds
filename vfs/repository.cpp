@@ -34,7 +34,7 @@ void Repository::read(char* destination, int offset, int size)
 
 Repository::Repository()
 {
-    _file_name = nullptr;
+    _file_name = "";
     _location = 0;
     _record_size = 0;
 }

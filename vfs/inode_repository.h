@@ -13,6 +13,7 @@ private:
 public:
 	INodeRepository();
 	INodeRepository(std::string name, Superblock* sb);
+	INodeRepository(std::string name, Superblock* sb, IMap* imap);
 
 	void Save(Inode* inode);
 	Inode* GetById(int id);
