@@ -32,7 +32,16 @@ void Repository::read(char* destination, int offset, int size)
     stream.close();
 }
 
-Repository::Repository(std::string file_name)
+Repository::Repository()
+{
+    _file_name = nullptr;
+    _location = 0;
+    _record_size = 0;
+}
+
+Repository::Repository(std::string file_name, uint_fast32_t location, uint_fast32_t record_size)
 {
 	_file_name = file_name;
+    _location = location;
+    _record_size = record_size;
 }
