@@ -1,24 +1,22 @@
 #pragma once
 #include <string>
-
-#include "superblock.h"
-#include "storage.h"
+#include "service.h"
 
 class FileSystem
 {
-	std::string _file_name;
-	Superblock _superblock;
-	Storage _storage;
+	Service* _services;
 
 public:
-	FileSystem(std::string, Superblock);
-	FileSystem(std::string, Superblock, Storage);
+	FileSystem();
+	FileSystem(Service* services);
 
-	//static FileSystem* Create(int size, std::string name);
-	//static FileSystem* Mount(std::string name);
+	Service* services() { return _services; }
 
-	std::string file_name()		{ return _file_name; }
-	Superblock* superblock()	{ return &_superblock; }
-	Storage* storage()			{ return &_storage; }
+	Block* GetBlock(int id);
+
+	static FileSystem* Create(std::string name, uint_fast64_t size);
+	static FileSystem* Mount (std::string name);
 };
+
+
 

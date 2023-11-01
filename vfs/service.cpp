@@ -2,14 +2,13 @@
 
 Service::Service()
 {
-	_file_service = nullptr;
-	_directory_service = nullptr;
-	_directory_service = nullptr;
+	_file_service = FileService();
+	_directory_service = DirectoryService();
 }
-
-Service::Service(FileSystem* file_system)
+Service::Service(Storage* storage)
 {
-	_file_service = FileService(file_system);
-	_directory_service = DirectoryService(file_system);
-	_current_directory = nullptr;
+	_file_service = FileService(storage);
+	_directory_service = DirectoryService(storage);
+	_block_service = BlockService(storage);
+	_inode_service = InodeService(storage);
 }

@@ -3,19 +3,19 @@
 
 Terminal::Terminal()
 {
-    _services = nullptr;
+    _file_system = nullptr;
 }
 
-Terminal::Terminal(Service* services)
+Terminal::Terminal(FileSystem* file_system)
 {
-    _services = services;
+    _file_system = file_system;
 }
 
 int Terminal::Listen()
 {
     std::string cmd;
     while (true) {
-        std::cout << "user@eds " << _services->current_directory() << ": ";
+        std::cout << "user@eds " << "(path)" << ": ";
         std::cin >> cmd;
 
         if (cmd == "ls") {
@@ -63,8 +63,6 @@ int Terminal::mkfile(std::string name)
         return -1;
     }
 
-    _services->file_service()->Create(name);
-
     return 0;
 }
 int Terminal::mkdir(std::string name)
@@ -73,13 +71,23 @@ int Terminal::mkdir(std::string name)
         return -1;
     }
 
-
     return 0;
 }
 int Terminal::get_block(int id)
 {
+    try
+    {
+        Block* block = _file_system->GetBlock(id);
+        std::cout << "Block info: " << std::endl;
+        std::cout << *block;
 
-    return 0;
+        return 0;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
+        return -1;
+    }
 }
 int Terminal::get_inode(int id)
 {
@@ -87,7 +95,5 @@ int Terminal::get_inode(int id)
 }
 int Terminal::ls()
 {
-    std::cout << "id\tflags\tmode\creation date\t" << std::endl;
-    _services->directory_service()->Get(_services->current_directory());
     return 0;
 }

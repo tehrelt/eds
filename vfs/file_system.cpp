@@ -7,6 +7,8 @@
 #include "inode.h"
 #include "fat.h"
 #include "imap.h"
+#include "superblock.h"
+#include "storage.h"
 
 //void FileSystem::saveInode(int index)
 //{
@@ -59,163 +61,142 @@
 //    int offset = (_superblock.num_of_first_data_block() + block_idx) * _superblock.block_size();
 //    write(content, offset, strlen(content));
 //}
-//
-//int FileSystem::findFreeBlockNum()
-//{
-//    for (int i = 0; i < _fat.capacity(); i++) {
-//        if (_fat[i] == -1) {
-//            return i;
-//        }
-//    }
-//
-//    return -1;
-//}
-//int FileSystem::findFreeInodeNum()
-//{
-//    for (int i = 0; i < _imap.capacity(); i++) {
-//        if (_imap.IsLocked(i) == false) {
-//            return i;
-//        }
-//    }
-//
-//    return -1;
-//}
 
-FileSystem::FileSystem(std::string name, Superblock superblock)
+
+
+FileSystem::FileSystem()
 {
-    _file_name = name;
-    _superblock = superblock;
-    _storage = Storage(name, &superblock);
+    _services = nullptr;
+}
+FileSystem::FileSystem(Service* services)
+{
+    _services = services;
 }
 
-FileSystem::FileSystem(std::string name, Superblock superblock, Storage storage)
+Block* FileSystem::GetBlock(int id)
 {
-    _file_name = name;
-    _superblock = superblock;
-    _storage = storage;
+    return _services->block_service()->GetBlock(id);
 }
 
-//FileSystem* FileSystem::Create(int size, std::string name)
-//{
-//    Superblock sb = Superblock(size);
-//    FAT fat = FAT(sb.fat_capacity());
-//    IMap imap = IMap(sb.imap_capacity());
-//
-//
-//    for (int i = 0; i < sb.num_of_first_data_block(); i++) {
-//        if (i >= sb.num_of_first_fat_block() && i < sb.num_of_first_imap_block() - 1) {
-//            fat[i] = i + 1;
-//        }
-//        else if (i >= sb.num_of_first_imap_block() && i < sb.num_of_first_part_block() - 1) {
-//            fat[i] = i + 1;
-//        }
-//        else if (i >= sb.num_of_first_part_block() && i < sb.num_of_first_data_block() - 1) {
-//            fat[i] = i + 1;
-//        }
-//        else {
-//            fat[i] = -2;
-//        }
-//    }
-//
-//    FileSystem* fs = new FileSystem(name, &sb);
-//
-//    std::ofstream stream;
-//
-//    stream.open(name, std::ios::binary | std::ios::out);
-//
-//    if (!stream.is_open()) {
-//        throw new std::exception();
-//    }
-//
-//    int block_size = sb.block_size();
-//    int fs_size_in_blocks = sb.fs_size_in_blocks();
-//    for (int i = 0; i < fs_size_in_blocks; i++) {
-//        Block* b = new Block(i, block_size);
-//        stream.write((char*)b, block_size);
-//        delete b;
-//    }
-//
-//    stream.seekp(0);
-//    stream.write((char*)&sb, sizeof(Superblock));
-//
-//    stream.seekp(sb.num_of_first_fat_block() * block_size);
-//    int fat_capacity = sb.fat_capacity();
-//    for (int i = 0; i < fat_capacity; i++) {
-//        stream.write((char*)&fat[i], sizeof(uint32_t));
-//    }
-//
-//    stream.seekp(sb.num_of_first_imap_block() * block_size);
-//    int imap_capacity = sb.imap_capacity();
-//    for (int i = 0; i < imap_capacity; i++) {
-//        Inode* inode = new Inode(i);
-//        stream.write((char*)inode, sizeof(Inode));
-//        imap[i] = *inode;
-//        
-//        delete inode;
-//    }
-//
-//    stream.seekp(sb.num_of_first_part_block() * block_size);
-//    int parts_count = sb.imap_parts_count();
-//    for (int i = 0; i < parts_count; i++) {
-//        uint_fast64_t t = 0;
-//        stream.write((char*)&t, sizeof(uint_fast64_t));
-//    }
-//
-//    stream.close();
-//
-//    //Inode* root = fs->AllocateDir();
-//    //root->SetSystemFlag();
-//    //fs->saveInode(root);
-//
-//    //fs->_root = new Directory(root, "/");
-//
-//    return fs;
-//}
-//FileSystem* FileSystem::Mount(std::string name)
-//{
-//    Superblock sb = Superblock();
-//
-//    std::ifstream stream;
-//
-//    stream.open(name, std::ios::binary | std::ios::in);
-//
-//    stream.read((char*)&sb, sizeof(Superblock));
-//
-//    int block_size = sb.block_size();
-//
-//    FAT fat = FAT(sb.fat_capacity());
-//
-//
-//    IMap imap = IMap(sb.imap_capacity());
-//
-//    stream.seekg(sb.num_of_first_fat_block() * block_size);
-//    int fat_capacity = sb.fat_capacity();
-//    for (int i = 0; i < fat_capacity; i++) {
-//        stream.read((char*)&fat[i], sizeof(uint32_t));
-//    }
-//
-//    stream.seekg(sb.num_of_first_imap_block() * block_size);
-//    int imap_capacity = sb.imap_capacity();
-//    for (int i = 0; i < imap_capacity; i++) {
-//        Inode *inode = new Inode(i);
-//        stream.read((char*)inode, sizeof(Inode));
-//        imap.set_inode(i, inode);
-//        delete inode;
-//    }
-//
-//    stream.seekg(sb.num_of_first_part_block() * block_size);
-//    int parts_count = sb.imap_parts_count();
-//    for (int i = 0; i < parts_count; i++) {
-//        uint_fast64_t part = 0;
-//        stream.read((char*)&part, sizeof(uint_fast64_t));
-//        imap.set_part(i, part);
-//    }
-//
-//    stream.close();
-//
-//    FileSystem* fs = new FileSystem(name, &sb);
-//
-//    return fs;
-//}
+FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
+{
+    Superblock sb = Superblock(size);
+
+    FAT fat = FAT(sb.fat_capacity());
+    IMap imap = IMap(sb.imap_capacity());
+
+
+    for (int i = 0; i < sb.num_of_first_data_block(); i++) {
+        if (i >= sb.num_of_first_fat_block() && i < sb.num_of_first_imap_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else if (i >= sb.num_of_first_imap_block() && i < sb.num_of_first_part_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else if (i >= sb.num_of_first_part_block() && i < sb.num_of_first_data_block() - 1) {
+            fat[i] = i + 1;
+        }
+        else {
+            fat[i] = -2;
+        }
+    }
+
+    Storage* storage = new Storage(name, &sb, &fat, &imap);
+    Service* service = new Service(storage);
+    FileSystem* fs = new FileSystem(service);
+
+    std::ofstream stream;
+
+    stream.open(name, std::ios::binary | std::ios::out);
+
+    if (!stream.is_open()) {
+        throw new std::exception();
+    }
+
+    int block_size = sb.block_size();
+    int fs_size_in_blocks = sb.fs_size_in_blocks();
+    for (int i = 0; i < fs_size_in_blocks; i++) {
+        char* block = new char[block_size];
+        stream.write(block, block_size);
+        delete block;
+    }
+
+    stream.seekp(0);
+    stream.write((char*)&sb, sizeof(Superblock));
+
+    stream.seekp(sb.num_of_first_fat_block() * block_size);
+    int fat_capacity = sb.fat_capacity();
+    for (int i = 0; i < fat_capacity; i++) {
+        stream.write((char*)&fat[i], sizeof(uint32_t));
+    }
+
+    stream.seekp(sb.num_of_first_imap_block() * block_size);
+    int imap_capacity = sb.imap_capacity();
+    for (int i = 0; i < imap_capacity; i++) {
+        Inode* inode = new Inode(i);
+        stream.write((char*)inode, sizeof(Inode));
+        imap[i] = *inode;
+        
+        delete inode;
+    }
+
+    stream.seekp(sb.num_of_first_part_block() * block_size);
+    int parts_count = sb.imap_parts_count();
+    for (int i = 0; i < parts_count; i++) {
+        uint_fast64_t t = 0;
+        stream.write((char*)&t, sizeof(uint_fast64_t));
+    }
+
+    stream.close();
+
+    return fs;
+}
+FileSystem* FileSystem::Mount(std::string name)
+{
+    Superblock sb = Superblock();
+
+    std::ifstream stream;
+
+    stream.open(name, std::ios::binary | std::ios::in);
+
+    stream.read((char*)&sb, sizeof(Superblock));
+
+    int block_size = sb.block_size();
+
+    FAT fat = FAT(sb.fat_capacity());
+
+
+    IMap imap = IMap(sb.imap_capacity());
+
+    stream.seekg(sb.num_of_first_fat_block() * block_size);
+    int fat_capacity = sb.fat_capacity();
+    for (int i = 0; i < fat_capacity; i++) {
+        stream.read((char*)&fat[i], sizeof(uint32_t));
+    }
+
+    stream.seekg(sb.num_of_first_imap_block() * block_size);
+    int imap_capacity = sb.imap_capacity();
+    for (int i = 0; i < imap_capacity; i++) {
+        Inode *inode = new Inode(i);
+        stream.read((char*)inode, sizeof(Inode));
+        imap.set_inode(i, inode);
+        delete inode;
+    }
+
+    stream.seekg(sb.num_of_first_part_block() * block_size);
+    int parts_count = sb.imap_parts_count();
+    for (int i = 0; i < parts_count; i++) {
+        uint_fast64_t part = 0;
+        stream.read((char*)&part, sizeof(uint_fast64_t));
+        imap.set_part(i, part);
+    }
+
+    stream.close();
+    Storage* storage = new Storage(name, &sb, &fat, &imap);
+    Service* service = new Service(storage);
+    FileSystem* fs = new FileSystem(service);
+
+    return fs;
+}
 
 // int FileSystem::Run() { return _terminal.Listen(); }

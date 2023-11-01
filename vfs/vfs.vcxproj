@@ -127,8 +127,10 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="base_service.cpp" />
     <ClCompile Include="block.cpp" />
     <ClCompile Include="block_repository.cpp" />
+    <ClCompile Include="block_service.cpp" />
     <ClCompile Include="dentry.cpp" />
     <ClCompile Include="directory.cpp" />
     <ClCompile Include="directory_service.cpp" />
@@ -139,6 +141,7 @@
     <ClCompile Include="inode.cpp" />
     <ClCompile Include="imap.cpp" />
     <ClCompile Include="inode_repository.cpp" />
+    <ClCompile Include="inode_service.cpp" />
     <ClCompile Include="repository.cpp" />
     <ClCompile Include="service.cpp" />
     <ClCompile Include="storage.cpp" />
@@ -148,8 +151,10 @@
     <ClCompile Include="tools.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="base_service.h" />
     <ClInclude Include="block.h" />
     <ClInclude Include="block_repository.h" />
+    <ClInclude Include="block_service.h" />
     <ClInclude Include="dentry.h" />
     <ClInclude Include="directory.h" />
     <ClInclude Include="directory_service.h" />
@@ -160,6 +165,7 @@
     <ClInclude Include="inode.h" />
     <ClInclude Include="imap.h" />
     <ClInclude Include="inode_repository.h" />
+    <ClInclude Include="inode_service.h" />
     <ClInclude Include="list_head.h" />
     <ClInclude Include="repository.h" />
     <ClInclude Include="resource.h" />

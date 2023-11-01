@@ -1,20 +1,10 @@
 #pragma once
-#include "file_system.h"
-#include "file.h"
-#include "directory.h"
+#include "base_service.h"
 
-class FileService
+class FileService : BaseService
 {
-private:
-	FileSystem* _file_system;
-
 public:
-	FileService();
-	FileService(FileSystem* file_system);
-
-	File Create(std::string name, Directory*);
-	File Read();
-	File Update();
-	void Delete();
+	FileService() : BaseService() { }
+	FileService(Storage* storage) : BaseService(storage) { }
 };
 

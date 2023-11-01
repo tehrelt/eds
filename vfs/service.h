@@ -1,24 +1,24 @@
 #pragma once
 #include "file_service.h"
 #include "directory_service.h"
+#include "storage.h"
+#include "block_service.h"
+#include "inode_service.h"
 
 class Service
 {
-private:
 	FileService _file_service;
 	DirectoryService _directory_service;
-
-protected:
-	Directory* _current_directory;
+	InodeService _inode_service;
+	BlockService _block_service;
 
 public:
 	Service();
-	Service(FileSystem* file_system);
+	Service(Storage* storage);
 
-	FileService* file_service()				{ return &_file_service; }
-	DirectoryService* directory_service()	{ return &_directory_service; }
-
-	Directory* current_directory()			{ return _current_directory; }
-	void set_directory(Directory* dir)		{ _current_directory = dir; }
+	FileService* file_service() { return &_file_service; }
+	DirectoryService* directory_service() { return &_directory_service; }
+	InodeService* inode_service() { return &_inode_service; }
+	BlockService* block_service() { return &_block_service; }
 };
 
