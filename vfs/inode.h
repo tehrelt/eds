@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <time.h>
+#include <iostream>
 
 constexpr uint_fast8_t SYSTEM = 0b0001;
 constexpr uint_fast8_t HIDDEN = 0b0010;
@@ -56,5 +57,7 @@ public:
 	void UnsetHiddenFlag();
 	void UnsetArchiveFlag();
 	void UnsetDirectoryFlag();
+
+	friend std::ostream& operator<<(std::ostream& os, const Inode& inode);
 };
 

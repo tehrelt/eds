@@ -65,3 +65,13 @@ time_t Inode::modify_date() { return _modify_date; }
 time_t Inode::access_date() { return _access_date; }
 
 int_fast32_t Inode::block_num() { return _block_num; }
+
+std::ostream& operator<<(std::ostream& os, const Inode& inode)
+{
+	os << inode._id << "\t";
+	os << std::to_string(inode._flags) << "\t";
+	os << std::to_string(inode._mode) << "\t"; 
+	os << timeToString(inode._create_date);
+
+	return os;
+}

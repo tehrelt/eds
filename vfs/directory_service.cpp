@@ -1,5 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "directory_service.h"
+#include "tools.h"
 
 DirectoryService::DirectoryService()
 {
@@ -16,6 +17,7 @@ Directory* DirectoryService::CreateRoot()
 	Block* block = _file_system->storage()->block_repository()->Allocate();
 	Inode* inode = _file_system->storage()->inode_repository()->Allocate();
 
+	inode->set_create_date(getCurrentDate());
 	inode->set_block_num(block->id());
 
 	Directory* dir = new Directory(inode, "");
@@ -50,4 +52,13 @@ Directory* DirectoryService::CreateRoot()
 	_file_system->storage()->block_repository()->Save(block);
 
 	return dir;
+}
+
+Directory* DirectoryService::Get(Directory* current)
+{
+	for (int i = 0; i < current->dentry().size(); i++) {
+		Inode* inode = current->dentry()[i]->inode();
+		std::cout << *inode << std::endl;
+	}
+	return nullptr;
 }

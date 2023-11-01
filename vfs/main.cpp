@@ -126,7 +126,7 @@ Service* create_file_system(uint_fast64_t size, std::string name)
 
     Service* s = new Service(fs);
 
-    s->set_directory(s->directory_service().CreateRoot());
+    s->set_directory(s->directory_service()->CreateRoot());
 
     return s;
 }

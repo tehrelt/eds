@@ -6,15 +6,18 @@ class DirectoryService
 {
 private:
 	FileSystem* _file_system;
-	Repository* repository;
+	Repository* _repository;
 
 public:
 	DirectoryService();
 	DirectoryService(FileSystem* file_system);
 
-	Directory* CreateRoot();
-	Directory* Create(std::string name);
-	Directory* Update();
-	void Delete();
+	Directory*	CreateRoot();
+
+	Directory*	Create(std::string name);
+	Directory*	Get(Directory* current);
+	Directory*	Update();
+
+	void		Delete();
 };
 

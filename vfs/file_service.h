@@ -1,6 +1,7 @@
 #pragma once
 #include "file_system.h"
 #include "file.h"
+#include "directory.h"
 
 class FileService
 {
@@ -11,7 +12,7 @@ public:
 	FileService();
 	FileService(FileSystem* file_system);
 
-	File Create(std::string name);
+	File Create(std::string name, Directory*);
 	File Read();
 	File Update();
 	void Delete();

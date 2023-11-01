@@ -63,6 +63,8 @@ int Terminal::mkfile(std::string name)
         return -1;
     }
 
+    _services->file_service()->Create(name);
+
     return 0;
 }
 int Terminal::mkdir(std::string name)
@@ -85,6 +87,7 @@ int Terminal::get_inode(int id)
 }
 int Terminal::ls()
 {
-    _services->directory_service()->
+    std::cout << "id\tflags\tmode\creation date\t" << std::endl;
+    _services->directory_service()->Get(_services->current_directory());
     return 0;
 }

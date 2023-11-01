@@ -11,6 +11,7 @@ class DEntry
 public:
 	DEntry(Inode* inode, std::string name);
 
+	Inode* inode()				{ return _inode; }
 	uint_fast32_t inode_id()	{ return _inode->id(); }
 
 	char* name()				{ return _name; }
