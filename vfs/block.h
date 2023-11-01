@@ -9,6 +9,7 @@ public:
 	Block();
 	Block(int id, int size);
 
+	uint_fast32_t id() { return _id; }
 	char* data();
 
 	char operator[](int index);
