@@ -41,5 +41,6 @@ public:
 
 
 	Block* GetBlock(int id);
+	Inode* GetInode(int id);
 };
 

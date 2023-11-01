@@ -75,7 +75,12 @@ FileSystem::FileSystem(Service* services)
 
 Block* FileSystem::GetBlock(int id)
 {
-    return _services->block_service()->GetBlock(id);
+    return _services->block_service()->Get(id);
+}
+
+Inode* FileSystem::GetInode(int id)
+{
+    return _services->inode_service()->Get(id);
 }
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)

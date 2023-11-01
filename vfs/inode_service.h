@@ -6,5 +6,7 @@ class InodeService : BaseService
 public:
 	InodeService() : BaseService() {}
 	InodeService(Storage* storage) : BaseService(storage) {}
+
+	Inode* Get(int id);
 };
 

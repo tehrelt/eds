@@ -20,7 +20,7 @@ Inode* Storage::read_inode(int id)
 	Inode* inode = new Inode();
 
 	read((char*)inode,
-		_superblock.num_of_first_imap_block() + id * sizeof(Inode),
+		(_superblock.num_of_first_imap_block() * _superblock.block_size()) + (id * sizeof(Inode)),
 		sizeof(Inode));
 
 	return inode;
@@ -79,4 +79,9 @@ Block* Storage::GetBlock(int id)
 		throw new std::exception("Нельзя просмотреть блоки зарезервированные под систему");
 	}
 	return read_block(id);
+}
+
+Inode* Storage::GetInode(int id)
+{
+	return read_inode(id);
 }

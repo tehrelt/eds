@@ -7,6 +7,6 @@ public:
 	BlockService() : BaseService() {}
 	BlockService(Storage* storage) : BaseService(storage) {}
 
-	Block* GetBlock(int id);
+	Block* Get(int id);
 };
 

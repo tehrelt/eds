@@ -91,6 +91,17 @@ int Terminal::get_block(int id)
 }
 int Terminal::get_inode(int id)
 {
+    try
+    {
+        Inode* inode = _file_system->GetInode(id);
+        std::cout << "INODE INFO: " << std::endl;
+        std::cout << *inode << std::endl;
+    }
+    catch (const std::exception& e)
+    {
+        std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
+        return -1;
+    }
     return 0;
 }
 int Terminal::ls()
