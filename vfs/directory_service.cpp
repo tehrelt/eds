@@ -72,3 +72,13 @@ std::vector<DEntry*> DirectoryService::GetInfo(Directory* dir)
 {
 	return dir->dentry();
 }
+
+Directory* DirectoryService::Get(int inode_id)
+{
+	INode* inode = _storage->GetINode(inode_id);
+	Block* block = _storage->GetBlock(inode->block_num());
+	char* content = block->data();
+
+	delete inode;
+	return new Directory(content);
+}

@@ -24,7 +24,8 @@ public:
 	int inode_id()					{ return _inode_id; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
 
-	std::string path()				{ return _path.ToString(); }
+	Path* path()						{ return &_path; }
+	std::string path_str()				{ return _path.ToString(); }
 
 	void add(DEntry* dentry);
 

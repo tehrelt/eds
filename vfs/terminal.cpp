@@ -8,6 +8,8 @@ Terminal::Terminal()
 
 Terminal::Terminal(FileSystem* file_system)
 {
+    path = Path();
+    path.add("");
     _file_system = file_system;
     _commands = std::map<std::string, std::function<void()>>();
 
@@ -28,7 +30,7 @@ int Terminal::Listen()
 {
     std::string cmd;
     while (true) {
-        std::cout << "user@eds " << _file_system->current_directory()->path() << "/" << ": ";
+        std::cout << "user@eds " << path.ToString() << ": ";
         std::cin >> cmd;
 
         this->execute_command(cmd);
@@ -42,9 +44,7 @@ int Terminal::Listen()
 }
 
 void Terminal::execute_command(const std::string& cmd) {
-    // Проверяем, есть ли команда в map
     if (_commands.find(cmd) != _commands.end()) {
-        // Вызываем метод по ключу
         _commands[cmd]();
     }
     else {
@@ -58,7 +58,8 @@ void Terminal::mkfile()
     std::cout << "file name: ";
     std::cin >> name;
 
-    if (name.length() == 0) {
+    if (name.length() == 0 && name.length() > 16) {
+        return;
     }
 
     _file_system->CreateFile(name);
@@ -136,10 +137,27 @@ void Terminal::change_directory()
     std::cout << "directory name to change: ";
     std::cin >> name;
 
+    if (name == "..") {
+        Directory* dir = _file_system->GetParentDirectory();
+        _file_system->ChangeDirectory(dir);
+
+        path.remove();
+        
+        return;
+    }
+
     for (auto dentry : _file_system->current_directory()->dentry()) {
         if (name == dentry->name()) {
-            char* content = _file_system->GetBlockContent(dentry->inode_id());
-            _file_system->ChangeDirectory(new Directory(content));
+            INode* inode = _file_system->GetInode(dentry->inode_id());
+
+            if (inode->IsDirectoryFlag() == false) {
+                std::cout << "ERROR! not a directory" << std::endl;
+                return;
+            }
+
+            Directory* dir = _file_system->GetDirectory(inode->id());
+            _file_system->ChangeDirectory(dir);
+            path.add(dentry->name());
             return;
         }
     }

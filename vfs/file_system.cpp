@@ -21,7 +21,9 @@ FileSystem::FileSystem(Service* services)
 
 void FileSystem::ChangeDirectory(Directory* dir)
 {
+    auto path = _current_directory->path();
     delete _current_directory;
+  
     _current_directory = dir;
 }
 
@@ -29,6 +31,16 @@ char* FileSystem::GetBlockContent(int inode_id)
 {
     INode* inode = _services->inode_service()->Get(inode_id);
     return _services->block_service()->Get(inode->block_num())->data();
+}
+
+Directory* FileSystem::GetDirectory(int inode_id)
+{
+    return _services->directory_service()->Get(inode_id);
+}
+
+Directory* FileSystem::GetParentDirectory()
+{
+    return _services->directory_service()->Get(_current_directory->parent());
 }
 
 Block* FileSystem::GetBlock(int id)

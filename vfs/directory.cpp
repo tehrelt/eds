@@ -36,7 +36,7 @@ Directory::Directory(char* content)
     char* entry = content + 12;
     for (int i = 0; i < size; i++) {
         std::memcpy(&idid, entry,     4);
-        std::memcpy(name,  entry + 4, 4);
+        std::memcpy(name,  entry + 4, 16);
 
         _dentries.push_back(new DEntry(idid, name));
         entry += entry_size;
@@ -48,7 +48,7 @@ Directory::Directory(INode* inode, std::string name, INode* parent)
         throw new std::exception();
     }
 
-    _path = _path + name;
+    _path;
 
     _parent_id = parent->id();
     _inode_id = inode->id();

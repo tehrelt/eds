@@ -18,5 +18,7 @@ public:
 	Directory* AddToDirectory(Directory* d, DEntry* dentry);
 
 	std::vector<DEntry*> GetInfo(Directory* dir);
+
+	Directory* Get(int inode_id);
 };
 

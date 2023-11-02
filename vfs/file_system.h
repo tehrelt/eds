@@ -19,6 +19,9 @@ public:
 
 	char* GetBlockContent(int inode_id);
 
+	Directory* GetDirectory(int inode_id);
+	Directory* GetParentDirectory();
+
 	Block* GetBlock(int id);
 	INode* GetInode(int id);
 

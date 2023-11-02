@@ -9,6 +9,8 @@ class Terminal
 {
 	FileSystem* _file_system;
 
+	Path path;
+
 	std::map<std::string, std::function<void()>> _commands;
 	
 	void execute_command(const std::string& cmd);
