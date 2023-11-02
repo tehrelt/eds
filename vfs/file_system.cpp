@@ -43,6 +43,15 @@ File* FileSystem::CreateFile(std::string name)
         return file;
 }
 
+Directory* FileSystem::CreateDirectory(std::string name)
+{
+    Directory* dir = _services->directory_service()->Create(name, _current_directory);
+
+    _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode_id(), name));
+
+    return dir;
+}
+
 std::vector<DEntry*> FileSystem::ls()
 {
     return _services->directory_service()->GetInfo(_current_directory);

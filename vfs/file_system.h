@@ -19,6 +19,7 @@ public:
 	INode* GetInode(int id);
 
 	File* CreateFile(std::string name);
+	Directory* CreateDirectory(std::string name);
 
 	std::vector<DEntry*> ls();
 	Superblock* sb();

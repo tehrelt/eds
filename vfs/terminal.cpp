@@ -79,6 +79,8 @@ int Terminal::mkdir(std::string name)
         return -1;
     }
 
+    _file_system->CreateDirectory(name);
+
     return 0;
 }
 int Terminal::sb()

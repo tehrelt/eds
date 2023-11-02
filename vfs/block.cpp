@@ -17,9 +17,6 @@ char* Block::data() { return _data; }
 
 void Block::set_data(char* data)
 {
-	if (strlen(data) > strlen(_data)) {
-		throw new std::exception("Размер устанавливаемого блока должен быть равен размеру блока");
-	}
 	_data = data;
 }
 

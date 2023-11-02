@@ -13,6 +13,8 @@ public:
 	Directory* CreateRoot();
 	Directory* ReadRoot();
 
+	Directory* Create(std::string name, Directory* parent);
+
 	Directory* AddToDirectory(Directory* d, DEntry* dentry);
 
 	std::vector<DEntry*> GetInfo(Directory* dir);

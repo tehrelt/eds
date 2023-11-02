@@ -19,6 +19,7 @@ Directory* DirectoryService::CreateRoot()
 	INode* root_inode = _storage->AllocateInode();
 
 	root_inode->SetDirectoryFlag();
+	root_inode->SetSystemFlag();
 
 	_storage->SaveINode(root_inode);
 
@@ -39,6 +40,23 @@ Directory* DirectoryService::ReadRoot()
 	Directory* root = new Directory(block_content);
 
 	return root;
+}
+
+Directory* DirectoryService::Create(std::string name, Directory* parent)
+{
+	INode* inode = _storage->AllocateInode();
+
+	inode->SetDirectoryFlag();
+
+	_storage->SaveINode(inode);
+
+	INode* parent_inode = _storage->GetINode(parent->inode_id());
+
+	Directory* dir = new Directory(inode, name, parent_inode);
+
+	save_directory(dir);
+
+	return dir;
 }
 
 Directory* DirectoryService::AddToDirectory(Directory* directory, DEntry* dentry)
