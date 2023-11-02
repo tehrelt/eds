@@ -178,6 +178,10 @@ FileSystem* FileSystem::Mount(std::string name)
 
     stream.open(name, std::ios::binary | std::ios::in);
 
+    if (!stream.is_open()) {
+        throw new std::exception("Невозможно открыть файл");
+    }
+
     stream.read((char*)&sb, sizeof(Superblock));
 
     int block_size = sb.block_size();
