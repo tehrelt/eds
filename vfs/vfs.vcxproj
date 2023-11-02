@@ -162,7 +162,6 @@
     <ClInclude Include="inode.h" />
     <ClInclude Include="imap.h" />
     <ClInclude Include="inode_service.h" />
-    <ClInclude Include="list_head.h" />
     <ClInclude Include="path.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="service.h" />
