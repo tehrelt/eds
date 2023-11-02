@@ -9,6 +9,18 @@ Terminal::Terminal()
 Terminal::Terminal(FileSystem* file_system)
 {
     _file_system = file_system;
+    _commands = std::map<std::string, std::function<void()>>();
+
+    // Добавляем методы в map
+    _commands["ls"]     = std::bind(&Terminal::ls, this);
+    _commands["mkdir"]  = std::bind(&Terminal::mkdir, this);
+    _commands["mkfile"] = std::bind(&Terminal::mkfile, this);
+    _commands["sb"]     = std::bind(&Terminal::sb, this);
+    _commands["gi"]     = std::bind(&Terminal::get_inode, this);
+    _commands["gb"]     = std::bind(&Terminal::get_block, this);
+
+    _commands.emplace("cls",        []() { system("cls"); });
+    _commands.emplace("shutdown",   []() { std::cout << "Shutdowning..."; });
 }
 
 int Terminal::Listen()
@@ -18,72 +30,50 @@ int Terminal::Listen()
         std::cout << "user@eds " << _file_system->current_directory()->path() << "/" << ": ";
         std::cin >> cmd;
 
-        if (cmd == "ls") {
-            ls();
-        }
-        else if (cmd == "sb") {
-            sb();
-        }
-        else if (cmd == "mkf") {
-            std::string name;
-            std::cout << "file name: ";
-            std::cin >> name;
-            mkfile(name);
-        }
-        else if (cmd == "mkd") {
-            std::string name;
-            std::cout << "dir name: ";
-            std::cin >> name;
-            mkdir(name);
-        }
-        else if (cmd == "gi") {
-            int id;
-            std::cout << "id: ";
-            std::cin >> id;
-            get_inode(id);
-        }
-        else if (cmd == "gb") {
-            int id;
-            std::cout << "id: ";
-            std::cin >> id;
-            get_block(id);
-        }
-        else if (cmd == "shutdown") {
-            std::cout << "Shutdowning...";
+        this->execute_command(cmd);
+
+        if (cmd == "shutdown") {
             return 0;
-        }
-        else if (cmd == "cls") {
-            system("cls");
-        }
-        else {
-            std::cout << "Invalid command" << std::endl;
         }
     }
 
     return 0;
 }
 
-int Terminal::mkfile(std::string name)
+void Terminal::execute_command(const std::string& cmd) {
+    // Проверяем, есть ли команда в map
+    if (_commands.find(cmd) != _commands.end()) {
+        // Вызываем метод по ключу
+        _commands[cmd]();
+    }
+    else {
+        std::cout << "Unknown command" << std::endl;
+    }
+}
+
+void Terminal::mkfile()
 {
+    std::string name;
+    std::cout << "file name: ";
+    std::cin >> name;
+
     if (name.length() == 0) {
-        return -1;
     }
 
     _file_system->CreateFile(name);
-
-    return 0;
 }
-int Terminal::mkdir(std::string name)
+void Terminal::mkdir()
 {
+    std::string name;
+    std::cout << "dir name: ";
+    std::cin >> name;
+
     if (name.length() == 0) {
-        return -1;
     }
 
     _file_system->CreateDirectory(name);
-
-    return 0;
 }
-int Terminal::sb()
+void Terminal::sb()
 {
     Superblock* sb = _file_system->sb();
 
@@ -96,27 +86,29 @@ int Terminal::sb()
     std::cout << "\tBlocks\tcapacity: " << sb->data_blocks_count() << std::endl;
     std::cout << "\tSpace\tfree space: " << sb->free_space_in_bytes() << " bytes" << std::endl;
     std::cout << "\t\ttotal space: " << sb->total_space_in_bytes() << " bytes" << std::endl;
-
-    return 0;
 }
-int Terminal::get_block(int id)
+void Terminal::get_block()
 {
+    int id;
+    std::cout << "id: ";
+    std::cin >> id;
     try
     {
         Block* block = _file_system->GetBlock(id);
         std::cout << "Block info: " << std::endl;
         std::cout << *block;
-
-        return 0;
     }
     catch (const std::exception& e)
     {
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
-        return -1;
     }
 }
-int Terminal::get_inode(int id)
+void Terminal::get_inode()
 {
+    int id;
+    std::cout << "id: ";
+    std::cin >> id;
+
     try
     {
         INode* inode = _file_system->GetInode(id);
@@ -126,11 +118,9 @@ int Terminal::get_inode(int id)
     catch (const std::exception& e)
     {
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
-        return -1;
     }
-    return 0;
 }
-int Terminal::ls()
+void Terminal::ls()
 {
     auto vector = _file_system->ls();
 
@@ -138,6 +128,4 @@ int Terminal::ls()
         INode* inode = _file_system->GetInode(vector[i]->inode_id());
         std::cout << *inode << "\t" << vector[i]->name() << std::endl;
     }
-
-    return 0;
 }
