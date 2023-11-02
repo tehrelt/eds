@@ -162,6 +162,7 @@ Block* Storage::AllocateBlock()
 	_superblock -= _superblock.block_size();
 
 	set_fat_record(block->id(), -2);
+	save_superblock();
 
 	return block;
 }
