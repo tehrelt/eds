@@ -72,7 +72,7 @@ File* FileSystem::CreateFile(std::string name)
 {
     File* file = _services->file_service()->Create(name);
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(file->inode()->id(), name));
-        return file;
+    return file;
 }
 
 Directory* FileSystem::CreateDirectory(std::string name)

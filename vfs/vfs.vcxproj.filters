@@ -40,12 +40,6 @@
     <Filter Include="Исходные файлы\fs">
       <UniqueIdentifier>{e2c36ed9-e940-470a-8e49-b1af388ebfc8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Файлы заголовков\repository">
-      <UniqueIdentifier>{952c70ae-77ac-4b78-b03b-9c63d06065d2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\repository">
-      <UniqueIdentifier>{c8d56e65-30a8-4b93-9e82-25b78e03a6c7}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\service">
       <UniqueIdentifier>{a0567c54-7052-49ea-b3dc-bc21a453062c}</UniqueIdentifier>
     </Filter>
@@ -63,6 +57,18 @@
     </Filter>
     <Filter Include="Файлы заголовков\service\services\base">
       <UniqueIdentifier>{06547843-467e-4f82-a48c-26f9f26b87ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\service\services">
+      <UniqueIdentifier>{c22edc65-68b5-4664-aaf8-fd088771505a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\service\services\base">
+      <UniqueIdentifier>{e3ff4a41-3056-4951-8229-1ff33cf17cec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Исходные файлы\storage">
+      <UniqueIdentifier>{c8d56e65-30a8-4b93-9e82-25b78e03a6c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\storage">
+      <UniqueIdentifier>{952c70ae-77ac-4b78-b03b-9c63d06065d2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -97,13 +103,7 @@
       <Filter>Исходные файлы\fs</Filter>
     </ClCompile>
     <ClCompile Include="storage.cpp">
-      <Filter>Исходные файлы\repository</Filter>
-    </ClCompile>
-    <ClCompile Include="directory_service.cpp">
-      <Filter>Исходные файлы\service</Filter>
-    </ClCompile>
-    <ClCompile Include="file_service.cpp">
-      <Filter>Исходные файлы\service</Filter>
+      <Filter>Исходные файлы\storage</Filter>
     </ClCompile>
     <ClCompile Include="service.cpp">
       <Filter>Исходные файлы\service</Filter>
@@ -115,16 +115,22 @@
       <Filter>Исходные файлы\service\models</Filter>
     </ClCompile>
     <ClCompile Include="base_service.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\service\services\base</Filter>
     </ClCompile>
     <ClCompile Include="block_service.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\service\services</Filter>
     </ClCompile>
     <ClCompile Include="inode_service.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\service\services</Filter>
     </ClCompile>
     <ClCompile Include="path.cpp">
-      <Filter>Исходные файлы</Filter>
+      <Filter>Исходные файлы\service\models</Filter>
+    </ClCompile>
+    <ClCompile Include="directory_service.cpp">
+      <Filter>Исходные файлы\service\services</Filter>
+    </ClCompile>
+    <ClCompile Include="file_service.cpp">
+      <Filter>Исходные файлы\service\services</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,7 +168,7 @@
       <Filter>Файлы заголовков\fs</Filter>
     </ClInclude>
     <ClInclude Include="storage.h">
-      <Filter>Файлы заголовков\repository</Filter>
+      <Filter>Файлы заголовков\storage</Filter>
     </ClInclude>
     <ClInclude Include="service.h">
       <Filter>Файлы заголовков\service</Filter>
@@ -172,9 +178,6 @@
     </ClInclude>
     <ClInclude Include="directory.h">
       <Filter>Файлы заголовков\service\models</Filter>
-    </ClInclude>
-    <ClInclude Include="path.h">
-      <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="block_service.h">
       <Filter>Файлы заголовков\service\services</Filter>
@@ -190,6 +193,9 @@
     </ClInclude>
     <ClInclude Include="base_service.h">
       <Filter>Файлы заголовков\service\services\base</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
+      <Filter>Файлы заголовков\service\models</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

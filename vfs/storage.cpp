@@ -158,6 +158,8 @@ INode* Storage::AllocateInode()
 Block* Storage::AllocateBlock()
 {
 	Block* block = find_free_block();
+	block->set_char(0, '\0');
+	save_block(block);
 
 	_superblock -= _superblock.block_size();
 

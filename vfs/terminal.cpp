@@ -1,4 +1,5 @@
 #include "terminal.h"
+#include "tools.h"
 
 
 Terminal::Terminal()
@@ -13,30 +14,34 @@ Terminal::Terminal(FileSystem* file_system)
     path = Path();
     path.add("");
 
-    _commands = std::map<std::string, std::function<void()>>();
+    _commands = std::map<std::string, std::function<void(std::vector<std::string> args)>>();
 
-    _commands["ls"]     = std::bind(&Terminal::ls, this);
-    _commands["mkdir"]  = std::bind(&Terminal::mkdir, this);
-    _commands["mkfile"] = std::bind(&Terminal::mkfile, this);
-    _commands["sb"]     = std::bind(&Terminal::sb, this);
-    _commands["gi"]     = std::bind(&Terminal::get_inode, this);
-    _commands["gb"]     = std::bind(&Terminal::get_block, this);
-    _commands["cd"]     = std::bind(&Terminal::change_directory, this);
+    _commands["ls"]     = std::bind(&Terminal::ls,               this, std::placeholders::_1);
+    _commands["mkdir"]  = std::bind(&Terminal::mkdir,            this, std::placeholders::_1);
+    _commands["mkfile"] = std::bind(&Terminal::mkfile,           this, std::placeholders::_1);
+    _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1);
+    _commands["gi"]     = std::bind(&Terminal::get_inode,        this, std::placeholders::_1);
+    _commands["gb"]     = std::bind(&Terminal::get_block,        this, std::placeholders::_1);
+    _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1);
+    _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1);
 
-    _commands.emplace("cls",        []() { system("cls"); });
-    _commands.emplace("shutdown",   []() { std::cout << "Shutdowning..."; });
+    _commands.emplace("cls",        [](std::vector<std::string> args) { system("cls"); });
+    _commands.emplace("shutdown",   [](std::vector<std::string> args) { std::cout << "Shutdowning..."; });
 }
 
 int Terminal::Listen()
 {
-    std::string cmd;
+    std::string line;
+
+    std::cin.ignore(1);
+
     while (true) {
         std::cout << "user@eds " << path.ToString() << ": ";
-        std::cin >> cmd;
+        std::getline(std::cin, line);
 
-        this->execute_command(cmd);
+        this->execute_command(line);
 
-        if (cmd == "shutdown") {
+        if (line == "shutdown") {
             return 0;
         }
     }
@@ -44,39 +49,84 @@ int Terminal::Listen()
     return 0;
 }
 
-void Terminal::execute_command(const std::string& cmd) {
+void Terminal::execute_command(const std::string& line) {
+
+    if (line == "") {
+        return;
+    }
+
+    auto tokens = split(line, ' ');
+
+    std::string cmd = tokens[0];
+
     if (_commands.find(cmd) != _commands.end()) {
-        _commands[cmd]();
+        _commands[cmd](tokens);
     }
     else {
         std::cout << "Unknown command" << std::endl;
     }
 }
 
-void Terminal::mkfile()
+bool Terminal::find_arg(std::vector<std::string> args, const std::string& arg)
+{
+    return (std::find(args.begin(), args.end(), arg) != args.end());
+}
+
+bool Terminal::exists(std::string name)
+{
+    for (auto dentry : _file_system->current_directory()->dentry()) {
+        if (name == dentry->name()) {
+            return true;
+        }
+    }
+    return false;
+}
+
+void Terminal::mkfile(std::vector<std::string> args)
 {
     std::string name;
-    std::cout << "file name: ";
-    std::cin >> name;
-
+    if (args.size() == 1) {
+        std::cout << "\tfile name: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+    
     if (name.length() == 0 && name.length() > 16) {
+        std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
+    }
+
+    if (exists(name)) {
+        std::cout << "ERROR! Element with this name already exists" << std::endl;
     }
 
     _file_system->CreateFile(name);
 }
-void Terminal::mkdir()
+void Terminal::mkdir(std::vector<std::string> args)
 {
     std::string name;
-    std::cout << "dir name: ";
-    std::cin >> name;
+    if (args.size() == 1) {
+        std::cout << "\tdirectory name: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
 
-    if (name.length() == 0) {
+    if (name.length() == 0 && name.length() > 16) {
+        std::cout << "invalid name (0 < n < 16)" << std::endl;
+        return;
+    }
+
+    if (exists(name)) {
+        std::cout << "ERROR! Element with this name already exists" << std::endl;
     }
 
     _file_system->CreateDirectory(name);
 }
-void Terminal::sb()
+void Terminal::sb(std::vector<std::string> args)
 {
     Superblock* sb = _file_system->sb();
 
@@ -90,27 +140,58 @@ void Terminal::sb()
     std::cout << "\tSpace\tfree space: " << sb->free_space_in_bytes() << " bytes" << std::endl;
     std::cout << "\t\ttotal space: " << sb->total_space_in_bytes() << " bytes" << std::endl;
 }
-void Terminal::get_block()
+void Terminal::get_block(std::vector<std::string> args)
 {
     int id;
-    std::cout << "id: ";
-    std::cin >> id;
+    if (args.size() == 1) {
+        std::cout << "id: ";
+        std::cin >> id;
+    }
+    else {
+        try
+        {
+            id = std::stoi(args[1]);
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "ERROR! Enter an id of block to inspect" << std::endl;
+            return;
+        }
+        
+    }
+   
+    
     try
     {
         Block* block = _file_system->GetBlock(id);
         std::cout << "Block info: " << std::endl;
         std::cout << *block;
+        delete block;
     }
     catch (const std::exception& e)
     {
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
     }
 }
-void Terminal::get_inode()
+void Terminal::get_inode(std::vector<std::string> args)
 {
     int id;
-    std::cout << "id: ";
-    std::cin >> id;
+    if (args.size() == 1) {
+        std::cout << "id: ";
+        std::cin >> id;
+    }
+    else {
+        try
+        {
+            id = std::stoi(args[1]);
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << "ERROR! Enter an id of block to inspect" << std::endl;
+            return;
+        }
+
+    }
 
     try
     {
@@ -123,7 +204,7 @@ void Terminal::get_inode()
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
     }
 }
-void Terminal::ls()
+void Terminal::ls(std::vector<std::string> args)
 {
     auto vector = _file_system->ls();
     std::cout << "id\tflags\tmode\tcreation date\t\tname" << std::endl;
@@ -133,11 +214,17 @@ void Terminal::ls()
         std::cout << *inode << "\t" << vector[i]->name() << std::endl;
     }
 }
-void Terminal::change_directory()
+void Terminal::change_directory(std::vector<std::string> args)
 {
+
     std::string name;
-    std::cout << "directory name to change: ";
-    std::cin >> name;
+    if (args.size() == 1) {
+        std::cout << "directory name to change: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
 
     if (name == "..") {
         Directory* dir = _file_system->GetParentDirectory();
@@ -166,7 +253,44 @@ void Terminal::change_directory()
             Directory* dir = _file_system->GetDirectory(inode->id());
             _file_system->ChangeDirectory(dir);
             path.add(dentry->name());
+            delete inode;
             return;
         }
     }
+    std::cout << "ERROR! cannot find a directory" << std::endl;
+}
+void Terminal::cat(std::vector<std::string> args)
+{
+    std::string name;
+    if (args.size() == 1) {
+        std::cout << "\tfile name to open: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+
+    if (name.length() == 0 && name.length() > 16) {
+        std::cout << "invalid name (0 < n < 16)" << std::endl;
+        return;
+    }
+
+    for (auto dentry : _file_system->current_directory()->dentry()) {
+        if (name == dentry->name()) {
+            INode* inode = _file_system->GetInode(dentry->inode_id());
+
+            if (inode->IsDirectoryFlag() == true) {
+                std::cout << "ERROR! cannot open a directory" << std::endl;
+                return;
+            }
+
+            Block* block = _file_system->GetBlock(inode->block_num());
+
+            std::cout << block->data() << std::endl;
+
+            delete block;
+            return;
+        }
+    }
+    _file_system->CreateFile(name);
 }
