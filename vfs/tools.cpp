@@ -22,3 +22,12 @@ std::vector<std::string> split(const std::string& input, char delimiter) {
 
     return result;
 }
+
+char* intToChar(int i) {
+    char* bytes = new char[4];
+    bytes[0] = (i >> 24) & 0xFF;
+    bytes[1] = (i >> 16) & 0xFF;
+    bytes[2] = (i >> 8)  & 0xFF;
+    bytes[3] =  i        & 0xFF;
+    return bytes;
+}

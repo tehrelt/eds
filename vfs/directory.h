@@ -9,14 +9,14 @@ class Dir
 public:
 	int  parent_id;
 	int  inode_id;
-	int* dentries;
+	DEntry** dentries;
 	int  dentires_count;
 };
 
 class Directory
 {
-	INode*					_parent;
-	INode*					_inode;
+	int						_parent_id;
+	int						_inode_id;
 	std::vector<DEntry*>	_dentries;
 
 	static bool				_ROOT_EXISTS;
@@ -25,14 +25,17 @@ class Directory
 
 public:
 	Directory(INode*, std::string name);
+	Directory(char* content);
 	Directory(INode* inode, std::string name, INode* parent);
 
-	INode* parent()					{ return _parent; }
-	INode* inode()					{ return _inode; }
+	int parent()					{ return _parent_id; }
+	int inode_id()					{ return _inode_id; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
 
 	std::string path()				{ return _path.ToString(); }
 
 	Dir Convert();
+	char* ConvertToChar();
+	int CharSize();
 };
 

@@ -112,7 +112,7 @@ int Terminal::ls()
     auto vector = _file_system->ls();
 
     for (int i = 0; i < vector.size(); i++) {
-        INode* inode = _file_system->GetInode(vector[i]->inode()->id());
+        INode* inode = _file_system->GetInode(vector[i]->inode_id());
         std::cout << *inode << "\t" << vector[i]->name() << std::endl;
     }
 

@@ -162,7 +162,8 @@ FileSystem* FileSystem::Mount(std::string name)
     Service* service = new Service(storage);
     FileSystem* fs = new FileSystem(service);
 
-
+    fs->_root = fs->_services->directory_service()->ReadRoot();
+    fs->_current_directory = fs->_root;
 
     return fs;
 }
