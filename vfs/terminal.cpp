@@ -8,12 +8,13 @@ Terminal::Terminal()
 
 Terminal::Terminal(FileSystem* file_system)
 {
+    _file_system = file_system;
+
     path = Path();
     path.add("");
-    _file_system = file_system;
+
     _commands = std::map<std::string, std::function<void()>>();
 
-    // Добавляем методы в map
     _commands["ls"]     = std::bind(&Terminal::ls, this);
     _commands["mkdir"]  = std::bind(&Terminal::mkdir, this);
     _commands["mkfile"] = std::bind(&Terminal::mkfile, this);
@@ -125,6 +126,7 @@ void Terminal::get_inode()
 void Terminal::ls()
 {
     auto vector = _file_system->ls();
+    std::cout << "id\tflags\tmode\tcreation date\t\tname" << std::endl;
 
     for (int i = 0; i < vector.size(); i++) {
         INode* inode = _file_system->GetInode(vector[i]->inode_id());

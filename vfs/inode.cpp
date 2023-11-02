@@ -68,9 +68,34 @@ int_fast32_t INode::block_num() { return _block_num; }
 
 std::ostream& operator<<(std::ostream& os, const INode& inode)
 {
+	char flags[5];
+	flags[4] = '\0';
+
+	for (int i = 0; i < 4; i++) { flags[i] = '-'; }
+	
+
+	if ((inode._flags & SYSTEM) != 0)		{ flags[0] = 's'; } 
+	if ((inode._flags & HIDDEN) != 0)		{ flags[1] = 'h'; }
+	if ((inode._flags & ARCHIVE) != 0)		{ flags[2] = 'a'; }
+	if ((inode._flags & DIRECTORY) != 0)	{ flags[3] = 'd'; }
+
+	char mode[7];
+	mode[6] = '\0';
+
+	for (int i = 0; i < 6; i++) {
+		mode[i] = '-';
+	}
+
+	if ((inode._mode & 0b100000) != 0) { mode[0] = 'r'; }
+	if ((inode._mode & 0b010000) != 0) { mode[1] = 'w'; }
+	if ((inode._mode & 0b001000) != 0) { mode[2] = 'x'; }
+	if ((inode._mode & 0b000100) != 0) { mode[3] = 'r'; }
+	if ((inode._mode & 0b000010) != 0) { mode[4] = 'w'; }
+	if ((inode._mode & 0b000001) != 0) { mode[5] = 'x'; }
+
 	os << inode._id << "\t";
-	os << std::to_string(inode._flags) << "\t";
-	os << std::to_string(inode._mode) << "\t"; 
+	os << flags << "\t";
+	os << mode << "\t"; 
 	os << timeToString(inode._create_date);
 
 	return os;
