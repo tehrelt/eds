@@ -14,6 +14,12 @@ void Path::add(std::string part)
     _parts.push_back(part);
 }
 
+Path& Path::operator+(const std::string& name)
+{
+    this->add(name);
+    return *this;
+}
+
 std::string Path::ToString()
 {
     std::string path;

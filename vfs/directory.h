@@ -15,6 +15,7 @@ class Directory
 	Path					_path;
 
 public:
+	Directory(INode*);
 	Directory(INode*, std::string name);
 	Directory(char* content);
 	Directory(INode* inode, std::string name, INode* parent);

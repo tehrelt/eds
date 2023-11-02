@@ -18,6 +18,7 @@ Terminal::Terminal(FileSystem* file_system)
     _commands["sb"]     = std::bind(&Terminal::sb, this);
     _commands["gi"]     = std::bind(&Terminal::get_inode, this);
     _commands["gb"]     = std::bind(&Terminal::get_block, this);
+    _commands["cd"]     = std::bind(&Terminal::change_directory, this);
 
     _commands.emplace("cls",        []() { system("cls"); });
     _commands.emplace("shutdown",   []() { std::cout << "Shutdowning..."; });
@@ -127,5 +128,19 @@ void Terminal::ls()
     for (int i = 0; i < vector.size(); i++) {
         INode* inode = _file_system->GetInode(vector[i]->inode_id());
         std::cout << *inode << "\t" << vector[i]->name() << std::endl;
+    }
+}
+void Terminal::change_directory()
+{
+    std::string name;
+    std::cout << "directory name to change: ";
+    std::cin >> name;
+
+    for (auto dentry : _file_system->current_directory()->dentry()) {
+        if (name == dentry->name()) {
+            char* content = _file_system->GetBlockContent(dentry->inode_id());
+            _file_system->ChangeDirectory(new Directory(content));
+            return;
+        }
     }
 }

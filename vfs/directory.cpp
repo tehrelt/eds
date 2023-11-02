@@ -4,6 +4,7 @@
 
 bool Directory::_ROOT_EXISTS = false;
 
+
 Directory::Directory(INode* inode, std::string name)
 {
     if (!inode->IsDirectoryFlag() || _ROOT_EXISTS) {
@@ -46,6 +47,8 @@ Directory::Directory(INode* inode, std::string name, INode* parent)
     if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
     }
+
+    _path = _path + name;
 
     _parent_id = parent->id();
     _inode_id = inode->id();

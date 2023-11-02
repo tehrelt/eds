@@ -15,6 +15,10 @@ public:
 	Service* services()				{ return _services; }
 	Directory* current_directory()	{ return _current_directory; }
 
+	void ChangeDirectory(Directory* dir);
+
+	char* GetBlockContent(int inode_id);
+
 	Block* GetBlock(int id);
 	INode* GetInode(int id);
 

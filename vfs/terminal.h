@@ -22,8 +22,7 @@ class Terminal
 
 	void ls();
 
-	void cls();
-	void shutdown();
+	void change_directory();
 
 public:
 	Terminal();

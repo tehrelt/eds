@@ -19,6 +19,18 @@ FileSystem::FileSystem(Service* services)
     _services = services;
 }
 
+void FileSystem::ChangeDirectory(Directory* dir)
+{
+    delete _current_directory;
+    _current_directory = dir;
+}
+
+char* FileSystem::GetBlockContent(int inode_id)
+{
+    INode* inode = _services->inode_service()->Get(inode_id);
+    return _services->block_service()->Get(inode->block_num())->data();
+}
+
 Block* FileSystem::GetBlock(int id)
 {
     return _services->block_service()->Get(id);

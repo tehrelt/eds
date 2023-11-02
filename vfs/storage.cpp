@@ -36,7 +36,6 @@ INode* Storage::find_free_inode()
 	}
 	return nullptr;
 }
-
 Block* Storage::find_free_block()
 {
 	for (int i = 0; i < _fat.capacity(); i++) {
@@ -47,10 +46,7 @@ Block* Storage::find_free_block()
 	return nullptr;
 }
 
-void Storage::save_superblock()
-{
-	write((char*)&_superblock, 0, sizeof(Superblock));
-}
+
 
 Block* Storage::find_relative_block(INode* inode, int pos)
 {
@@ -63,6 +59,10 @@ Block* Storage::find_relative_block(INode* inode, int pos)
 	return read_block(block_num);
 }
 
+void Storage::save_superblock()
+{
+	write((char*)&_superblock, 0, sizeof(Superblock));
+}
 void Storage::save_block(Block* block)
 {
 	char* content = block->data();
