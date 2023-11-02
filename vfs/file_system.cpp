@@ -21,10 +21,18 @@ FileSystem::FileSystem(Service* services)
 
 void FileSystem::ChangeDirectory(Directory* dir)
 {
-    auto path = _current_directory->path();
-    delete _current_directory;
-  
+    if (_current_directory != _root) {
+        delete _current_directory;
+    }
     _current_directory = dir;
+}
+
+void FileSystem::ChangeToRootDirectory()
+{
+    if (_current_directory != _root) {
+        delete _current_directory;
+    }
+    _current_directory = _root;
 }
 
 char* FileSystem::GetBlockContent(int inode_id)

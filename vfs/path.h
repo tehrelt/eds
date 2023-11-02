@@ -13,6 +13,7 @@ public:
 
 	void add(std::string part);
 	void remove();
+	void erase();
 
 	Path& operator+(const std::string& name);
 

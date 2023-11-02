@@ -147,6 +147,12 @@ void Terminal::change_directory()
         
         return;
     }
+    else if (name == "/") {
+        _file_system->ChangeToRootDirectory();
+        path = Path();
+        path.add("");
+        return;
+    }
 
     for (auto dentry : _file_system->current_directory()->dentry()) {
         if (name == dentry->name()) {

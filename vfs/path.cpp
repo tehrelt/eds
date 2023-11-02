@@ -18,7 +18,6 @@ void Path::remove()
 {
     _parts.pop_back();
 }
-
 Path& Path::operator+(const std::string& name)
 {
     this->add(name);

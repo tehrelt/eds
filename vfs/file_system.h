@@ -16,6 +16,7 @@ public:
 	Directory* current_directory()	{ return _current_directory; }
 
 	void ChangeDirectory(Directory* dir);
+	void ChangeToRootDirectory();
 
 	char* GetBlockContent(int inode_id);
 
