@@ -44,6 +44,9 @@ public:
 	uint64_t free_space_in_bytes();
 	uint64_t total_space_in_bytes();
 
+	void free_space_decrement(int size) { _free_space_in_bytes -= size; }
+	void free_space_increment(int size) { _free_space_in_bytes += size; }
+
 	char* fs_name();
 
 	friend std::ostream& operator<<(std::ostream& stream, const Superblock& sb) {

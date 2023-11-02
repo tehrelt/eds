@@ -156,6 +156,8 @@ Block* Storage::AllocateBlock()
 
 	set_fat_record(block->id(), -2);
 
+	_superblock.free_space_in_bytes();
+
 	return block;
 }
 
