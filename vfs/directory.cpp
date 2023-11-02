@@ -55,6 +55,11 @@ Directory::Directory(INode* inode, std::string name, INode* parent)
     _dentries.push_back(new DEntry(parent, "../"));
 }
 
+void Directory::add(DEntry* dentry)
+{
+    _dentries.push_back(dentry);
+}
+
 char* Directory::ConvertToChar()
 {
     int entry_size = 4 + 16;

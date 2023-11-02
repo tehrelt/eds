@@ -47,6 +47,11 @@ Block* Storage::find_free_block()
 	return nullptr;
 }
 
+void Storage::save_superblock()
+{
+	write((char*)&_superblock, 0, sizeof(Superblock));
+}
+
 Block* Storage::find_relative_block(INode* inode, int pos)
 {
 	int block_num = inode->block_num();
@@ -154,9 +159,9 @@ Block* Storage::AllocateBlock()
 {
 	Block* block = find_free_block();
 
-	set_fat_record(block->id(), -2);
+	_superblock -= _superblock.block_size();
 
-	_superblock.free_space_in_bytes();
+	set_fat_record(block->id(), -2);
 
 	return block;
 }

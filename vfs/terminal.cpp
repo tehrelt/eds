@@ -21,6 +21,9 @@ int Terminal::Listen()
         if (cmd == "ls") {
             ls();
         }
+        else if (cmd == "sb") {
+            sb();
+        }
         else if (cmd == "mkf") {
             std::string name;
             std::cout << "file name: ";
@@ -66,6 +69,8 @@ int Terminal::mkfile(std::string name)
         return -1;
     }
 
+    _file_system->CreateFile(name);
+
     return 0;
 }
 int Terminal::mkdir(std::string name)
@@ -73,6 +78,22 @@ int Terminal::mkdir(std::string name)
     if (name.length() == 0) {
         return -1;
     }
+
+    return 0;
+}
+int Terminal::sb()
+{
+    Superblock* sb = _file_system->sb();
+
+    std::cout << "######## SUPERBLOCK ########" << std::endl;
+    std::cout << "\tfile system name: " << sb->fs_name() << std::endl;
+    std::cout << "\tblock size: " << sb->block_size() << std::endl;
+    std::cout << "\tFAT\tcapacity: " << sb->fat_capacity() << "\tsize: " << sb->fat_size() << " bytes" << "\tfirst block: " << sb->num_of_first_fat_block() << std::endl;
+    std::cout << "\tIMap\tcapacity: " << sb->imap_capacity() << "\tsize: " << sb->imap_size() << " bytes" << "\tfirst block: " << sb->num_of_first_imap_block() << std::endl;
+    std::cout << "\tIBitmap\tparts: " << sb->imap_parts_count() << "\tsize: " << sb->imap_parts_size() << " bytes" << std::endl;
+    std::cout << "\tBlocks\tcapacity: " << sb->data_blocks_count() << std::endl;
+    std::cout << "\tSpace\tfree space: " << sb->free_space_in_bytes() << " bytes" << std::endl;
+    std::cout << "\t\ttotal space: " << sb->total_space_in_bytes() << " bytes" << std::endl;
 
     return 0;
 }

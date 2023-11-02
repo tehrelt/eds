@@ -44,8 +44,8 @@ public:
 	uint64_t free_space_in_bytes();
 	uint64_t total_space_in_bytes();
 
-	void free_space_decrement(int size) { _free_space_in_bytes -= size; }
-	void free_space_increment(int size) { _free_space_in_bytes += size; }
+	Superblock& operator-=(const int size) { _free_space_in_bytes -= size; return *this; }
+	Superblock& operator+=(const int size) { _free_space_in_bytes += size; return *this; }
 
 	char* fs_name();
 

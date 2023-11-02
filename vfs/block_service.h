@@ -8,5 +8,7 @@ public:
 	BlockService(Storage* storage) : BaseService(storage) {}
 
 	Block* Get(int id);
+
+	Superblock* GetSB();
 };
 

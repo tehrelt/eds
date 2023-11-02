@@ -15,6 +15,7 @@ public:
 
 	int mkfile(std::string);
 	int mkdir(std::string);
+	int sb();
 
 	int get_block(int id);
 	int get_inode(int id);

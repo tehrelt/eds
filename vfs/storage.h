@@ -21,6 +21,8 @@ private:
 	INode* find_free_inode();
 	Block* find_free_block();
 
+	void save_superblock();
+
 	Block* find_relative_block(INode* inode, int pos);
 
 	void save_block(Block* block);

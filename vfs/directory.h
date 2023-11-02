@@ -4,15 +4,6 @@
 #include <vector>
 #include "path.h"
 
-class Dir 
-{
-public:
-	int  parent_id;
-	int  inode_id;
-	DEntry** dentries;
-	int  dentires_count;
-};
-
 class Directory
 {
 	int						_parent_id;
@@ -34,7 +25,8 @@ public:
 
 	std::string path()				{ return _path.ToString(); }
 
-	Dir Convert();
+	void add(DEntry* dentry);
+
 	char* ConvertToChar();
 	int CharSize();
 };

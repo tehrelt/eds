@@ -4,3 +4,8 @@ Block* BlockService::Get(int id)
 {
 	return _storage->GetBlock(id);
 }
+
+Superblock* BlockService::GetSB()
+{
+	return _storage->superblock();
+}

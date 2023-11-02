@@ -18,7 +18,7 @@ public:
 	int Tell();
 
 	void Clear();
-	int GetInode();
+	INode* inode() { return _inode; }
 
 	int Size();
 	bool IsOpen();

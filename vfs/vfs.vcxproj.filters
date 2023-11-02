@@ -58,6 +58,12 @@
     <Filter Include="Исходные файлы\service\models">
       <UniqueIdentifier>{62a97c20-faa6-4e3e-abcf-57563e1c07f9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Файлы заголовков\service\services">
+      <UniqueIdentifier>{ad5c59ea-3e91-4d87-b134-68c973c77501}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Файлы заголовков\service\services\base">
+      <UniqueIdentifier>{06547843-467e-4f82-a48c-26f9f26b87ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tools.cpp">
@@ -90,15 +96,6 @@
     <ClCompile Include="file_system.cpp">
       <Filter>Исходные файлы\fs</Filter>
     </ClCompile>
-    <ClCompile Include="block_repository.cpp">
-      <Filter>Исходные файлы\repository</Filter>
-    </ClCompile>
-    <ClCompile Include="inode_repository.cpp">
-      <Filter>Исходные файлы\repository</Filter>
-    </ClCompile>
-    <ClCompile Include="repository.cpp">
-      <Filter>Исходные файлы\repository</Filter>
-    </ClCompile>
     <ClCompile Include="storage.cpp">
       <Filter>Исходные файлы\repository</Filter>
     </ClCompile>
@@ -116,6 +113,18 @@
     </ClCompile>
     <ClCompile Include="directory.cpp">
       <Filter>Исходные файлы\service\models</Filter>
+    </ClCompile>
+    <ClCompile Include="base_service.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="block_service.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="inode_service.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -152,23 +161,8 @@
     <ClInclude Include="file_system.h">
       <Filter>Файлы заголовков\fs</Filter>
     </ClInclude>
-    <ClInclude Include="repository.h">
-      <Filter>Файлы заголовков\repository</Filter>
-    </ClInclude>
-    <ClInclude Include="inode_repository.h">
-      <Filter>Файлы заголовков\repository</Filter>
-    </ClInclude>
-    <ClInclude Include="block_repository.h">
-      <Filter>Файлы заголовков\repository</Filter>
-    </ClInclude>
     <ClInclude Include="storage.h">
       <Filter>Файлы заголовков\repository</Filter>
-    </ClInclude>
-    <ClInclude Include="directory_service.h">
-      <Filter>Файлы заголовков\service</Filter>
-    </ClInclude>
-    <ClInclude Include="file_service.h">
-      <Filter>Файлы заголовков\service</Filter>
     </ClInclude>
     <ClInclude Include="service.h">
       <Filter>Файлы заголовков\service</Filter>
@@ -178,6 +172,24 @@
     </ClInclude>
     <ClInclude Include="directory.h">
       <Filter>Файлы заголовков\service\models</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="block_service.h">
+      <Filter>Файлы заголовков\service\services</Filter>
+    </ClInclude>
+    <ClInclude Include="directory_service.h">
+      <Filter>Файлы заголовков\service\services</Filter>
+    </ClInclude>
+    <ClInclude Include="file_service.h">
+      <Filter>Файлы заголовков\service\services</Filter>
+    </ClInclude>
+    <ClInclude Include="inode_service.h">
+      <Filter>Файлы заголовков\service\services</Filter>
+    </ClInclude>
+    <ClInclude Include="base_service.h">
+      <Filter>Файлы заголовков\service\services\base</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

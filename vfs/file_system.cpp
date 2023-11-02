@@ -36,9 +36,21 @@ INode* FileSystem::GetInode(int id)
     }
 }
 
+File* FileSystem::CreateFile(std::string name)
+{
+    File* file = _services->file_service()->Create(name);
+    Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(file->inode()->id(), name));
+        return file;
+}
+
 std::vector<DEntry*> FileSystem::ls()
 {
     return _services->directory_service()->GetInfo(_current_directory);
+}
+
+Superblock* FileSystem::sb()
+{
+    return _services->block_service()->GetSB();
 }
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)

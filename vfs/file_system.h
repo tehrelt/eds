@@ -18,7 +18,10 @@ public:
 	Block* GetBlock(int id);
 	INode* GetInode(int id);
 
+	File* CreateFile(std::string name);
+
 	std::vector<DEntry*> ls();
+	Superblock* sb();
 
 	static FileSystem* Create(std::string name, uint_fast64_t size);
 	static FileSystem* Mount (std::string name);

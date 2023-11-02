@@ -1,6 +1,19 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "directory_service.h"
 
+void DirectoryService::save_directory(Directory* directory)
+{
+	INode* inode = _storage->GetINode(directory->inode_id());
+	int size = directory->CharSize();
+	char* content = directory->ConvertToChar();
+	_storage->WriteBytes(inode, 0, content, size);
+}
+
+Directory* DirectoryService::read_directory()
+{
+	return nullptr;
+}
+
 Directory* DirectoryService::CreateRoot()
 {
 	INode* root_inode = _storage->AllocateInode();
@@ -11,10 +24,7 @@ Directory* DirectoryService::CreateRoot()
 
 	Directory* root = new Directory(root_inode, "");
 
-	int size = root->CharSize();
-	char* content = root->ConvertToChar();
-	
-	_storage->WriteBytes(root_inode, 0, content, size);
+	save_directory(root);
 
 	return root;
 }
@@ -29,6 +39,15 @@ Directory* DirectoryService::ReadRoot()
 	Directory* root = new Directory(block_content);
 
 	return root;
+}
+
+Directory* DirectoryService::AddToDirectory(Directory* directory, DEntry* dentry)
+{
+	directory->add(dentry);
+	
+	save_directory(directory);
+
+	return directory;
 }
 
 std::vector<DEntry*> DirectoryService::GetInfo(Directory* dir)
