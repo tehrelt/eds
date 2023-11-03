@@ -319,18 +319,10 @@ void Terminal::cat(std::vector<std::string> args)
                 return;
             }
 
-            auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
+            char* content = _file_system->ReadFile(inode->id());
 
-            for (auto bid : chain) {
-                if (bid == -2) {
-                    return;
-                }
-                Block* block = _file_system->GetBlock(bid);
-                std::cout << block->data();
-                delete block;
-                std::cout << std::endl;
-            }
-            throw new std::exception("bad block chain");
+            std::cout << content << std::endl;
+            return;
         }
     }
     _file_system->CreateFile(name);
@@ -376,8 +368,6 @@ void Terminal::write(std::vector<std::string> args)
         }
     }
     text += '\0';
-
-    std::cout << "Entered text: " << text << std::endl;
 
     _file_system->Write(inode->id(), text);
 }

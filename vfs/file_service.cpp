@@ -6,3 +6,8 @@ File* FileService::Create(std::string name)
 
 	return new File(inode);
 }
+
+char* FileService::Read(int inode_id)
+{
+	return _storage->ReadINodeContent(inode_id);
+}

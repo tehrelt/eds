@@ -9,5 +9,6 @@ public:
 	FileService(Storage* storage) : BaseService(storage) { }
 
 	File* Create(std::string name);
+	char* Read(int inode_id);
 };
 

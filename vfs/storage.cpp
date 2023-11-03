@@ -253,6 +253,32 @@ INode* Storage::GetINode(int id)
 	return read_inode(id);
 }
 
+char* Storage::ReadINodeContent(int inode_id)
+{
+
+	INode* inode = GetINode(inode_id);
+	char* content = new char[(GetBlockchain(inode->block_num()).size() - 1) * _superblock.block_size()];
+
+	int p = 0;
+	int id = inode->block_num();
+	while (id != -2) {
+
+		char* bc = new char[_superblock.block_size()];
+
+		read(bc, id * _superblock.block_size(), _superblock.block_size());
+
+		std::memcpy(content + p, bc, _superblock.block_size());
+
+		p += _superblock.block_size();
+
+		id = _fat[id];
+
+		delete[] bc;
+	}
+
+	return content;
+}
+
 void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 {
 	Block* block = find_relative_block(inode, pos);

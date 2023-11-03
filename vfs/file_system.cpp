@@ -86,6 +86,11 @@ void FileSystem::Write(int inode_id, std::string text)
     delete inode;
 }
 
+char* FileSystem::ReadFile(int inode_id)
+{
+    return _services->file_service()->Read(inode_id);
+}
+
 std::vector<DEntry*> FileSystem::ls()
 {
     return _services->directory_service()->GetInfo(_current_directory);

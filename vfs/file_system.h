@@ -30,6 +30,7 @@ public:
 	Directory* CreateDirectory(std::string name);
 
 	void Write(int inode_id, std::string text);
+	char* ReadFile(int inode_id);
 
 	std::vector<DEntry*> ls();
 	Superblock* sb();
