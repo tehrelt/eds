@@ -21,24 +21,18 @@ FileSystem::FileSystem(Service* services)
 
 void FileSystem::ChangeDirectory(Directory* dir)
 {
-    if (_current_directory != _root) {
+    if (_current_directory != _root_directory) {
         delete _current_directory;
     }
     _current_directory = dir;
 }
-void FileSystem::ChangeOptionalDirectory(Directory* dir)
-{
-    if (_optional_directory != _root) {
-        delete _optional_directory;
-    }
-    _optional_directory = dir;
-}
+
 void FileSystem::ChangeToRootDirectory()
 {
-    if (_current_directory != _root) {
+    if (_current_directory != _root_directory) {
         delete _current_directory;
     }
-    _current_directory = _root;
+    _current_directory = _root_directory;
 }
 
 char* FileSystem::GetBlockContent(int inode_id)
@@ -245,14 +239,14 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
 
     stream.close();
 
-    fs->_root = fs->_services->directory_service()->CreateRoot();
-    fs->_current_directory = fs->_root;
+    fs->_root_directory = fs->_services->directory_service()->CreateRoot();
+    fs->_current_directory = fs->_root_directory;
 
     INode* users_inode = fs->services()->file_service()->Create("usr")->inode();
     users_inode->SetSystemFlag();
     fs->services()->inode_service()->SetOwner(users_inode, 0);
     fs->services()->inode_service()->Save(users_inode);
-    fs->_services->directory_service()->AddToDirectory(fs->_root, new DEntry(users_inode->id(), "usr"));
+    fs->_services->directory_service()->AddToDirectory(fs->_root_directory, new DEntry(users_inode->id(), "usr"));
 
     std::string username;
     std::string pass;
@@ -320,8 +314,8 @@ FileSystem* FileSystem::Mount(std::string name)
     Service* service = new Service(storage);
     FileSystem* fs = new FileSystem(service);
 
-    fs->_root = fs->_services->directory_service()->ReadRoot();
-    fs->_current_directory = fs->_root;
+    fs->_root_directory = fs->_services->directory_service()->ReadRoot();
+    fs->_current_directory = fs->_root_directory;
 
     fs->_root_user = fs->_services->user_service()->Read(0);
     for (int i = 1; i < sb.users_count(); i++) {

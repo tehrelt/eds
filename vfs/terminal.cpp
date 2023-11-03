@@ -494,11 +494,19 @@ void Terminal::write_append(std::vector<std::string> args)
 
 Directory* Terminal::traverse_to_dir(std::string path_string)
 {
-    Path path = Path(path_string);
-    Directory* current_directory = _file_system->current_directory();
-    
-    for (int i = 0; i < path.parts().size() - 1; i++) {
-        std::string dir_name = path.parts()[i];
+    auto path = Path(path_string).parts();
+
+    Directory* current_directory = nullptr;
+    if (path[0].compare("") == 0) {
+        path.erase(path.begin());
+        current_directory = _file_system->root_directory();
+    }
+    else {
+        current_directory = _file_system->current_directory();
+    }
+
+    for (int i = 0; i < path.size() - 1; i++) {
+        std::string dir_name = path[i];
         auto dentry = exists(dir_name, current_directory);
         if (dentry != nullptr) {
             current_directory = _file_system->GetDirectory(dentry->inode_id());
