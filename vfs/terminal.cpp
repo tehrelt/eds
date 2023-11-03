@@ -231,7 +231,10 @@ void Terminal::get_chain(std::vector<std::string> args)
     auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
 
     for (int el : chain) {
-        std::cout << el << " -> ";
+        std::cout << el;
+        if (el != -2) {
+            std::cout << " -> ";
+        }       
     }
     std::cout << std::endl;
 }
@@ -358,7 +361,12 @@ void Terminal::write(std::vector<std::string> args)
         if (line.at(0) == '\x4') {
             break; 
         }
-        text += line + "\n";
+        if (text == "") {
+            text += line;
+        }
+        else {
+            text += "\n" + line;
+        }
     }
     text += '\0';
 

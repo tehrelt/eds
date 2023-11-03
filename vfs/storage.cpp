@@ -170,17 +170,19 @@ Block* Storage::AllocateBlock()
 
 void Storage::ClearBlocks(INode* inode)
 {
-	Block* block;
-	for (block = GetBlock(inode->block_num()); 
-		_fat[block->id()] != -2; 
-		block = GetBlock(_fat[block->id()])) {
-
-		std::memcpy(block->data(), "\0", _superblock.block_size());
-
+	Block* clear_block = new Block(0, _superblock.block_size());
+	Block* block = GetBlock(inode->block_num());
+	do {
+		std::memcpy(block->data(), clear_block->data(), _superblock.block_size());
 		save_block(block);
-	}
+
+		if(_fat[block->id()] != -2) { 
+			block = GetBlock(_fat[block->id()]);
+		}
+	} while (_fat[block->id()] != -2);
 
 	delete block;
+	delete clear_block;
 
 	int id = 0;
 	for (id = inode->block_num(); _fat[id] != -2; id = _fat[id]) {

@@ -182,6 +182,7 @@ FileSystem* FileSystem::Mount(std::string name)
 
     if (!stream.is_open()) {
         throw new std::exception("Невозможно открыть файл");
+        return nullptr;
     }
 
     stream.read((char*)&sb, sizeof(Superblock));
