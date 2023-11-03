@@ -11,3 +11,8 @@ INode* InodeService::Get(int id)
 		throw e;
 	}
 }
+
+void InodeService::Save(INode* inode)
+{
+	_storage->SaveINode(inode);
+}

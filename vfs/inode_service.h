@@ -8,5 +8,6 @@ public:
 	InodeService(Storage* storage) : BaseService(storage) {}
 
 	INode* Get(int id);
+	void Save(INode* inode);
 };
 

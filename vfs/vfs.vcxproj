@@ -142,11 +142,13 @@
     <ClCompile Include="inode_service.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="service.cpp" />
+    <ClCompile Include="sha256.cpp" />
     <ClCompile Include="storage.cpp" />
     <ClCompile Include="superblock.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="terminal.cpp" />
     <ClCompile Include="tools.cpp" />
+    <ClCompile Include="user.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_service.h" />
@@ -165,10 +167,12 @@
     <ClInclude Include="path.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="service.h" />
+    <ClInclude Include="sha256.h" />
     <ClInclude Include="storage.h" />
     <ClInclude Include="superblock.h" />
     <ClInclude Include="terminal.h" />
     <ClInclude Include="tools.h" />
+    <ClInclude Include="user.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

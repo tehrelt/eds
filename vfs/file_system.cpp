@@ -174,6 +174,11 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
 
     fs->_root = fs->_services->directory_service()->CreateRoot();
     fs->_current_directory = fs->_root;
+
+    INode* usr = fs->services()->file_service()->Create("usr")->inode();
+    usr->SetSystemFlag();
+    fs->Write(usr->id(), "");
+    fs->services()->inode_service()->Save(usr);
     
     return fs;
 }
