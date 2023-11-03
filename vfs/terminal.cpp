@@ -318,12 +318,18 @@ void Terminal::cat(std::vector<std::string> args)
                 return;
             }
 
-            Block* block = _file_system->GetBlock(inode->block_num());
+            auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
 
-            std::cout << block->data() << std::endl;
-
-            delete block;
-            return;
+            for (auto bid : chain) {
+                if (bid == -2) {
+                    return;
+                }
+                Block* block = _file_system->GetBlock(bid);
+                std::cout << block->data();
+                delete block;
+                std::cout << std::endl;
+            }
+            throw new std::exception("bad block chain");
         }
     }
     _file_system->CreateFile(name);

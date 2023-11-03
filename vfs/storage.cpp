@@ -5,13 +5,12 @@
 Block* Storage::read_block(int id)
 {
 	Block* block = new Block(id, _superblock.block_size());
-	char* block_content = new char[_superblock.block_size()];
-
-	read(block_content,
+	block->set_char(0, '\0');
+	read(block->data(),
 		id * _superblock.block_size(), 
 		_superblock.block_size());
 
-	std::memcpy(block->data(), block_content, _superblock.block_size());
+	std::memcpy(block->data(), block->data(), _superblock.block_size());
 
 	return block;
 }
@@ -192,6 +191,7 @@ void Storage::ClearBlocks(INode* inode)
 	while (id != -2) {
 		block = GetBlock(id);
 		std::memcpy(block->data(), clear_block->data(), _superblock.block_size());
+		
 		save_block(block);
 
 		id = _fat[id];
@@ -202,12 +202,17 @@ void Storage::ClearBlocks(INode* inode)
 
 	id = inode->block_num();
 	while (id != -2) {
+		if (id != inode->block_num()) {
+			_superblock += _superblock.block_size();
+		}
 		int tmp = id;
 		id = _fat[id];
 		set_fat_record(tmp, -1);
 	}
 
 	set_fat_record(inode->block_num(), -2);
+
+	save_superblock();
 }
 
 void Storage::SaveINode(INode* inode)
