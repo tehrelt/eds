@@ -250,6 +250,10 @@ FileSystem* FileSystem::Mount(std::string name)
 
     stream.read((char*)&sb, sizeof(Superblock));
 
+    if (sb.fs_name() != "EDS") {
+        throw std::exception("Invalid superblock signature");
+    }
+
     int block_size = sb.block_size();
 
     FAT fat = FAT(sb.fat_capacity());
