@@ -107,6 +107,7 @@ void Storage::lock_inode(int inode_id)
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
 }
+
 void Storage::set_fat_record(int idx, int value)
 {
 	_fat[idx] = value;
@@ -216,7 +217,6 @@ void Storage::FreeINode(INode* inode)
 {
 	unlock_inode(inode);
 }
-
 void Storage::FreeINode(int inode_id)
 {
 	unlock_inode(inode_id);

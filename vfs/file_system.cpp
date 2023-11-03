@@ -175,7 +175,7 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     stream.open(name, std::ios::binary | std::ios::out);
 
     if (!stream.is_open()) {
-        throw new std::exception();
+        throw std::exception("Cannot create a file");
     }
 
     int block_size = sb.block_size();
@@ -245,8 +245,7 @@ FileSystem* FileSystem::Mount(std::string name)
     stream.open(name, std::ios::binary | std::ios::in);
 
     if (!stream.is_open()) {
-        throw new std::exception("Невозможно открыть файл");
-        return nullptr;
+        throw std::exception("Cannot open a file");
     }
 
     stream.read((char*)&sb, sizeof(Superblock));
