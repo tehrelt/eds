@@ -28,6 +28,7 @@ public:
 	std::string path_str()				{ return _path.ToString(); }
 
 	void add(DEntry* dentry);
+	void remove(int);
 
 	char* ConvertToChar();
 	int CharSize();

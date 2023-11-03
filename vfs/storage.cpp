@@ -71,11 +71,38 @@ void Storage::save_inode(INode* inode)
 		sizeof(INode));
 }
 
+void Storage::unlock_inode(INode* inode)
+{
+	_imap.Unlock(inode->id());
+	auto part = _imap.part(inode->id());
+	auto part_idx = _imap.get_part_index(inode->id());
+	write((char*)&part,
+		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
+		sizeof(part));
+}
+void Storage::unlock_inode(int inode_id)
+{
+	_imap.Unlock(inode_id);
+	auto part = _imap.part(inode_id);
+	auto part_idx = _imap.get_part_index(inode_id);
+	write((char*)&part,
+		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
+		sizeof(part));
+}
 void Storage::lock_inode(INode* inode)
 {
 	_imap.Lock(inode->id());
 	auto part = _imap.part(inode->id());
 	auto part_idx = _imap.get_part_index(inode->id());
+	write((char*)&part,
+		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
+		sizeof(part));
+}
+void Storage::lock_inode(int inode_id)
+{
+	_imap.Lock(inode_id);
+	auto part = _imap.part(inode_id);
+	auto part_idx = _imap.get_part_index(inode_id);
 	write((char*)&part,
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
@@ -155,7 +182,6 @@ INode* Storage::AllocateInode()
 
 	return inode;
 }
-
 Block* Storage::AllocateBlock()
 {
 	Block* block = find_free_block();
@@ -184,6 +210,16 @@ Block* Storage::AllocateBlock(int prev_id)
 	save_superblock();
 
 	return block;
+}
+
+void Storage::FreeINode(INode* inode)
+{
+	unlock_inode(inode);
+}
+
+void Storage::FreeINode(int inode_id)
+{
+	unlock_inode(inode_id);
 }
 
 void Storage::ClearBlocks(INode* inode)

@@ -63,6 +63,11 @@ void Directory::add(DEntry* dentry)
     _dentries.push_back(dentry);
 }
 
+void Directory::remove(int dentry_idx)
+{
+    _dentries.erase(std::next(_dentries.begin(), dentry_idx));
+}
+
 char* Directory::ConvertToChar()
 {
     int entry_size = 4 + 16;

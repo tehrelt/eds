@@ -20,6 +20,10 @@ class Terminal
 
 	void mkfile(std::vector<std::string> args);
 	void mkdir(std::vector<std::string> args);
+
+	void rm(std::vector<std::string> args);
+	void rmdir(std::vector<std::string> args);
+
 	void sb(std::vector<std::string> args);
 
 	void get_block(std::vector<std::string> args);

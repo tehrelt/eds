@@ -33,6 +33,7 @@ public:
 	INode* GetInode(int id);
 
 	File* CreateFile(std::string name);
+	void RemoveFile(int inode_id);
 
 
 	Directory* CreateDirectory(std::string name);

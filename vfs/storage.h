@@ -32,7 +32,10 @@ private:
 	void save_block(Block* block);
 	void save_inode(INode* inode);
 
+	void unlock_inode(INode* inode);
+	void unlock_inode(int inode_id);
 	void lock_inode(INode* inode);
+	void lock_inode(int inode_id);
 	void set_fat_record(int idx, int value);
 
 	void write(char* source, int offset, int size);
@@ -55,6 +58,9 @@ public:
 	INode* AllocateInode();
 	Block* AllocateBlock();
 	Block* AllocateBlock(int prev_block_id);
+
+	void FreeINode(INode* inode);
+	void FreeINode(int inode_id);
 
 	void ClearBlocks(INode* inode);
 

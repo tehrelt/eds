@@ -16,6 +16,7 @@ public:
 	Directory* Create(std::string name, Directory* parent);
 
 	Directory* AddToDirectory(Directory* d, DEntry* dentry);
+	Directory* RemoveFromDirectory(Directory* d, int inode_id);
 
 	std::vector<DEntry*> GetInfo(Directory* dir);
 

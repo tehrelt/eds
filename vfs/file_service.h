@@ -10,6 +10,7 @@ public:
 	FileService(Storage* storage) : BaseService(storage) { }
 
 	File* Create(std::string name);
+	void Remove(int inode_id);
 
 	void Write(INode* inode, std::string text);
 	void Append(INode* inode, std::string text);

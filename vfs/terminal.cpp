@@ -23,11 +23,12 @@ Terminal::Terminal(FileSystem* file_system)
     _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1);
     _commands["gi"]     = std::bind(&Terminal::get_inode,        this, std::placeholders::_1);
     _commands["gb"]     = std::bind(&Terminal::get_block,        this, std::placeholders::_1);
-    _commands["chain"]  = std::bind(&Terminal::get_chain,     this, std::placeholders::_1);
+    _commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1);
     _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1);
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1);
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1);
     _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1);
+    _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1);
 
     _commands.emplace("cls",        [](std::vector<std::string> args) { system("cls"); });
     _commands.emplace("shutdown",   [](std::vector<std::string> args) { std::cout << "Shutdowning..."; });
@@ -132,6 +133,38 @@ void Terminal::mkdir(std::vector<std::string> args)
     }
 
     _file_system->CreateDirectory(name);
+}
+void Terminal::rm(std::vector<std::string> args)
+{
+    std::string name;
+    if (args.size() == 1) {
+        std::cout << "\tfile name to open: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+
+    if (name.length() == 0 && name.length() > 16) {
+        std::cout << "invalid name (0 < n < 16)" << std::endl;
+        return;
+    }
+
+    for (auto dentry : _file_system->current_directory()->dentry()) {
+        if (name == dentry->name()) {
+            INode* inode = _file_system->GetInode(dentry->inode_id());
+
+            if (inode->IsDirectoryFlag() == true) {
+                std::cout << "ERROR! cannot remove a directory" << std::endl;
+                return;
+            }
+
+            _file_system->RemoveFile(inode->id());
+        }
+    }
+}
+void Terminal::rmdir(std::vector<std::string> args)
+{
 }
 void Terminal::sb(std::vector<std::string> args)
 {
@@ -382,7 +415,6 @@ void Terminal::write(std::vector<std::string> args)
 
     _file_system->WriteFile(inode->id(), text);
 }
-
 void Terminal::write_append(std::vector<std::string> args)
 {
     std::string name;

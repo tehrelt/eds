@@ -80,6 +80,12 @@ File* FileSystem::CreateFile(std::string name)
     return file;
 }
 
+void FileSystem::RemoveFile(int inode_id)
+{
+    _services->file_service()->Remove(inode_id);
+    _services->directory_service()->RemoveFromDirectory(_current_directory, inode_id);
+}
+
 Directory* FileSystem::CreateDirectory(std::string name)
 {
     Directory* dir = _services->directory_service()->Create(name, _current_directory);

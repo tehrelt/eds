@@ -68,6 +68,21 @@ Directory* DirectoryService::AddToDirectory(Directory* directory, DEntry* dentry
 	return directory;
 }
 
+Directory* DirectoryService::RemoveFromDirectory(Directory* directory, int inode_id)
+{
+	int i = 0;
+	for (auto dentry : directory->dentry()) {
+		if (dentry->inode_id() == inode_id) {
+			directory->remove(i);
+		}
+		i++;
+	}
+
+	save_directory(directory);
+
+	return directory;
+}
+
 std::vector<DEntry*> DirectoryService::GetInfo(Directory* dir)
 {
 	return dir->dentry();
