@@ -249,7 +249,7 @@ FileSystem* FileSystem::Mount(std::string name)
 
     stream.read((char*)&sb, sizeof(Superblock));
 
-    if (sb.fs_name() != "EDS") {
+    if (strcmp(sb.fs_name(), "EDS") != 0) {
         throw std::exception("Invalid superblock signature");
     }
 

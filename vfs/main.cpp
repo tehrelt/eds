@@ -4,9 +4,6 @@
 #include "terminal.h"
 #include "service.h"
 
-Service* create_file_system(uint_fast64_t size, std::string name);
-Service* mount_file_system(std::string name);
-
 int main()
 {
     FileSystem* fs = nullptr;
