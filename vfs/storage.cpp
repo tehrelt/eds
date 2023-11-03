@@ -227,7 +227,7 @@ void Storage::SaveUser(char* user)
 	int id = 0;
 	std::memcpy(&id, user, 4);
 	INode* inode = GetINode(USERS_INODE);
-	WriteBytes(inode, (4 + 16 + 256)*id, user, 4 + 16 + 256);
+	WriteBytes(inode, (4 + 16 + 64)*id, user, 4 + 16 + 64);
 
 	_superblock.add_user();
 	save_superblock();
@@ -316,8 +316,8 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 			ep = _superblock.block_size() - sp;
 		}
 
-		std::memcpy(block->data() + sp, content + written_bytes, ep);
-		written_bytes += ep;
+		std::memcpy(block->data() + sp, content + written_bytes, ep - sp);
+		written_bytes += ep - sp;
 
 		save_block(block);
 

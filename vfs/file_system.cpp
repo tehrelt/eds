@@ -191,7 +191,7 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     std::cout << "password: ";  std::cin >> pass;
     fs->_root_user = fs->CreateUser("root", pass);
     
-    std::cout << "CREATE A REGUALAR USER: " << std::endl;
+    std::cout << "CREATE A REGULAR USER: " << std::endl;
     std::cout << "name: ";      std::cin >> username;
     std::cout << "password: ";  std::cin >> pass;
     fs->_current_user = fs->CreateUser(username, pass);

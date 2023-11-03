@@ -6,7 +6,7 @@ class User
 private:
 	uint_fast32_t _id;
 	char _name[16];
-	char _hash_password[256];
+	char _hash_password[64];
 public:
 	User();
 	User(char* content);
