@@ -45,6 +45,9 @@ Directory* FileSystem::GetDirectory(int inode_id)
 }
 Directory* FileSystem::GetParentDirectory()
 {
+    if (_current_directory->parent() == -1) {
+        throw std::exception("YOU ARE ALREADY IN ROOT DIRECTORY!");
+    }
     return _services->directory_service()->Get(_current_directory->parent());
 }
 
@@ -81,7 +84,11 @@ File* FileSystem::CreateFile(std::string name)
 Directory* FileSystem::CreateDirectory(std::string name)
 {
     Directory* dir = _services->directory_service()->Create(name, _current_directory);
+    INode* inode = GetInode(dir->inode_id());
+    _services->inode_service()->SetOwner(inode, _current_user->id());
+    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
 
+    _services->inode_service()->Save(inode);
     _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode_id(), name));
 
     return dir;

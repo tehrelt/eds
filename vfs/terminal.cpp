@@ -266,10 +266,17 @@ void Terminal::change_directory(std::vector<std::string> args)
     }
 
     if (name == "..") {
-        Directory* dir = _file_system->GetParentDirectory();
-        _file_system->ChangeDirectory(dir);
+        try
+        {
+            Directory* dir = _file_system->GetParentDirectory();
+            _file_system->ChangeDirectory(dir);
 
-        path.remove();
+            path.remove();
+        }
+        catch (const std::exception& e)
+        {
+            std::cout << e.what() << std::endl;
+        }
         
         return;
     }
