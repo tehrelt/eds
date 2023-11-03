@@ -4,6 +4,7 @@
 #include "imap.h"
 #include "fat.h"
 #include "block.h"
+#include <vector>
 
 class Storage
 {
@@ -48,12 +49,17 @@ public:
 
 	INode* AllocateInode();
 	Block* AllocateBlock();
+
+	void ClearBlocks(INode* inode);
+
 	void SaveINode(INode* inode);
+
+	std::vector<int> GetBlockchain(int block_id);
 
 	Block* GetBlock(int id);
 	INode* GetINode(int id);
 
-	void WriteBytes(INode* inode, int pos, char* content, int size);
+	void WriteBytes(INode* inode, int pos, const char* content, int size);
 	void WriteByte(INode* inode, int pos, char byte);
 };
 

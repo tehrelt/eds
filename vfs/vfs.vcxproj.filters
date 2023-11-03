@@ -195,7 +195,4 @@
       <Filter>Файлы заголовков\service\models</Filter>
     </ClInclude>
   </ItemGroup>
-  <ItemGroup>
-    <None Include=".todo" />
-  </ItemGroup>
 </Project>

@@ -26,7 +26,6 @@ void FileSystem::ChangeDirectory(Directory* dir)
     }
     _current_directory = dir;
 }
-
 void FileSystem::ChangeToRootDirectory()
 {
     if (_current_directory != _root) {
@@ -40,12 +39,10 @@ char* FileSystem::GetBlockContent(int inode_id)
     INode* inode = _services->inode_service()->Get(inode_id);
     return _services->block_service()->Get(inode->block_num())->data();
 }
-
 Directory* FileSystem::GetDirectory(int inode_id)
 {
     return _services->directory_service()->Get(inode_id);
 }
-
 Directory* FileSystem::GetParentDirectory()
 {
     return _services->directory_service()->Get(_current_directory->parent());
@@ -55,7 +52,6 @@ Block* FileSystem::GetBlock(int id)
 {
     return _services->block_service()->Get(id);
 }
-
 INode* FileSystem::GetInode(int id)
 {
     try
@@ -74,7 +70,6 @@ File* FileSystem::CreateFile(std::string name)
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(file->inode()->id(), name));
     return file;
 }
-
 Directory* FileSystem::CreateDirectory(std::string name)
 {
     Directory* dir = _services->directory_service()->Create(name, _current_directory);
@@ -82,6 +77,13 @@ Directory* FileSystem::CreateDirectory(std::string name)
     _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode_id(), name));
 
     return dir;
+}
+
+void FileSystem::Write(int inode_id, std::string text)
+{
+    INode* inode = _services->inode_service()->Get(inode_id);
+    _services->block_service()->Write(inode, text);
+    delete inode;
 }
 
 std::vector<DEntry*> FileSystem::ls()

@@ -16,7 +16,7 @@ class Terminal
 	
 	void execute_command(const std::string& cmd);
 	bool find_arg(std::vector<std::string> args, const std::string& arg);
-	bool exists(std::string name);
+	DEntry* exists(std::string name);
 
 	void mkfile(std::vector<std::string> args);
 	void mkdir(std::vector<std::string> args);
@@ -24,12 +24,16 @@ class Terminal
 
 	void get_block(std::vector<std::string> args);
 	void get_inode(std::vector<std::string> args);
+	void get_chain(std::vector<std::string> args);
 
 	void ls(std::vector<std::string> args);
 
 	void change_directory(std::vector<std::string> args);
 
 	void cat(std::vector<std::string> args);
+
+	void write(std::vector<std::string> args);
+	void write_append(std::vector<std::string> args);
 
 public:
 	Terminal();

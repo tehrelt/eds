@@ -1,5 +1,6 @@
 #include "terminal.h"
 #include "tools.h"
+#include <sstream>
 
 
 Terminal::Terminal()
@@ -22,8 +23,11 @@ Terminal::Terminal(FileSystem* file_system)
     _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1);
     _commands["gi"]     = std::bind(&Terminal::get_inode,        this, std::placeholders::_1);
     _commands["gb"]     = std::bind(&Terminal::get_block,        this, std::placeholders::_1);
+    _commands["chain"]  = std::bind(&Terminal::get_chain,     this, std::placeholders::_1);
     _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1);
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1);
+    _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1);
+    _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1);
 
     _commands.emplace("cls",        [](std::vector<std::string> args) { system("cls"); });
     _commands.emplace("shutdown",   [](std::vector<std::string> args) { std::cout << "Shutdowning..."; });
@@ -72,14 +76,14 @@ bool Terminal::find_arg(std::vector<std::string> args, const std::string& arg)
     return (std::find(args.begin(), args.end(), arg) != args.end());
 }
 
-bool Terminal::exists(std::string name)
+DEntry* Terminal::exists(std::string name)
 {
     for (auto dentry : _file_system->current_directory()->dentry()) {
         if (name == dentry->name()) {
-            return true;
+            return dentry;
         }
     }
-    return false;
+    return nullptr;
 }
 
 void Terminal::mkfile(std::vector<std::string> args)
@@ -204,6 +208,33 @@ void Terminal::get_inode(std::vector<std::string> args)
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
     }
 }
+void Terminal::get_chain(std::vector<std::string> args)
+{
+    std::string name;
+    if (args.size() == 1) {
+        std::cout << "\tfile name to open: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+
+    auto dentry = exists(name);
+
+    if (!dentry) {
+        std::cout << "ERROR! cannot find a file" << std::endl;
+        return;
+    }
+
+    INode* inode = _file_system->services()->inode_service()->Get(dentry->inode_id());
+
+    auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
+
+    for (int el : chain) {
+        std::cout << el << " -> ";
+    }
+    std::cout << std::endl;
+}
 void Terminal::ls(std::vector<std::string> args)
 {
     auto vector = _file_system->ls();
@@ -293,4 +324,51 @@ void Terminal::cat(std::vector<std::string> args)
         }
     }
     _file_system->CreateFile(name);
+}
+
+void Terminal::write(std::vector<std::string> args)
+{
+    std::string name;
+    if (args.size() == 1) {
+        std::cout << "\tfile name to open: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+
+    auto dentry = exists(name);
+
+   
+
+    if (!dentry) {
+        mkfile(args);
+        dentry = exists(name);
+    }
+
+    INode* inode = _file_system->GetInode(dentry->inode_id());
+
+    if (inode->IsDirectoryFlag()) {
+        std::cout << "ERROR! cannot open a directory" << std::endl;
+        return;
+    }
+
+    std::string text;
+    for (std::string line; std::getline(std::cin, line); ) {
+        if (line.at(0) == '\x4') {
+            break; 
+        }
+        text += line + "\n";
+    }
+    text += '\0';
+
+    std::cout << "Entered text: " << text << std::endl;
+
+    _file_system->Write(inode->id(), text);
+}
+
+void Terminal::write_append(std::vector<std::string> args)
+{
+    std::ostringstream sstream;
+    sstream << std::cin.rdbuf();
 }

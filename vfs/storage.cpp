@@ -1,5 +1,4 @@
 #include "storage.h"
-
 #include <fstream>
 #include "tools.h"
 
@@ -169,9 +168,46 @@ Block* Storage::AllocateBlock()
 	return block;
 }
 
+void Storage::ClearBlocks(INode* inode)
+{
+	Block* block;
+	for (block = GetBlock(inode->block_num()); 
+		_fat[block->id()] != -2; 
+		block = GetBlock(_fat[block->id()])) {
+
+		std::memcpy(block->data(), "\0", _superblock.block_size());
+
+		save_block(block);
+	}
+
+	delete block;
+
+	int id = 0;
+	for (id = inode->block_num(); _fat[id] != -2; id = _fat[id]) {
+		_fat[id] = -1;
+	}
+
+	_fat[inode->block_num()] = -2;
+}
+
 void Storage::SaveINode(INode* inode)
 {
 	save_inode(inode);
+}
+
+std::vector<int> Storage::GetBlockchain(int block_id)
+{
+	int id = block_id;
+	std::vector<int> chain = std::vector<int>();
+
+	while (id != -2) {
+		chain.push_back(id);
+		id = _fat[id];
+	}
+
+	chain.push_back(-2);
+
+	return chain;
 }
 
 Block* Storage::GetBlock(int id)
@@ -195,7 +231,7 @@ INode* Storage::GetINode(int id)
 	return read_inode(id);
 }
 
-void Storage::WriteBytes(INode* inode, int pos, char* content, int size)
+void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 {
 	Block* block = find_relative_block(inode, pos);
 	

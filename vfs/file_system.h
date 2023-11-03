@@ -29,6 +29,8 @@ public:
 	File* CreateFile(std::string name);
 	Directory* CreateDirectory(std::string name);
 
+	void Write(int inode_id, std::string text);
+
 	std::vector<DEntry*> ls();
 	Superblock* sb();
 
