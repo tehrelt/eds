@@ -105,6 +105,7 @@ void Terminal::mkfile(std::vector<std::string> args)
 
     if (exists(name)) {
         std::cout << "ERROR! Element with this name already exists" << std::endl;
+        return;
     }
 
     _file_system->CreateFile(name);
@@ -127,6 +128,7 @@ void Terminal::mkdir(std::vector<std::string> args)
 
     if (exists(name)) {
         std::cout << "ERROR! Element with this name already exists" << std::endl;
+        return;
     }
 
     _file_system->CreateDirectory(name);
