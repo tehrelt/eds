@@ -135,6 +135,11 @@ Storage::Storage(std::string name, Superblock* sb, FAT* fat, IMap* imap)
 	_superblock = *sb;
 }
 
+int Storage::GetNextUserId()
+{
+	return _superblock.users_count();
+}
+
 INode* Storage::AllocateInode()
 {
 	INode* inode = find_free_inode();
@@ -215,6 +220,17 @@ void Storage::ClearBlocks(INode* inode)
 void Storage::SaveINode(INode* inode)
 {
 	save_inode(inode);
+}
+
+void Storage::SaveUser(char* user)
+{
+	int id = 0;
+	std::memcpy(&id, user, 4);
+	INode* inode = GetINode(USERS_INODE);
+	WriteBytes(inode, (4 + 16 + 256)*id, user, 4 + 16 + 256);
+
+	_superblock.add_user();
+	save_superblock();
 }
 
 std::vector<int> Storage::GetBlockchain(int block_id)
@@ -310,7 +326,7 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 		}
 	}
 
-	inode->set_size(written_bytes);
+	inode->set_size(pos + written_bytes);
 	if (inode->IsDirectoryFlag()) {
 		inode->set_size(blocks_affected * _superblock.block_size());
 	}

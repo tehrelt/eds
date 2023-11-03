@@ -9,6 +9,12 @@ private:
 	char _hash_password[256];
 public:
 	User();
+	User(char* content);
 	User(int id, std::string name, std::string password);
+
+	char* name() { return _name; }
+
+
+	char* ToChar();
 };
 

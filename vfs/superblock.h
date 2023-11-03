@@ -20,6 +20,7 @@ private:
 	uint32_t _data_blocks_count;				// 4
 	uint64_t _free_space_in_bytes;				// 8
 	uint64_t _total_space_in_bytes;				// 8
+	uint32_t _users_count;						// 4
 
 	char _fs_name[4];							// 4
 
@@ -43,9 +44,13 @@ public:
 	uint32_t data_blocks_count();
 	uint64_t free_space_in_bytes();
 	uint64_t total_space_in_bytes();
+	uint32_t users_count();
+
+	void add_user();
 
 	Superblock& operator-=(const int size) { _free_space_in_bytes -= size; return *this; }
 	Superblock& operator+=(const int size) { _free_space_in_bytes += size; return *this; }
+	Superblock& operator++();
 
 	char* fs_name();
 

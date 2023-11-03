@@ -40,7 +40,7 @@ int Terminal::Listen()
     std::cin.ignore(1);
 
     while (true) {
-        std::cout << "user@eds " << path.ToString() << ": ";
+        std::cout << _file_system->current_user()->name() << "@eds " << path.ToString() << ": ";
         std::getline(std::cin, line);
 
         this->execute_command(line);

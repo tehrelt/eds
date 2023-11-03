@@ -79,6 +79,11 @@ Directory* FileSystem::CreateDirectory(std::string name)
     return dir;
 }
 
+User* FileSystem::CreateUser(std::string name, std::string password)
+{
+    return _services->user_service()->Create(name, password);
+}
+
 void FileSystem::Write(int inode_id, std::string text)
 {
     INode* inode = _services->inode_service()->Get(inode_id);
@@ -175,10 +180,23 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     fs->_root = fs->_services->directory_service()->CreateRoot();
     fs->_current_directory = fs->_root;
 
-    INode* usr = fs->services()->file_service()->Create("usr")->inode();
-    usr->SetSystemFlag();
-    fs->Write(usr->id(), "");
-    fs->services()->inode_service()->Save(usr);
+    INode* users_inode = fs->services()->file_service()->Create("usr")->inode();
+    users_inode->SetSystemFlag();
+    fs->services()->inode_service()->Save(users_inode);
+    fs->_services->directory_service()->AddToDirectory(fs->_root, new DEntry(users_inode->id(), "usr"));
+
+    std::string username;
+    std::string pass;
+    std::cout << "CREATE A ROOT USER: " << std::endl;
+    std::cout << "password: ";  std::cin >> pass;
+    fs->_root_user = fs->CreateUser("root", pass);
+    
+    std::cout << "CREATE A REGUALAR USER: " << std::endl;
+    std::cout << "name: ";      std::cin >> username;
+    std::cout << "password: ";  std::cin >> pass;
+    fs->_current_user = fs->CreateUser(username, pass);
+   
+    
     
     return fs;
 }

@@ -149,6 +149,7 @@
     <ClCompile Include="terminal.cpp" />
     <ClCompile Include="tools.cpp" />
     <ClCompile Include="user.cpp" />
+    <ClCompile Include="user_service.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="base_service.h" />
@@ -173,6 +174,7 @@
     <ClInclude Include="terminal.h" />
     <ClInclude Include="tools.h" />
     <ClInclude Include="user.h" />
+    <ClInclude Include="user_service.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

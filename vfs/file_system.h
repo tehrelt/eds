@@ -1,19 +1,25 @@
 #pragma once
 #include <string>
 #include "service.h"
+#include "user.h"
 
 class FileSystem
 {
 	Service* _services;
+
 	Directory* _root;
 	Directory* _current_directory;
+
+	User* _root_user;
+	User* _current_user;
 
 public:
 	FileSystem();
 	FileSystem(Service* services);
 
-	Service* services()				{ return _services; }
-	Directory* current_directory()	{ return _current_directory; }
+	Service*	services()				{ return _services; }
+	Directory*	current_directory()		{ return _current_directory; }
+	User*		current_user()			{ return _current_user; }
 
 	void ChangeDirectory(Directory* dir);
 	void ChangeToRootDirectory();
@@ -28,6 +34,7 @@ public:
 
 	File* CreateFile(std::string name);
 	Directory* CreateDirectory(std::string name);
+	User* CreateUser(std::string name, std::string password);
 
 	void Write(int inode_id, std::string text);
 	char* ReadFile(int inode_id);

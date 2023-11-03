@@ -6,6 +6,9 @@
 #include "block.h"
 #include <vector>
 
+constexpr auto ROOT_INODE	= 0;
+constexpr auto USERS_INODE	= 1;
+
 class Storage
 {
 private:
@@ -44,6 +47,8 @@ public:
 	FAT*		fat()			{ return &_fat; }
 	IMap*		imap()			{ return &_imap; }
 
+	int GetNextUserId();
+
 	int_fast32_t	get_fat_record(int i)	{ return _fat[i]; }
 	INode*			get_imap_record(int i)	{ return &_imap[i]; }
 
@@ -54,6 +59,7 @@ public:
 	void ClearBlocks(INode* inode);
 
 	void SaveINode(INode* inode);
+	void SaveUser(char* user);
 
 	std::vector<int> GetBlockchain(int block_id);
 

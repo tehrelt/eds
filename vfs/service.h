@@ -4,6 +4,7 @@
 #include "storage.h"
 #include "block_service.h"
 #include "inode_service.h"
+#include "user_service.h"
 
 class Service
 {
@@ -11,14 +12,16 @@ class Service
 	DirectoryService _directory_service;
 	InodeService _inode_service;
 	BlockService _block_service;
+	UserService _user_service;
 
 public:
 	Service();
 	Service(Storage* storage);
 
-	FileService* file_service() { return &_file_service; }
-	DirectoryService* directory_service() { return &_directory_service; }
-	InodeService* inode_service() { return &_inode_service; }
-	BlockService* block_service() { return &_block_service; }
+	FileService* file_service()				{ return &_file_service; }
+	DirectoryService* directory_service()	{ return &_directory_service; }
+	InodeService* inode_service()			{ return &_inode_service; }
+	BlockService* block_service()			{ return &_block_service; }
+	UserService* user_service()				{ return &_user_service; }
 };
 

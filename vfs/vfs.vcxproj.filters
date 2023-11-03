@@ -132,11 +132,14 @@
     <ClCompile Include="file_service.cpp">
       <Filter>Исходные файлы\service\services</Filter>
     </ClCompile>
-    <ClCompile Include="user.cpp">
-      <Filter>Исходные файлы</Filter>
-    </ClCompile>
     <ClCompile Include="sha256.cpp">
       <Filter>Исходные файлы\tools</Filter>
+    </ClCompile>
+    <ClCompile Include="user_service.cpp">
+      <Filter>Исходные файлы\service\services</Filter>
+    </ClCompile>
+    <ClCompile Include="user.cpp">
+      <Filter>Исходные файлы\service\models</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -205,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="sha256.h">
       <Filter>Файлы заголовков\tools</Filter>
+    </ClInclude>
+    <ClInclude Include="user_service.h">
+      <Filter>Файлы заголовков\service\services</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
