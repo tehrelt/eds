@@ -79,7 +79,6 @@ File* FileSystem::CreateFile(std::string name)
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
     return file;
 }
-
 void FileSystem::RemoveFile(int inode_id)
 {
     _services->file_service()->Remove(inode_id);
