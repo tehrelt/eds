@@ -13,10 +13,14 @@ public:
 
 	void add(std::string part);
 	void remove();
-	void erase();
+	
+	std::string last();
 
 	Path& operator+(const std::string& name);
 
+	std::vector<std::string> parts() { return _parts; }
 	std::string ToString();
+
+	static std::string GetLastSegment(std::string path);
 };
 

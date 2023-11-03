@@ -26,6 +26,13 @@ void FileSystem::ChangeDirectory(Directory* dir)
     }
     _current_directory = dir;
 }
+void FileSystem::ChangeOptionalDirectory(Directory* dir)
+{
+    if (_optional_directory != _root) {
+        delete _optional_directory;
+    }
+    _optional_directory = dir;
+}
 void FileSystem::ChangeToRootDirectory()
 {
     if (_current_directory != _root) {
@@ -79,6 +86,18 @@ File* FileSystem::CreateFile(std::string name)
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
     return file;
 }
+File* FileSystem::CreateFileAt(std::string name, Directory* directory)
+{
+    File* file = _services->file_service()->Create(name);
+    INode* inode = file->inode();
+
+    _services->inode_service()->SetOwner(inode, _current_user->id());
+    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
+
+    _services->inode_service()->Save(inode);
+    _services->directory_service()->AddToDirectory(directory, new DEntry(inode->id(), name));
+    return file;
+}
 void FileSystem::RemoveFile(int inode_id)
 {
     _services->file_service()->Remove(inode_id);
@@ -94,6 +113,19 @@ Directory* FileSystem::CreateDirectory(std::string name)
 
     _services->inode_service()->Save(inode);
     _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode_id(), name));
+
+    return dir;
+}
+
+Directory* FileSystem::CreateDirectoryAt(std::string name, Directory* directory)
+{
+    Directory* dir = _services->directory_service()->Create(name, directory);
+    INode* inode = GetInode(dir->inode_id());
+    _services->inode_service()->SetOwner(inode, _current_user->id());
+    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
+
+    _services->inode_service()->Save(inode);
+    _services->directory_service()->AddToDirectory(directory, new DEntry(dir->inode_id(), name));
 
     return dir;
 }

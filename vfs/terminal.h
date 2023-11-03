@@ -17,6 +17,7 @@ class Terminal
 	void execute_command(const std::string& cmd);
 	bool find_arg(std::vector<std::string> args, const std::string& arg);
 	DEntry* exists(std::string name);
+	DEntry* exists(std::string name, Directory* dir);
 
 	void mkfile(std::vector<std::string> args);
 	void mkdir(std::vector<std::string> args);
@@ -38,6 +39,8 @@ class Terminal
 
 	void write(std::vector<std::string> args);
 	void write_append(std::vector<std::string> args);
+
+	Directory* traverse_to_dir(std::string path);
 
 public:
 	Terminal();

@@ -88,9 +88,20 @@ DEntry* Terminal::exists(std::string name)
     return nullptr;
 }
 
+DEntry* Terminal::exists(std::string name, Directory* dir)
+{
+    for (auto dentry : dir->dentry()) {
+        if (name == dentry->name()) {
+            return dentry;
+        }
+    }
+    return nullptr;
+}
+
 void Terminal::mkfile(std::vector<std::string> args)
 {
     std::string name;
+    Directory* optional_dir = nullptr;
     if (args.size() == 1) {
         std::cout << "\tfile name: ";
         std::cin >> name;
@@ -99,6 +110,11 @@ void Terminal::mkfile(std::vector<std::string> args)
         name = args[1];
     }
     
+    if (name.find('/') != std::string::npos) {
+        optional_dir = traverse_to_dir(name);
+        name = Path::GetLastSegment(name);
+    }
+
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
@@ -109,11 +125,17 @@ void Terminal::mkfile(std::vector<std::string> args)
         return;
     }
 
-    _file_system->CreateFile(name);
+    if (optional_dir) {
+        _file_system->CreateFileAt(name, optional_dir);
+    }
+    else {
+        _file_system->CreateFile(name);
+    }
 }
 void Terminal::mkdir(std::vector<std::string> args)
 {
     std::string name;
+    Directory* optional_dir = nullptr;
     if (args.size() == 1) {
         std::cout << "\tdirectory name: ";
         std::cin >> name;
@@ -122,6 +144,11 @@ void Terminal::mkdir(std::vector<std::string> args)
         name = args[1];
     }
 
+    if (name.find('/') != std::string::npos) {
+        optional_dir = traverse_to_dir(name);
+        name = Path::GetLastSegment(name);
+    }
+
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
@@ -132,7 +159,13 @@ void Terminal::mkdir(std::vector<std::string> args)
         return;
     }
 
-    _file_system->CreateDirectory(name);
+    if (optional_dir) {
+        _file_system->CreateDirectoryAt(name, optional_dir);
+    }
+    else {
+        _file_system->CreateDirectory(name);
+    }
+    
 }
 void Terminal::rm(std::vector<std::string> args)
 {
@@ -457,4 +490,23 @@ void Terminal::write_append(std::vector<std::string> args)
     text += '\0';
 
     _file_system->AppendFile(inode->id(), text);
+}
+
+Directory* Terminal::traverse_to_dir(std::string path_string)
+{
+    Path path = Path(path_string);
+    Directory* current_directory = _file_system->current_directory();
+    
+    for (int i = 0; i < path.parts().size() - 1; i++) {
+        std::string dir_name = path.parts()[i];
+        auto dentry = exists(dir_name, current_directory);
+        if (dentry != nullptr) {
+            current_directory = _file_system->GetDirectory(dentry->inode_id());
+        }
+        else {
+            current_directory = _file_system->CreateDirectoryAt(dir_name, current_directory);
+        }
+    }
+
+    return current_directory;
 }

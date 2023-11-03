@@ -18,6 +18,10 @@ void Path::remove()
 {
     _parts.pop_back();
 }
+std::string Path::last()
+{
+    return _parts.back();
+}
 Path& Path::operator+(const std::string& name)
 {
     this->add(name);
@@ -33,4 +37,9 @@ std::string Path::ToString()
     }
 
     return path;
+}
+
+std::string Path::GetLastSegment(std::string path)
+{
+    return Path(path)._parts.back();
 }
