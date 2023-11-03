@@ -42,7 +42,8 @@ public:
 	User* GetUser(int id);
 
 
-	void Write(int inode_id, std::string text);
+	void AppendFile(int inode_id, std::string text);
+	void WriteFile(int inode_id, std::string text);
 	char* ReadFile(int inode_id);
 
 	std::vector<DEntry*> ls();

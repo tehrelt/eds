@@ -303,18 +303,20 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 	int start_pos = pos % _superblock.block_size();
 	int end_pos = pos + size;
 	int blocks_affected = (end_pos + _superblock.block_size() - 1) / _superblock.block_size();	
+	int block_num = pos  / _superblock.block_size();
 	int written_bytes = 0;
 
-	for(int i = 0; i < blocks_affected; i++) {
+	
+	for(int i = block_num; i < blocks_affected; i++) {
 
-		int sp = (start_pos + written_bytes) % _superblock.block_size();
-		int ep = 0;
+		int sp = 0;
+		int ep = _superblock.block_size();
 
-		if (i == blocks_affected - 1) {
-			ep = end_pos % _superblock.block_size();
+		if (i == block_num) {
+			sp = start_pos;
 		}
-		else {
-			ep = _superblock.block_size() - sp;
+		if (i == blocks_affected - 1 && end_pos != _superblock.block_size()) {
+			ep = end_pos % _superblock.block_size();
 		}
 
 		std::memcpy(block->data() + sp, content + written_bytes, ep - sp);
@@ -344,4 +346,16 @@ void Storage::WriteByte(INode* inode, int pos, char byte)
 	block->set_char(pos, byte);
 
 	save_block(block);
+}
+
+int Storage::GetEOF(INode* inode)
+{
+	auto chain = GetBlockchain(inode->block_num());
+
+	int block_offset = chain.size() - 2;
+	int last_block = chain.at(block_offset);
+
+	char* content = GetBlock(last_block)->data();
+	int bytes_offset = block_offset * _superblock.block_size() + strlen(content);
+	return bytes_offset;
 }

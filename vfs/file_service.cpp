@@ -1,5 +1,10 @@
 #include "file_service.h"
 
+int FileService::get_eof(INode* inode)
+{
+	return _storage->GetEOF(inode);
+}
+
 File* FileService::Create(std::string name)
 {
 	INode* inode = _storage->AllocateInode();
@@ -7,9 +12,15 @@ File* FileService::Create(std::string name)
 	return new File(inode);
 }
 
-void FileService::SetMode(INode* inode, uint_fast8_t mode)
+void FileService::Write(INode* inode, std::string text)
 {
+	_storage->ClearBlocks(inode);
+	_storage->WriteBytes(inode, 0, text.c_str(), text.size());
+}
 
+void FileService::Append(INode* inode, std::string text)
+{
+	_storage->WriteBytes(inode, get_eof(inode), text.c_str(), text.size());
 }
 
 char* FileService::Read(int inode_id)

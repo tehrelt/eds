@@ -75,7 +75,6 @@ File* FileSystem::CreateFile(std::string name)
     _services->inode_service()->SetOwner(inode, _current_user->id());
     _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
 
-
     _services->inode_service()->Save(inode);
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
     return file;
@@ -105,13 +104,23 @@ User* FileSystem::GetUser(int id)
     std::memcpy(userc, users + id*(USER_RECORD_SIZE), USER_RECORD_SIZE);
 
     User* user = new User(userc);
+
+    delete users;
+    delete userc;
+
     return user;
 }
 
-void FileSystem::Write(int inode_id, std::string text)
+void FileSystem::AppendFile(int inode_id, std::string text)
 {
     INode* inode = _services->inode_service()->Get(inode_id);
-    _services->block_service()->Write(inode, text);
+    _services->file_service()->Append(inode, text);
+    delete inode;
+}
+void FileSystem::WriteFile(int inode_id, std::string text)
+{
+    INode* inode = _services->inode_service()->Get(inode_id);
+    _services->file_service()->Write(inode, text);
     delete inode;
 }
 

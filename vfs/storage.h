@@ -70,5 +70,7 @@ public:
 
 	void WriteBytes(INode* inode, int pos, const char* content, int size);
 	void WriteByte(INode* inode, int pos, char byte);
+
+	int GetEOF(INode* inode);
 };
 

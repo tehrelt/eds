@@ -380,11 +380,49 @@ void Terminal::write(std::vector<std::string> args)
     }
     text += '\0';
 
-    _file_system->Write(inode->id(), text);
+    _file_system->WriteFile(inode->id(), text);
 }
 
 void Terminal::write_append(std::vector<std::string> args)
 {
-    std::ostringstream sstream;
-    sstream << std::cin.rdbuf();
+    std::string name;
+    if (args.size() == 1) {
+        std::cout << "\tfile name to open: ";
+        std::cin >> name;
+    }
+    else {
+        name = args[1];
+    }
+
+    auto dentry = exists(name);
+
+
+
+    if (!dentry) {
+        mkfile(args);
+        dentry = exists(name);
+    }
+
+    INode* inode = _file_system->GetInode(dentry->inode_id());
+
+    if (inode->IsDirectoryFlag()) {
+        std::cout << "ERROR! cannot open a directory" << std::endl;
+        return;
+    }
+
+    std::string text;
+    for (std::string line; std::getline(std::cin, line); ) {
+        if (line.at(0) == '\x4') {
+            break;
+        }
+        if (text == "") {
+            text += line;
+        }
+        else {
+            text += "\n" + line;
+        }
+    }
+    text += '\0';
+
+    _file_system->AppendFile(inode->id(), text);
 }

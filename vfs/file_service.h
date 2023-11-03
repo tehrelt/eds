@@ -4,13 +4,15 @@
 
 class FileService : BaseService
 {
+	int get_eof(INode* inode);
 public:
 	FileService() : BaseService() { }
 	FileService(Storage* storage) : BaseService(storage) { }
 
 	File* Create(std::string name);
 
-	void SetMode(INode* inode, uint_fast8_t mode);
+	void Write(INode* inode, std::string text);
+	void Append(INode* inode, std::string text);
 
 	char* Read(int inode_id);
 };
