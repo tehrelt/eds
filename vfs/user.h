@@ -1,6 +1,9 @@
 #pragma once
 #include <cstdint>
 #include <string>
+
+constexpr auto USER_RECORD_SIZE = 4 + 16 + 64;
+
 class User
 {
 private:
@@ -12,7 +15,8 @@ public:
 	User(char* content);
 	User(int id, std::string name, std::string password);
 
-	char* name() { return _name; }
+	uint_fast32_t id()	{ return _id; }
+	char* name()		{ return _name; }
 
 
 	char* ToChar();

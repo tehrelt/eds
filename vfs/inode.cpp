@@ -20,6 +20,7 @@ void INode::UnsetDirectoryFlag() { _flags &= ~DIRECTORY; }
 
 void INode::set_mode(uint_fast8_t mode) { _mode = mode; }
 void INode::set_flags(uint_fast8_t flags) { _flags = flags; }
+void INode::set_uid(uint_fast16_t uid) { _uid = uid; }
 
 void INode::set_create_date(time_t date) { _create_date = date; }
 void INode::set_access_date(time_t date) { _access_date = date; }

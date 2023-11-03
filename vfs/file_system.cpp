@@ -67,9 +67,17 @@ INode* FileSystem::GetInode(int id)
 File* FileSystem::CreateFile(std::string name)
 {
     File* file = _services->file_service()->Create(name);
-    Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(file->inode()->id(), name));
+    INode* inode = file->inode();
+    
+    _services->inode_service()->SetOwner(inode, _current_user->id());
+    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
+
+
+    _services->inode_service()->Save(inode);
+    Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
     return file;
 }
+
 Directory* FileSystem::CreateDirectory(std::string name)
 {
     Directory* dir = _services->directory_service()->Create(name, _current_directory);
@@ -83,6 +91,15 @@ User* FileSystem::CreateUser(std::string name, std::string password)
 {
     return _services->user_service()->Create(name, password);
 }
+User* FileSystem::GetUser(int id)
+{
+    char* users = _services->file_service()->Read(USERS_INODE);
+    char* userc = new char[USER_RECORD_SIZE];
+    std::memcpy(userc, users + id*(USER_RECORD_SIZE), USER_RECORD_SIZE);
+
+    User* user = new User(userc);
+    return user;
+}
 
 void FileSystem::Write(int inode_id, std::string text)
 {
@@ -95,12 +112,10 @@ char* FileSystem::ReadFile(int inode_id)
 {
     return _services->file_service()->Read(inode_id);
 }
-
 std::vector<DEntry*> FileSystem::ls()
 {
     return _services->directory_service()->GetInfo(_current_directory);
 }
-
 Superblock* FileSystem::sb()
 {
     return _services->block_service()->GetSB();
@@ -182,6 +197,7 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
 
     INode* users_inode = fs->services()->file_service()->Create("usr")->inode();
     users_inode->SetSystemFlag();
+    fs->services()->inode_service()->SetOwner(users_inode, 0);
     fs->services()->inode_service()->Save(users_inode);
     fs->_services->directory_service()->AddToDirectory(fs->_root, new DEntry(users_inode->id(), "usr"));
 
@@ -195,8 +211,6 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     std::cout << "name: ";      std::cin >> username;
     std::cout << "password: ";  std::cin >> pass;
     fs->_current_user = fs->CreateUser(username, pass);
-   
-    
     
     return fs;
 }
@@ -252,6 +266,26 @@ FileSystem* FileSystem::Mount(std::string name)
 
     fs->_root = fs->_services->directory_service()->ReadRoot();
     fs->_current_directory = fs->_root;
+
+    fs->_root_user = fs->_services->user_service()->Read(0);
+    for (int i = 1; i < sb.users_count(); i++) {
+        std::cout << i << ". " << fs->GetUser(i)->name() << std::endl;
+    }
+
+    int pick;
+
+    do
+    {
+        std::cout << "Choose an user: ";
+        std::cin >> pick;
+
+        if (pick < 0 || pick > sb.users_count()) {
+            std::cout << "Invalid user. Try again!" << std::endl;
+        }
+        else {
+            fs->_current_user = fs->GetUser(pick);
+        }
+    } while (fs->current_user() == nullptr);
 
     return fs;
 }

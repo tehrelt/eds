@@ -244,11 +244,13 @@ void Terminal::get_chain(std::vector<std::string> args)
 void Terminal::ls(std::vector<std::string> args)
 {
     auto vector = _file_system->ls();
-    std::cout << "id\tflags\tmode\tsize\tcreation date\t\tname" << std::endl;
+    std::cout << "id\tflags\tmode\tsize\tcreation date\t\towner\tname" << std::endl;
 
     for (int i = 0; i < vector.size(); i++) {
         INode* inode = _file_system->GetInode(vector[i]->inode_id());
-        std::cout << *inode << "\t" << vector[i]->name() << std::endl;
+        User* user = _file_system->GetUser(inode->uid());
+        std::cout << *inode << "\t" << user->name() << "\t" << vector[i]->name() << std::endl;
+
     }
 }
 void Terminal::change_directory(std::vector<std::string> args)

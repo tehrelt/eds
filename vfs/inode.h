@@ -38,6 +38,7 @@ public:
 
 	void set_mode(uint_fast8_t mode);
 	void set_flags(uint_fast8_t flags);
+	void set_uid(uint_fast16_t uid);
 
 	void set_create_date(time_t date);
 	void set_access_date(time_t date);

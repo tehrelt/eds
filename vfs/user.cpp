@@ -25,9 +25,7 @@ User::User(int id, std::string name, std::string hash_password)
 
 char* User::ToChar()
 {
-	int size = 4 + 16 + 64;
-
-	char* content = new char[size];
+	char* content = new char[USER_RECORD_SIZE];
 
 	std::memcpy(content, &_id, 4);
 	std::memcpy(content + 4, _name, 16);

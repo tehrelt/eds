@@ -33,8 +33,14 @@ public:
 	INode* GetInode(int id);
 
 	File* CreateFile(std::string name);
+
+
 	Directory* CreateDirectory(std::string name);
+
+
 	User* CreateUser(std::string name, std::string password);
+	User* GetUser(int id);
+
 
 	void Write(int inode_id, std::string text);
 	char* ReadFile(int inode_id);

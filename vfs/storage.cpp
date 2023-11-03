@@ -109,8 +109,9 @@ void Storage::read(char* destination, int offset, int size)
 
 	stream.open(_file_name, std::ios::binary | std::ios::in);
 
-	if (!stream.is_open())
+	if (!stream.is_open()) {
 		throw new std::exception();
+	}
 
 	stream.seekg(offset, std::ios::beg);
 	stream.read(destination, size);
