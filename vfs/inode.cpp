@@ -26,6 +26,7 @@ void INode::set_access_date(time_t date) { _access_date = date; }
 void INode::set_modify_date(time_t date) { _modify_date = date; }
 
 void INode::set_block_num(int_fast32_t index) { _block_num = index; }
+void INode::set_size(uint_fast32_t size) { _size = size; }
 
 INode::INode()
 {
@@ -38,6 +39,7 @@ INode::INode()
 	_create_date = 0;
 	_modify_date = 0;
 	_access_date = 0;
+	_size = 0;
 }
 
 INode::INode(int id)
@@ -51,13 +53,13 @@ INode::INode(int id)
 	_create_date = 0;
 	_modify_date = 0;
 	_access_date = 0;
+
+	_size = 0;
 }
 
 uint_fast8_t INode::flags() { return _flags; }
 uint_fast8_t INode::mode() { return _mode; }
-
 uint_fast16_t INode::uid() { return _uid; }
-
 int_fast32_t INode::id() { return _id; }
 
 time_t INode::create_date() { return _create_date; }
@@ -65,6 +67,7 @@ time_t INode::modify_date() { return _modify_date; }
 time_t INode::access_date() { return _access_date; }
 
 int_fast32_t INode::block_num() { return _block_num; }
+uint_fast32_t INode::size() { return _size; }
 
 std::ostream& operator<<(std::ostream& os, const INode& inode)
 {
@@ -95,7 +98,8 @@ std::ostream& operator<<(std::ostream& os, const INode& inode)
 
 	os << inode._id << "\t";
 	os << flags << "\t";
-	os << mode << "\t"; 
+	os << mode << "\t";
+	os << inode._size << "\t";
 	os << timeToString(inode._create_date);
 
 	return os;

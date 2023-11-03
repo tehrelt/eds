@@ -69,6 +69,7 @@ void Terminal::execute_command(const std::string& line) {
     else {
         std::cout << "Unknown command" << std::endl;
     }
+    std::cout << std::endl;
 }
 
 bool Terminal::find_arg(std::vector<std::string> args, const std::string& arg)
@@ -200,7 +201,7 @@ void Terminal::get_inode(std::vector<std::string> args)
     try
     {
         INode* inode = _file_system->GetInode(id);
-        std::cout << "INODE INFO: " << std::endl;
+        std::cout << "id\tflags\tmode\tsize\tcreation date\t\tname" << std::endl;
         std::cout << *inode << std::endl;
     }
     catch (const std::exception& e)
@@ -241,7 +242,7 @@ void Terminal::get_chain(std::vector<std::string> args)
 void Terminal::ls(std::vector<std::string> args)
 {
     auto vector = _file_system->ls();
-    std::cout << "id\tflags\tmode\tcreation date\t\tname" << std::endl;
+    std::cout << "id\tflags\tmode\tsize\tcreation date\t\tname" << std::endl;
 
     for (int i = 0; i < vector.size(); i++) {
         INode* inode = _file_system->GetInode(vector[i]->inode_id());

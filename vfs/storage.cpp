@@ -80,7 +80,6 @@ void Storage::lock_inode(INode* inode)
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
 }
-
 void Storage::set_fat_record(int idx, int value)
 {
 	_fat[idx] = value;
@@ -165,7 +164,6 @@ Block* Storage::AllocateBlock()
 
 	return block;
 }
-
 Block* Storage::AllocateBlock(int prev_id)
 {
 	Block* block = find_free_block();
@@ -214,7 +212,6 @@ void Storage::ClearBlocks(INode* inode)
 
 	save_superblock();
 }
-
 void Storage::SaveINode(INode* inode)
 {
 	save_inode(inode);
@@ -286,6 +283,13 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 			block = AllocateBlock(block->id());
 		}
 	}
+
+	inode->set_size(written_bytes);
+	if (inode->IsDirectoryFlag()) {
+		inode->set_size(blocks_affected * _superblock.block_size());
+	}
+
+	save_inode(inode);
 
 	delete block;
 }

@@ -11,15 +11,16 @@ constexpr uint_fast8_t DIRECTORY = 0b1000;
 class INode
 {
 
-	int_fast32_t _id;
-	uint_fast8_t _flags;
-	uint_fast16_t _uid;
-	uint_fast8_t _mode;
-	time_t _create_date;
-	time_t _modify_date;
-	time_t _access_date;
+	int_fast32_t _id;					// 4
+	uint_fast8_t _flags;				// 1
+	uint_fast16_t _uid;					// 2
+	uint_fast8_t _mode;					// 1
+	time_t _create_date;				// 8
+	time_t _modify_date;				// 8
+	time_t _access_date;				// 8
 
-	int_fast32_t _block_num;
+	int_fast32_t _block_num;			// 4
+	uint_fast32_t _size;				// 4
 
 public:
 	INode();
@@ -33,6 +34,7 @@ public:
 	time_t modify_date();
 	time_t access_date();
 	int_fast32_t block_num();
+	uint_fast32_t size();
 
 	void set_mode(uint_fast8_t mode);
 	void set_flags(uint_fast8_t flags);
@@ -42,6 +44,7 @@ public:
 	void set_modify_date(time_t date);
 
 	void set_block_num(int_fast32_t index);
+	void set_size(uint_fast32_t size);
 
 	void SetSystemFlag();
 	void SetHiddenFlag();
