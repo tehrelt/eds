@@ -49,6 +49,7 @@ public:
 
 	INode* AllocateInode();
 	Block* AllocateBlock();
+	Block* AllocateBlock(int prev_block_id);
 
 	void ClearBlocks(INode* inode);
 

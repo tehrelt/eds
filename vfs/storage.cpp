@@ -11,7 +11,7 @@ Block* Storage::read_block(int id)
 		id * _superblock.block_size(), 
 		_superblock.block_size());
 
-	block->set_data(block_content);
+	std::memcpy(block->data(), block_content, _superblock.block_size());
 
 	return block;
 }
@@ -44,8 +44,6 @@ Block* Storage::find_free_block()
 	}
 	return nullptr;
 }
-
-
 
 Block* Storage::find_relative_block(INode* inode, int pos)
 {
@@ -163,6 +161,23 @@ Block* Storage::AllocateBlock()
 	_superblock -= _superblock.block_size();
 
 	set_fat_record(block->id(), -2);
+
+	save_superblock();
+
+	return block;
+}
+
+Block* Storage::AllocateBlock(int prev_id)
+{
+	Block* block = find_free_block();
+	block->set_char(0, '\0');
+	save_block(block);
+
+	_superblock -= _superblock.block_size();
+
+	set_fat_record(prev_id, block->id());
+	set_fat_record(block->id(), -2);
+
 	save_superblock();
 
 	return block;
@@ -171,25 +186,28 @@ Block* Storage::AllocateBlock()
 void Storage::ClearBlocks(INode* inode)
 {
 	Block* clear_block = new Block(0, _superblock.block_size());
-	Block* block = GetBlock(inode->block_num());
-	do {
+	Block* block = nullptr;
+	
+	int id = inode->block_num();
+	while (id != -2) {
+		block = GetBlock(id);
 		std::memcpy(block->data(), clear_block->data(), _superblock.block_size());
 		save_block(block);
 
-		if(_fat[block->id()] != -2) { 
-			block = GetBlock(_fat[block->id()]);
-		}
-	} while (_fat[block->id()] != -2);
+		id = _fat[id];
+	}
 
 	delete block;
 	delete clear_block;
 
-	int id = 0;
-	for (id = inode->block_num(); _fat[id] != -2; id = _fat[id]) {
-		_fat[id] = -1;
+	id = inode->block_num();
+	while (id != -2) {
+		int tmp = id;
+		id = _fat[id];
+		set_fat_record(tmp, -1);
 	}
 
-	_fat[inode->block_num()] = -2;
+	set_fat_record(inode->block_num(), -2);
 }
 
 void Storage::SaveINode(INode* inode)
@@ -242,7 +260,7 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 	int blocks_affected = (end_pos + _superblock.block_size() - 1) / _superblock.block_size();	
 	int written_bytes = 0;
 
-	for(int i = 0; i < blocks_affected; i++, block = read_block(_fat[block->id()])) {
+	for(int i = 0; i < blocks_affected; i++) {
 
 		int sp = (start_pos + written_bytes) % _superblock.block_size();
 		int ep = 0;
@@ -251,16 +269,20 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 			ep = end_pos % _superblock.block_size();
 		}
 		else {
-			ep = _superblock.block_size();
+			ep = _superblock.block_size() - sp;
 		}
 
-		for (int j = sp; j < ep; j++) {
-			block->set_char(j, content[written_bytes]);
-			written_bytes++;
-		}
+		std::memcpy(block->data() + sp, content + written_bytes, ep);
+		written_bytes += ep;
 
 		save_block(block);
+
+		if (i != blocks_affected - 1) {
+			block = AllocateBlock(block->id());
+		}
 	}
+
+	delete block;
 }
 void Storage::WriteByte(INode* inode, int pos, char byte)
 {
