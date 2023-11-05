@@ -12,8 +12,6 @@ class Directory
 
 	static bool				_ROOT_EXISTS;
 
-	Path					_path;
-
 public:
 	Directory(INode*);
 	Directory(INode*, std::string name);
@@ -23,9 +21,6 @@ public:
 	int parent()					{ return _parent_id; }
 	int inode_id()					{ return _inode_id; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
-
-	Path* path()						{ return &_path; }
-	std::string path_str()				{ return _path.ToString(); }
 
 	void add(DEntry* dentry);
 	void remove(int);

@@ -23,13 +23,13 @@ public:
 	User*		current_user()			{ return _current_user;		  }
 
 	void ChangeDirectory(Directory* dir);
-	void ChangeOptionalDirectory(Directory* dir);
 	void ChangeToRootDirectory();
 
 	char* GetBlockContent(int inode_id);
 
 	Directory* GetDirectory(int inode_id);
 	Directory* GetParentDirectory();
+	Directory* GetParentDirectory(Directory* at);
 
 	Block* GetBlock(int id);
 	INode* GetInode(int id);

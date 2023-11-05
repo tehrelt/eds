@@ -10,9 +10,11 @@ class Path
 public:
 	Path();
 	Path(std::string path);
+	Path(std::vector<std::string> parts);
 
 	void add(std::string part);
 	void remove();
+	Path reverse();
 	
 	std::string last();
 

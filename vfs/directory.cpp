@@ -11,8 +11,6 @@ Directory::Directory(INode* inode, std::string name)
         throw new std::exception();
     }
 
-    _path = Path("");
-
     _ROOT_EXISTS = true;
 
     _parent_id = -1;
@@ -47,8 +45,6 @@ Directory::Directory(INode* inode, std::string name, INode* parent)
     if (!inode->IsDirectoryFlag() && _ROOT_EXISTS) {
         throw new std::exception();
     }
-
-    _path;
 
     _parent_id = parent->id();
     _inode_id = inode->id();

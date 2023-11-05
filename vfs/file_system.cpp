@@ -44,12 +44,20 @@ Directory* FileSystem::GetDirectory(int inode_id)
 {
     return _services->directory_service()->Get(inode_id);
 }
+
 Directory* FileSystem::GetParentDirectory()
 {
     if (_current_directory->parent() == -1) {
         throw std::exception("YOU ARE ALREADY IN ROOT DIRECTORY!");
     }
     return _services->directory_service()->Get(_current_directory->parent());
+}
+Directory* FileSystem::GetParentDirectory(Directory* at)
+{
+    if (at->parent() == -1) {
+        throw std::exception("YOU ARE ALREADY IN ROOT DIRECTORY!");
+    }
+    return _services->directory_service()->Get(at->parent());
 }
 
 Block* FileSystem::GetBlock(int id)

@@ -1,0 +1,175 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<ClassDiagram MajorVersion="1" MinorVersion="1">
+  <Class Name="BaseService">
+    <Position X="10.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAAAAAAAAAgAA=</HashCode>
+      <FileName>base_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Block">
+    <Position X="14.5" Y="5.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAEAAAEBAAAAAAAAABAAAAAAAEAAAAAAAAQAAgAAgA=</HashCode>
+      <FileName>block.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="BlockService">
+    <Position X="10.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAgAABAAAAAAAAAAAAIAAACAAAAAAEAAAA=</HashCode>
+      <FileName>block_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DEntry">
+    <Position X="19.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIIAAAAAAAAAAAAAAAAAAAAAAEAAIAAAAAAAAAAgA=</HashCode>
+      <FileName>dentry.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Directory">
+    <Position X="22.25" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAIABBAAAAAMCBEAAAAAAAAAAAAAAIAAIAAAAACACA=</HashCode>
+      <FileName>directory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="DirectoryService">
+    <Position X="6.5" Y="3.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CAAAAAAAAAAAAABAAQAAAAAAAAACAEAAAAAAIAAIAAQ=</HashCode>
+      <FileName>directory_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FAT" Collapsed="true">
+    <Position X="23.25" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAIAAAQAEAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>fat.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="File">
+    <Position X="24" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IAAAIAAAAAAAoAAACAAAAAAgAAAEAAAACAgAAAHAAAA=</HashCode>
+      <FileName>file.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileService">
+    <Position X="13.25" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>ACAAAAAAAAAAAAAAAAAABAAgAAAAAVAAAAAAAAEAAAA=</HashCode>
+      <FileName>file_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileSystem">
+    <Position X="11.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QABAAAGAAcAAQBASASQASAEAAAAAAMAAEAIACIAACUQ=</HashCode>
+      <FileName>file_system.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IMap" Collapsed="true">
+    <Position X="21.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAQCAAAAAIIQCgBBAIAAAQAAAEQAAAAAAAAAACAAAA=</HashCode>
+      <FileName>imap.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="imap_exception" Collapsed="true">
+    <Position X="23.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAEAAAAAIAAAA=</HashCode>
+      <FileName>imap.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="INode">
+    <Position X="10" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>CgCAAgLIgCABECCggsBAAAAABAQBCAABKAAAAAMgSgw=</HashCode>
+      <FileName>inode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="InodeService">
+    <Position X="15.5" Y="3" Width="3" />
+    <TypeIdentifier>
+      <HashCode>AAAAgIAIAAAAAgBAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>inode_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Path">
+    <Position X="17.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAEAoEAAAAAAAAAAAABAIAAAAgAAACAgA=</HashCode>
+      <FileName>path.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Service" Collapsed="true">
+    <Position X="19.75" Y="1.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>QAAAACgAQAEAAEAAAAAAAAAAAAAEQBAAAAAAAACABAA=</HashCode>
+      <FileName>service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="SHA256">
+    <Position X="25" Y="1.5" Width="1.5" />
+    <NestedTypes>
+      <Typedef Name="SHA256::uint8" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sha256.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="SHA256::uint32" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sha256.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+      <Typedef Name="SHA256::uint64" Collapsed="true">
+        <TypeIdentifier>
+          <NewMemberFileName>sha256.h</NewMemberFileName>
+        </TypeIdentifier>
+      </Typedef>
+    </NestedTypes>
+    <TypeIdentifier>
+      <HashCode>AAAAQASBAAAAAAAAQAAAAAAAQAgEQAIAAAAAAAAEAAA=</HashCode>
+      <FileName>sha256.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Storage">
+    <Position X="19" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AQiAIQAAEAgBAABwECAAAAAYQABIIwIhCQAEEQAYBgc=</HashCode>
+      <FileName>storage.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Superblock">
+    <Position X="20.5" Y="5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EAgACgAAQghCBAhQQBBxAQMMAAAAQAAJAQQAICMCQQg=</HashCode>
+      <FileName>superblock.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Terminal">
+    <Position X="16" Y="5.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAABAAgAIIHBEACAECCEgAAAAAAIBAAAQoAABAACAA=</HashCode>
+      <FileName>terminal.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="User">
+    <Position X="23.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAABIAAAAAAAAAEAAABAAAAAIAAEAAAAAAAAAAAAAgA=</HashCode>
+      <FileName>user.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="UserService">
+    <Position X="8.75" Y="2.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAQAAAAAAAAAAAAAAAAAgAAgAAEAAEAAAAAAAAAAAAA=</HashCode>
+      <FileName>user_service.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Font Name="Segoe UI" Size="9" />
+</ClassDiagram>
