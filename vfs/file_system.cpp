@@ -88,7 +88,7 @@ File* FileSystem::CreateFile(std::string name)
     Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
     return file;
 }
-File* FileSystem::CreateFileAt(std::string name, Directory* directory)
+File* FileSystem::CreateFile(std::string name, Directory* directory)
 {
     File* file = _services->file_service()->Create(name);
     INode* inode = file->inode();
@@ -100,6 +100,7 @@ File* FileSystem::CreateFileAt(std::string name, Directory* directory)
     _services->directory_service()->AddToDirectory(directory, new DEntry(inode->id(), name));
     return file;
 }
+
 void FileSystem::RemoveFile(int inode_id)
 {
     _services->file_service()->Remove(inode_id);
@@ -119,7 +120,7 @@ Directory* FileSystem::CreateDirectory(std::string name)
     return dir;
 }
 
-Directory* FileSystem::CreateDirectoryAt(std::string name, Directory* directory)
+Directory* FileSystem::CreateDirectory(std::string name, Directory* directory)
 {
     Directory* dir = _services->directory_service()->Create(name, directory);
     INode* inode = GetInode(dir->inode_id());

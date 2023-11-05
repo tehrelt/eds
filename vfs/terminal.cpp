@@ -125,7 +125,7 @@ DEntry* Terminal::exists(int inode_id, Directory* dir)
 void Terminal::mkfile(std::vector<std::string> args)
 {
     std::string name;
-    Directory* optional_dir = nullptr;
+    Directory* dir = _file_system->current_directory();
     if (args.size() == 1) {
         std::cout << "\tfile name: ";
         std::cin >> name;
@@ -135,7 +135,7 @@ void Terminal::mkfile(std::vector<std::string> args)
     }
     
     if (name.find('/') != std::string::npos) {
-        optional_dir = traverse_to_dir(name);
+        dir = traverse_to_dir(name);
         name = Path::GetLastSegment(name);
     }
 
@@ -149,17 +149,12 @@ void Terminal::mkfile(std::vector<std::string> args)
         return;
     }
 
-    if (optional_dir) {
-        _file_system->CreateFileAt(name, optional_dir);
-    }
-    else {
-        _file_system->CreateFile(name);
-    }
+    _file_system->CreateFile(name, dir);
 }
 void Terminal::mkdir(std::vector<std::string> args)
 {
     std::string name;
-    Directory* optional_dir = nullptr;
+    Directory* dir = _file_system->current_directory();
     if (args.size() == 1) {
         std::cout << "\tdirectory name: ";
         std::cin >> name;
@@ -169,7 +164,7 @@ void Terminal::mkdir(std::vector<std::string> args)
     }
 
     if (name.find('/') != std::string::npos) {
-        optional_dir = traverse_to_dir(name);
+        dir = traverse_to_dir(name);
         name = Path::GetLastSegment(name);
     }
 
@@ -183,13 +178,7 @@ void Terminal::mkdir(std::vector<std::string> args)
         return;
     }
 
-    if (optional_dir) {
-        _file_system->CreateDirectoryAt(name, optional_dir);
-    }
-    else {
-        _file_system->CreateDirectory(name);
-    }
-    
+    _file_system->CreateDirectory(name, dir);
 }
 void Terminal::rm(std::vector<std::string> args)
 {
@@ -434,7 +423,6 @@ void Terminal::cat(std::vector<std::string> args)
     }
     _file_system->CreateFile(name);
 }
-
 void Terminal::write(std::vector<std::string> args)
 {
     std::string name;
@@ -550,7 +538,7 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
                 current_directory = _file_system->GetDirectory(dentry->inode_id());
             }
             else {
-                current_directory = _file_system->CreateDirectoryAt(dir_name, current_directory);
+                current_directory = _file_system->CreateDirectory(dir_name, current_directory);
             }
         }
     }

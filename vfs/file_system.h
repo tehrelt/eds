@@ -35,12 +35,12 @@ public:
 	INode* GetInode(int id);
 
 	File* CreateFile(std::string name);
-	File* CreateFileAt(std::string name, Directory* dir);
+	File* CreateFile(std::string name, Directory* dir);
 	void RemoveFile(int inode_id);
 
 
 	Directory* CreateDirectory(std::string name);
-	Directory* CreateDirectoryAt(std::string name, Directory* directory);
+	Directory* CreateDirectory(std::string name, Directory* directory);
 
 
 	User* CreateUser(std::string name, std::string password);
