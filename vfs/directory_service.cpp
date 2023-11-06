@@ -3,9 +3,9 @@
 
 void DirectoryService::save_directory(Directory* directory)
 {
-	INode* inode = _storage->GetINode(directory->inode_id());
+	INode* inode = _storage->GetINode(directory->inode());
 	int size = directory->CharSize();
-	char* content = directory->ConvertToChar();
+	char* content = directory->ToChar();
 	_storage->WriteBytes(inode, 0, content, size);
 }
 
@@ -50,7 +50,7 @@ Directory* DirectoryService::Create(std::string name, Directory* parent)
 
 	_storage->SaveINode(inode);
 
-	INode* parent_inode = _storage->GetINode(parent->inode_id());
+	INode* parent_inode = _storage->GetINode(parent->inode());
 
 	Directory* dir = new Directory(inode, name, parent_inode);
 
@@ -72,7 +72,7 @@ Directory* DirectoryService::RemoveFromDirectory(Directory* directory, int inode
 {
 	int i = 0;
 	for (auto dentry : directory->dentry()) {
-		if (dentry->inode_id() == inode_id) {
+		if (dentry->inode() == inode_id) {
 			directory->remove(i);
 		}
 		i++;

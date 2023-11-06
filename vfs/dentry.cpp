@@ -4,17 +4,14 @@
 
 DEntry::DEntry()
 {
-	this->_inode_id = -1;
+	_inode = nullptr;
+	_parent = nullptr;
+	strncpy(_name, "", 16);
 }
 
-DEntry::DEntry(INode* inode, std::string name)
+DEntry::DEntry(INode* inode, DEntry* parent, const std::string& name)
 {
-	_inode_id = inode->id();
-	strncpy(_name, name.c_str(), 16);
-}
-
-DEntry::DEntry(int inode_id, std::string name)
-{
-	_inode_id = inode_id;
+	_inode = inode;
+	_parent = parent;
 	strncpy(_name, name.c_str(), 16);
 }

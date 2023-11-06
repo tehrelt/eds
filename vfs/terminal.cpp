@@ -103,7 +103,7 @@ DEntry* Terminal::exists(std::string name)
 DEntry* Terminal::exists(int inode_id)
 {
     for (auto dentry : _file_system->current_directory()->dentry()) {
-        if (inode_id == dentry->inode_id()) {
+        if (inode_id == dentry->inode()) {
             return dentry;
         }
     }
@@ -121,7 +121,7 @@ DEntry* Terminal::exists(std::string name, Directory* dir)
 DEntry* Terminal::exists(int inode_id, Directory* dir)
 {
     for (auto dentry : dir->dentry()) {
-        if (inode_id == dentry->inode_id()) {
+        if (inode_id == dentry->inode()) {
             return dentry;
         }
     }
@@ -293,7 +293,7 @@ void Terminal::get_chain(std::vector<std::string> args, Directory* dir)
         return;
     }
 
-    INode* inode = _file_system->services()->inode_service()->Get(dentry->inode_id());
+    INode* inode = _file_system->services()->inode_service()->Get(dentry->inode());
 
     auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
 
@@ -311,7 +311,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
     std::cout << "id\tflags\tmode\tsize\tcreation date\t\towner\tname" << std::endl;
 
     for (int i = 0; i < vector.size(); i++) {
-        INode* inode = _file_system->GetInode(vector[i]->inode_id());
+        INode* inode = _file_system->GetInode(vector[i]->inode());
         User* user = _file_system->GetUser(inode->uid());
         std::cout << *inode << "\t" << user->name() << "\t" << vector[i]->name() << std::endl;
 
@@ -383,7 +383,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
     try
     {
         DEntry* dentry = dir->exists(name);
-        INode* inode = _file_system->GetInode(dentry->inode_id());
+        INode* inode = _file_system->GetInode(dentry->inode());
 
         if (inode->IsDirectoryFlag() == true) {
             throw std::exception("ERROR! cannot open a directory");
@@ -535,7 +535,7 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
         else {
             auto dentry = exists(dir_name, current_directory);
             if (dentry != nullptr) {
-                current_directory = _file_system->GetDirectory(dentry->inode_id());
+                current_directory = _file_system->GetDirectory(dentry->inode());
             }
             else {
                 current_directory = _file_system->CreateDirectory(dir_name, current_directory);
@@ -550,7 +550,7 @@ Path Terminal::get_path(Directory* directory)
 {
     Path path = Path();
     bool fl = true;
-    int inode_id = directory->inode_id();
+    int inode_id = directory->inode();
 
     if (directory->parent() != -1) {
         Directory* dir = _file_system->GetParentDirectory(directory);
@@ -559,7 +559,7 @@ Path Terminal::get_path(Directory* directory)
             fl = !(dir->parent() == -1);
             std::string name = exists(inode_id, dir)->name();
             path.add(name);
-            inode_id = dir->inode_id();
+            inode_id = dir->inode();
             if (fl) {
                 dir = _file_system->GetParentDirectory(dir);
             }

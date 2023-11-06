@@ -80,7 +80,7 @@ INode* FileSystem::GetInode(DEntry* dentry)
 {
     try
     {
-        return _services->inode_service()->Get(dentry->inode_id());
+        return _services->inode_service()->Get(dentry->inode());
     }
     catch (const std::exception& e)
     {
@@ -121,25 +121,25 @@ void FileSystem::RemoveFile(int inode_id)
 
 void FileSystem::RemoveFile(DEntry* dentry)
 {
-    _services->file_service()->Remove(dentry->inode_id());
-    _services->directory_service()->RemoveFromDirectory(_current_directory, dentry->inode_id());
+    _services->file_service()->Remove(dentry->inode());
+    _services->directory_service()->RemoveFromDirectory(_current_directory, dentry->inode());
 }
 
 void FileSystem::RemoveFile(DEntry* dentry, Directory* at)
 {
-    _services->file_service()->Remove(dentry->inode_id());
-    _services->directory_service()->RemoveFromDirectory(at, dentry->inode_id());
+    _services->file_service()->Remove(dentry->inode());
+    _services->directory_service()->RemoveFromDirectory(at, dentry->inode());
 }
 
 Directory* FileSystem::CreateDirectory(std::string name)
 {
     Directory* dir = _services->directory_service()->Create(name, _current_directory);
-    INode* inode = GetInode(dir->inode_id());
+    INode* inode = GetInode(dir->inode());
     _services->inode_service()->SetOwner(inode, _current_user->id());
     _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
 
     _services->inode_service()->Save(inode);
-    _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode_id(), name));
+    _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode(), name));
 
     return dir;
 }
@@ -147,12 +147,12 @@ Directory* FileSystem::CreateDirectory(std::string name)
 Directory* FileSystem::CreateDirectory(std::string name, Directory* directory)
 {
     Directory* dir = _services->directory_service()->Create(name, directory);
-    INode* inode = GetInode(dir->inode_id());
+    INode* inode = GetInode(dir->inode());
     _services->inode_service()->SetOwner(inode, _current_user->id());
     _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
 
     _services->inode_service()->Save(inode);
-    _services->directory_service()->AddToDirectory(directory, new DEntry(dir->inode_id(), name));
+    _services->directory_service()->AddToDirectory(directory, new DEntry(dir->inode(), name));
 
     return dir;
 }

@@ -1,6 +1,7 @@
 #include "file.h"
 
-File::File(INode* inode)
+File::File(INode* inode, DEntry* parent, const std::string& name)
+	: DEntry(inode, parent, name)
 {
-	_inode = inode;
+	position = 0;
 }
