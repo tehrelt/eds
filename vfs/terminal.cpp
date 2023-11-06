@@ -15,23 +15,23 @@ Terminal::Terminal(FileSystem* file_system)
     path = Path();
     path.add("");
 
-    _commands = std::map<std::string, std::function<void(std::vector<std::string> args)>>();
+    _commands = std::map<std::string, std::function<void(std::vector<std::string>, Directory*)>>();
 
-    _commands["ls"]     = std::bind(&Terminal::ls,               this, std::placeholders::_1);
-    _commands["mkdir"]  = std::bind(&Terminal::mkdir,            this, std::placeholders::_1);
-    _commands["mkfile"] = std::bind(&Terminal::mkfile,           this, std::placeholders::_1);
-    _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1);
-    _commands["gi"]     = std::bind(&Terminal::get_inode,        this, std::placeholders::_1);
-    _commands["gb"]     = std::bind(&Terminal::get_block,        this, std::placeholders::_1);
-    _commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1);
-    _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1);
-    _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1);
-    _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1);
-    _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1);
-    _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1);
+    _commands["ls"]     = std::bind(&Terminal::ls,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["mkdir"]  = std::bind(&Terminal::mkdir,            this, std::placeholders::_1, std::placeholders::_2);
+    _commands["mkfile"] = std::bind(&Terminal::mkfile,           this, std::placeholders::_1, std::placeholders::_2);
+    _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["gi"]     = std::bind(&Terminal::get_inode,        this, std::placeholders::_1, std::placeholders::_2);
+    _commands["gb"]     = std::bind(&Terminal::get_block,        this, std::placeholders::_1, std::placeholders::_2);
+    _commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1, std::placeholders::_2);
+    _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1, std::placeholders::_2);
+    _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1, std::placeholders::_2);
+    _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
+    _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1, std::placeholders::_2);
+    _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1, std::placeholders::_2);
 
-    _commands.emplace("cls",        [](std::vector<std::string> args) { system("cls"); });
-    _commands.emplace("shutdown",   [](std::vector<std::string> args) { std::cout << "Shutdowning..."; });
+    _commands.emplace("cls",        [](std::vector<std::string> args, Directory*) { system("cls"); });
+    _commands.emplace("shutdown",   [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
 }
 
 int Terminal::Listen()
@@ -51,7 +51,8 @@ int Terminal::Listen()
         {
             std::cout << "Executing error: " << e.what() << std::endl;
         }
-        
+
+        std::cout << std::endl;
 
         if (line == "shutdown") {
             return 0;
@@ -70,14 +71,19 @@ void Terminal::execute_command(const std::string& line) {
     auto tokens = split(line, ' ');
 
     std::string cmd = tokens[0];
-
+    Directory* dir = _file_system->current_directory();
+    if (tokens.size() > 1) {
+        if (tokens[1].find('/') != std::string::npos) {
+            dir = traverse_to_dir(tokens[1]);
+            tokens[1] = Path::GetLastSegment(tokens[1]);
+        }
+    }
     if (_commands.find(cmd) != _commands.end()) {
-        _commands[cmd](tokens);
+        _commands[cmd](tokens, dir);
     }
     else {
         std::cout << "Unknown command" << std::endl;
     }
-    std::cout << std::endl;
 }
 
 bool Terminal::find_arg(std::vector<std::string> args, const std::string& arg)
@@ -122,23 +128,14 @@ DEntry* Terminal::exists(int inode_id, Directory* dir)
     return nullptr;
 }
 
-void Terminal::mkfile(std::vector<std::string> args)
+void Terminal::mkfile(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
-    Directory* dir = _file_system->current_directory();
-    if (args.size() == 1) {
-        std::cout << "\tfile name: ";
-        std::cin >> name;
-    }
-    else {
-        name = args[1];
-    }
-    
-    if (name.find('/') != std::string::npos) {
-        dir = traverse_to_dir(name);
-        name = Path::GetLastSegment(name);
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args", "mkfile");
     }
 
+    std::string name = args[1];
+    
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
@@ -151,22 +148,13 @@ void Terminal::mkfile(std::vector<std::string> args)
 
     _file_system->CreateFile(name, dir);
 }
-void Terminal::mkdir(std::vector<std::string> args)
+void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
-    Directory* dir = _file_system->current_directory();
-    if (args.size() == 1) {
-        std::cout << "\tdirectory name: ";
-        std::cin >> name;
-    }
-    else {
-        name = args[1];
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help mkdir", "mkdir");
     }
 
-    if (name.find('/') != std::string::npos) {
-        dir = traverse_to_dir(name);
-        name = Path::GetLastSegment(name);
-    }
+    std::string name = args[1];
 
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
@@ -180,39 +168,39 @@ void Terminal::mkdir(std::vector<std::string> args)
 
     _file_system->CreateDirectory(name, dir);
 }
-void Terminal::rm(std::vector<std::string> args)
-{
-    std::string name;
-    if (args.size() == 1) {
-        std::cout << "\tfile name to open: ";
-        std::cin >> name;
-    }
-    else {
-        name = args[1];
-    }
+void Terminal::rm(std::vector<std::string> args, Directory* dir)
+{    
+    std::string name = args[1];
 
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
     }
 
-    for (auto dentry : _file_system->current_directory()->dentry()) {
-        if (name == dentry->name()) {
-            INode* inode = _file_system->GetInode(dentry->inode_id());
+    try
+    {
+        DEntry* dentry = dir->exists(name);
+        INode* inode = _file_system->GetInode(dentry);
 
-            if (inode->IsDirectoryFlag() == true) {
-                std::cout << "ERROR! cannot remove a directory" << std::endl;
-                return;
-            }
-
-            _file_system->RemoveFile(inode->id());
+        if (inode->IsDirectoryFlag()) {
+            std::cout << "ERROR! cannot remove a directory" << std::endl;
+            return;
         }
+
+        _file_system->RemoveFile(dentry);
+
+        delete dentry;
+        delete inode;
+    }
+    catch (const std::exception& e)
+    {
+        throw e;
     }
 }
-void Terminal::rmdir(std::vector<std::string> args)
+void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
 {
 }
-void Terminal::sb(std::vector<std::string> args)
+void Terminal::sb(std::vector<std::string> args, Directory* dir)
 {
     Superblock* sb = _file_system->sb();
 
@@ -226,7 +214,7 @@ void Terminal::sb(std::vector<std::string> args)
     std::cout << "\tSpace\tfree space: " << sb->free_space_in_bytes() << " bytes" << std::endl;
     std::cout << "\t\ttotal space: " << sb->total_space_in_bytes() << " bytes" << std::endl;
 }
-void Terminal::get_block(std::vector<std::string> args)
+void Terminal::get_block(std::vector<std::string> args, Directory* dir)
 {
     int id;
     if (args.size() == 1) {
@@ -259,7 +247,7 @@ void Terminal::get_block(std::vector<std::string> args)
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
     }
 }
-void Terminal::get_inode(std::vector<std::string> args)
+void Terminal::get_inode(std::vector<std::string> args, Directory* dir)
 {
     int id;
     if (args.size() == 1) {
@@ -290,16 +278,13 @@ void Terminal::get_inode(std::vector<std::string> args)
         std::cout << "При выполнении произошла ошибка: " << e.what() << std::endl;
     }
 }
-void Terminal::get_chain(std::vector<std::string> args)
+void Terminal::get_chain(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
-    if (args.size() == 1) {
-        std::cout << "\tfile name to open: ";
-        std::cin >> name;
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help mkdir", "mkdir");
     }
-    else {
-        name = args[1];
-    }
+    
+    std::string name = args[1];
 
     auto dentry = exists(name);
 
@@ -320,7 +305,7 @@ void Terminal::get_chain(std::vector<std::string> args)
     }
     std::cout << std::endl;
 }
-void Terminal::ls(std::vector<std::string> args)
+void Terminal::ls(std::vector<std::string> args, Directory* dir)
 {
     auto vector = _file_system->ls();
     std::cout << "id\tflags\tmode\tsize\tcreation date\t\towner\tname" << std::endl;
@@ -332,23 +317,13 @@ void Terminal::ls(std::vector<std::string> args)
 
     }
 }
-void Terminal::change_directory(std::vector<std::string> args)
+void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
 {
-
-    std::string name;
-    Directory* dir = _file_system->current_directory();
-    if (args.size() == 1) {
-        std::cout << "directory name to change: ";
-        std::cin >> name;
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help cd", "cd");
     }
-    else {
-        name = args[1];
-    }
-
-    if (name.find('/') != std::string::npos && name != "/") {
-        dir = traverse_to_dir(name);
-        name = Path::GetLastSegment(name);
-    }
+    
+    std::string name = args[1];
 
     if (name == "..") {
         try
@@ -356,94 +331,96 @@ void Terminal::change_directory(std::vector<std::string> args)
             dir = _file_system->GetParentDirectory(dir);
             _file_system->ChangeDirectory(dir);
             path = get_path(_file_system->current_directory());
+            return;
         }
         catch (const std::exception& e)
         {
-            std::cout << e.what() << std::endl;
+            throw e;
         }
-        
-        return;
     }
-    else if (name == "/") {
+    else if (name == "") {
         _file_system->ChangeToRootDirectory();
         path = Path();
         path.add("");
         return;
     }
 
-    for (auto dentry : dir->dentry()) {
-        if (name == dentry->name()) {
-            INode* inode = _file_system->GetInode(dentry->inode_id());
+    try
+    {
+        DEntry* dentry = dir->exists(name);
+        INode* inode = _file_system->GetInode(dentry);
 
-            if (inode->IsDirectoryFlag() == false) {
-                std::cout << "ERROR! not a directory" << std::endl;
-                return;
-            }
-
-            Directory* d = _file_system->GetDirectory(inode->id());
-            _file_system->ChangeDirectory(d);
-            path = get_path(_file_system->current_directory());
-
-            delete inode;
-            return;
+        if (inode->IsDirectoryFlag() == false) {
+            throw std::exception("ERROR! not a directory");
         }
+
+        Directory* d = _file_system->GetDirectory(inode->id());
+        _file_system->ChangeDirectory(d);
+        path = get_path(_file_system->current_directory());
+
+        delete inode;
+        return;
     }
-    std::cout << "ERROR! cannot find a directory" << std::endl;
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
+    throw std::exception("ERROR! cannot find a directory");
 }
-void Terminal::cat(std::vector<std::string> args)
+void Terminal::cat(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
     if (args.size() == 1) {
-        std::cout << "\tfile name to open: ";
-        std::cin >> name;
+        throw execution_exception("Enter an args. Try execute help cat", "cat");
     }
-    else {
-        name = args[1];
-    }
+
+    std::string name = args[1];
 
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
     }
 
-    for (auto dentry : _file_system->current_directory()->dentry()) {
-        if (name == dentry->name()) {
-            INode* inode = _file_system->GetInode(dentry->inode_id());
+    try
+    {
+        DEntry* dentry = dir->exists(name);
+        INode* inode = _file_system->GetInode(dentry->inode_id());
 
-            if (inode->IsDirectoryFlag() == true) {
-                std::cout << "ERROR! cannot open a directory" << std::endl;
-                return;
-            }
-
-            char* content = _file_system->ReadFile(inode->id());
-
-            std::cout << content << std::endl;
-            return;
+        if (inode->IsDirectoryFlag() == true) {
+            throw std::exception("ERROR! cannot open a directory");
         }
+
+        char* content = _file_system->ReadFile(inode->id());
+
+        std::cout << content << std::endl;
+        return;
     }
-    _file_system->CreateFile(name);
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
+    _file_system->CreateFile(name, dir);
 }
-void Terminal::write(std::vector<std::string> args)
+void Terminal::write(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
-    if (args.size() == 1) {
-        std::cout << "\tfile name to open: ";
-        std::cin >> name;
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help cat", "cat");
     }
-    else {
-        name = args[1];
-    }
-
-    auto dentry = exists(name);
-
    
+    std::string name = args[1];
 
-    if (!dentry) {
-        mkfile(args);
-        dentry = exists(name);
+    DEntry* dentry = nullptr;
+
+    try
+    {
+        dentry = dir->exists(name);
     }
+    catch (const std::exception& e)
+    {
+        mkfile(args, dir);
+        dentry = dir->exists(name);
+    } 
 
-    INode* inode = _file_system->GetInode(dentry->inode_id());
+    INode* inode = _file_system->GetInode(dentry);
 
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
@@ -466,27 +443,27 @@ void Terminal::write(std::vector<std::string> args)
 
     _file_system->WriteFile(inode->id(), text);
 }
-void Terminal::write_append(std::vector<std::string> args)
+void Terminal::write_append(std::vector<std::string> args, Directory* dir)
 {
-    std::string name;
-    if (args.size() == 1) {
-        std::cout << "\tfile name to open: ";
-        std::cin >> name;
-    }
-    else {
-        name = args[1];
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help wa", "wa");
     }
 
-    auto dentry = exists(name);
+    std::string name = args[1];
 
+    DEntry* dentry = nullptr;
 
-
-    if (!dentry) {
-        mkfile(args);
-        dentry = exists(name);
+    try
+    {
+        dentry = dir->exists(name);
+    }
+    catch (const std::exception& e)
+    {
+        mkfile(args, dir);
+        dentry = dir->exists(name);
     }
 
-    INode* inode = _file_system->GetInode(dentry->inode_id());
+    INode* inode = _file_system->GetInode(dentry);
 
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
@@ -507,7 +484,30 @@ void Terminal::write_append(std::vector<std::string> args)
     }
     text += '\0';
 
-    _file_system->AppendFile(inode->id(), text);
+    _file_system->AppendFile(inode, text);
+}
+
+
+void Terminal::move(std::vector<std::string> args, Directory* dir)
+{
+    throw std::exception("NOT IMPLEMENTED");
+
+    if (args.size() < 2) {
+        throw execution_exception("Enter an args. Try execute help wa", "wa");
+    }
+
+    Directory* source = dir;
+    Directory* target = traverse_to_dir(args[2]);
+    std::string source_name = Path::GetLastSegment(args[1]);
+    std::string target_name = Path::GetLastSegment(args[2]);
+
+    
+    DEntry* source_dentry = source->exists(source_name);
+    
+    
+    source->remove(source_dentry);
+
+   
 }
 
 Directory* Terminal::traverse_to_dir(std::string path_string)
@@ -568,4 +568,14 @@ Path Terminal::get_path(Directory* directory)
     path.add("");
 
     return path.reverse();
+}
+
+execution_exception::execution_exception(const std::string& message, const std::string& command) : std::exception(message.c_str())
+{
+    _message = message;
+    _command = command;
+}
+const char* execution_exception::what() noexcept
+{
+    return std::string(_command + ": " + _message).c_str();
 }

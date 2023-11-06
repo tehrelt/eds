@@ -22,8 +22,11 @@ public:
 	int inode_id()					{ return _inode_id; }
 	std::vector<DEntry*> dentry()	{ return _dentries; }
 
+	DEntry* exists(const std::string& name);
+
 	void add(DEntry* dentry);
 	void remove(int);
+	void remove(DEntry* dentry);
 
 	char* ConvertToChar();
 	int CharSize();

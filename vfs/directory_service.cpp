@@ -83,6 +83,14 @@ Directory* DirectoryService::RemoveFromDirectory(Directory* directory, int inode
 	return directory;
 }
 
+Directory* DirectoryService::RemoveFromDirectory(Directory* d, DEntry* dentry)
+{
+	d->remove(dentry);
+
+	save_directory(d);
+	return d;
+}
+
 std::vector<DEntry*> DirectoryService::GetInfo(Directory* dir)
 {
 	return dir->dentry();

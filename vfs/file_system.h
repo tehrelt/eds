@@ -33,11 +33,16 @@ public:
 
 	Block* GetBlock(int id);
 	INode* GetInode(int id);
+	INode* GetInode(DEntry* dentry);
 
 	File* CreateFile(std::string name);
 	File* CreateFile(std::string name, Directory* dir);
-	void RemoveFile(int inode_id);
 
+	void RemoveFile(int inode_id);
+	void RemoveFile(DEntry*);
+	void RemoveFile(DEntry*, Directory*);
+
+	void Move(DEntry* source, DEntry* destination);
 
 	Directory* CreateDirectory(std::string name);
 	Directory* CreateDirectory(std::string name, Directory* directory);
@@ -47,7 +52,7 @@ public:
 	User* GetUser(int id);
 
 
-	void AppendFile(int inode_id, std::string text);
+	void AppendFile(INode* inode, std::string text);
 	void WriteFile(int inode_id, std::string text);
 	char* ReadFile(int inode_id);
 

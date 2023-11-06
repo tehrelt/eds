@@ -17,6 +17,7 @@ public:
 
 	Directory* AddToDirectory(Directory* d, DEntry* dentry);
 	Directory* RemoveFromDirectory(Directory* d, int inode_id);
+	Directory* RemoveFromDirectory(Directory* d, DEntry* dentry);
 
 	std::vector<DEntry*> GetInfo(Directory* dir);
 

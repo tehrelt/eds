@@ -17,6 +17,11 @@ void FileService::Remove(int inode_id)
 	_storage->FreeINode(inode_id);
 }
 
+void FileService::Remove(INode* inode)
+{
+	_storage->FreeINode(inode);
+}
+
 void FileService::Write(INode* inode, std::string text)
 {
 	_storage->ClearBlocks(inode);

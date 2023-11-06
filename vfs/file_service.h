@@ -11,6 +11,7 @@ public:
 
 	File* Create(std::string name);
 	void Remove(int inode_id);
+	void Remove(INode* inode);
 
 	void Write(INode* inode, std::string text);
 	void Append(INode* inode, std::string text);

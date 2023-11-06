@@ -76,6 +76,18 @@ INode* FileSystem::GetInode(int id)
     }
 }
 
+INode* FileSystem::GetInode(DEntry* dentry)
+{
+    try
+    {
+        return _services->inode_service()->Get(dentry->inode_id());
+    }
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
+}
+
 File* FileSystem::CreateFile(std::string name)
 {
     File* file = _services->file_service()->Create(name);
@@ -105,6 +117,18 @@ void FileSystem::RemoveFile(int inode_id)
 {
     _services->file_service()->Remove(inode_id);
     _services->directory_service()->RemoveFromDirectory(_current_directory, inode_id);
+}
+
+void FileSystem::RemoveFile(DEntry* dentry)
+{
+    _services->file_service()->Remove(dentry->inode_id());
+    _services->directory_service()->RemoveFromDirectory(_current_directory, dentry->inode_id());
+}
+
+void FileSystem::RemoveFile(DEntry* dentry, Directory* at)
+{
+    _services->file_service()->Remove(dentry->inode_id());
+    _services->directory_service()->RemoveFromDirectory(at, dentry->inode_id());
 }
 
 Directory* FileSystem::CreateDirectory(std::string name)
@@ -151,9 +175,8 @@ User* FileSystem::GetUser(int id)
     return user;
 }
 
-void FileSystem::AppendFile(int inode_id, std::string text)
+void FileSystem::AppendFile(INode* inode, std::string text)
 {
-    INode* inode = _services->inode_service()->Get(inode_id);
     _services->file_service()->Append(inode, text);
     delete inode;
 }

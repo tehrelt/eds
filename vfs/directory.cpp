@@ -54,14 +54,31 @@ Directory::Directory(INode* inode, std::string name, INode* parent)
     _dentries.push_back(new DEntry(parent, "../"));
 }
 
+DEntry* Directory::exists(const std::string& name)
+{
+    for (auto dentry : _dentries) {
+        if (name == dentry->name()) {
+            return dentry;
+        }
+    }
+    throw std::exception("DEntry not found");
+}
+
 void Directory::add(DEntry* dentry)
 {
     _dentries.push_back(dentry);
 }
 
+
 void Directory::remove(int dentry_idx)
 {
     _dentries.erase(std::next(_dentries.begin(), dentry_idx));
+}
+
+void Directory::remove(DEntry* dentry)
+{
+    auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
+    _dentries.erase(it);
 }
 
 char* Directory::ConvertToChar()
