@@ -306,6 +306,11 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
     try
     {
         DEntry* dentry = dir->exists(name);
+
+        if (dentry == nullptr) {
+            throw std::exception("Directory wasnt found");
+        }
+
         INode* inode = dentry->inode();
 
         if (inode->IsDirectoryFlag() == false) {
