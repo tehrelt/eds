@@ -2,7 +2,6 @@
 #include <fstream>
 #include "file_system.h"
 #include "terminal.h"
-#include "service.h"
 
 int main()
 {
