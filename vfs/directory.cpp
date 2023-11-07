@@ -80,7 +80,6 @@ void Directory::init()
 {
     _dentries.push_back(new Directory(_inode, this, "."));
     _dentries.push_back(new Directory(_parent->inode(), this, ".."));
-    save();
 }
 
 void Directory::add(DEntry* dentry)
@@ -157,6 +156,7 @@ Directory* Directory::createDirectory(std::string name, int uid)
     _dentries.push_back(dir);
 
     this->save();
+    dir->save();
 
     return dir;
 }
