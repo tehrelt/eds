@@ -72,7 +72,7 @@ public:
 	Block* GetBlock(int id);
 	INode* GetINode(int id);
 
-	char* ReadINodeContent(int inode_id);
+	char* ReadINodeContent(INode* inode);
 
 	void WriteBytes(INode* inode, int pos, const char* content, int size);
 	void WriteByte(INode* inode, int pos, char byte);

@@ -27,7 +27,7 @@ DEntry* Directory::exists(const std::string& name)
             return dentry;
         }
     }
-    throw std::exception("DEntry not found");
+    return nullptr;
 }
 
 void Directory::add(DEntry* dentry)
@@ -45,20 +45,22 @@ void Directory::remove(DEntry* dentry)
     _dentries.erase(it);
 }
 
+void Directory::clear()
+{
+    _dentries.clear();
+}
+
 char* Directory::ToChar()
 {
     char* c = new char[DIRECTORY_RECORD_CHAR_SIZE];
 
-    int parent_id = _parent->inode()->id();
     int inode_id = _inode->id();
 
-    std::memcpy(c,     &parent_id, sizeof(int));
-    std::memcpy(c + 4, &inode_id,  sizeof(int));
-
+    std::memcpy(c, _name, 16);
     int size = _dentries.size();
-    std::memcpy(c + 8, &size, sizeof(int));
+    std::memcpy(c + 16, &size, sizeof(int));
 
-    char* current_entry = c + 12;
+    char* current_entry = c + 20;
 
     for (int i = 0; i < _dentries.size(); i++) {
         int entry_inode_id = _dentries[i]->inode()->id();

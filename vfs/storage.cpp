@@ -300,16 +300,13 @@ Block* Storage::GetBlock(int id)
 INode* Storage::GetINode(int id)
 {
 	if (id >= _superblock.imap_capacity()) {
-		throw new std::exception("Заданный id уходит за пределы IMap");
-		return nullptr;
+		throw std::exception("Заданный id уходит за пределы IMap");
 	}
 	return read_inode(id);
 }
 
-char* Storage::ReadINodeContent(int inode_id)
+char* Storage::ReadINodeContent(INode* inode)
 {
-
-	INode* inode = GetINode(inode_id);
 	char* content = new char[(GetBlockchain(inode->block_num()).size() - 1) * _superblock.block_size()];
 
 	int p = 0;

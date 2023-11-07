@@ -26,11 +26,8 @@ class Terminal
 	std::map<std::string, std::function<void(std::vector<std::string> args, Directory* dir)>> _commands;
 	
 	void execute_command(const std::string& cmd);
+
 	bool find_arg(std::vector<std::string> args, const std::string& arg);
-	DEntry* exists(std::string name);
-	DEntry* exists(int inode_id);
-	DEntry* exists(std::string name, Directory* dir);
-	DEntry* exists(int inode_id, Directory* dir);
 
 	void mkfile(std::vector<std::string> args, Directory* dir);
 	void mkdir(std::vector<std::string> args, Directory* dir);
@@ -56,6 +53,8 @@ class Terminal
 	void move(std::vector<std::string> args, Directory* dir);
 
 	Directory* traverse_to_dir(std::string path);
+	
+	Path get_path();
 	Path get_path(Directory* dir);
 
 public:

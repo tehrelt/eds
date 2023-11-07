@@ -20,11 +20,8 @@ FileSystem::FileSystem(Service* services)
 }
 
 void FileSystem::ChangeDirectory(Directory* dir)
-{
-    if (_current_directory != _root_directory) {
-        delete _current_directory;
-    }
-    _current_directory = dir;
+{    
+    _current_directory = _services->directory_service()->Get(dir->inode(), (Directory*)dir->parent());
 }
 
 void FileSystem::ChangeToRootDirectory()
@@ -40,24 +37,38 @@ char* FileSystem::GetBlockContent(int inode_id)
     INode* inode = _services->inode_service()->Get(inode_id);
     return _services->block_service()->Get(inode->block_num())->data();
 }
-Directory* FileSystem::GetDirectory(int inode_id)
+
+Directory* FileSystem::GetDirectory(INode* inode, Directory* parent)
 {
-    return _services->directory_service()->Get(inode_id);
+    return _services->directory_service()->Get(inode, parent);
 }
 
 Directory* FileSystem::GetParentDirectory()
 {
-    if (_current_directory->parent() == -1) {
+    if (_current_directory->parent() == nullptr) {
         throw std::exception("YOU ARE ALREADY IN ROOT DIRECTORY!");
     }
-    return _services->directory_service()->Get(_current_directory->parent());
+    
+    DEntry* p = _current_directory->parent();
+    Directory* parent = _services->directory_service()->Get(p->inode(), (Directory*)p->parent());
+
+    return parent;
 }
 Directory* FileSystem::GetParentDirectory(Directory* at)
 {
-    if (at->parent() == -1) {
+    if (at->parent() == nullptr) {
         throw std::exception("YOU ARE ALREADY IN ROOT DIRECTORY!");
     }
-    return _services->directory_service()->Get(at->parent());
+
+    DEntry* p = at->parent();
+    Directory* parent = _services->directory_service()->Get(p->inode(), (Directory*)p->parent());
+
+    return parent;
+}
+
+void FileSystem::GoBack()
+{
+
 }
 
 Block* FileSystem::GetBlock(int id)
@@ -76,83 +87,39 @@ INode* FileSystem::GetInode(int id)
     }
 }
 
-INode* FileSystem::GetInode(DEntry* dentry)
+File* FileSystem::CreateFile(std::string name, Directory* at)
 {
-    try
-    {
-        return _services->inode_service()->Get(dentry->inode());
-    }
-    catch (const std::exception& e)
-    {
-        throw e;
-    }
-}
-
-File* FileSystem::CreateFile(std::string name)
-{
-    File* file = _services->file_service()->Create(name);
-    INode* inode = file->inode();
+    File* file = _services->file_service()->Create(name, at);
     
-    _services->inode_service()->SetOwner(inode, _current_user->id());
-    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
-
-    _services->inode_service()->Save(inode);
-    Directory* dir = _services->directory_service()->AddToDirectory(_current_directory, new DEntry(inode->id(), name));
-    return file;
-}
-File* FileSystem::CreateFile(std::string name, Directory* directory)
-{
-    File* file = _services->file_service()->Create(name);
     INode* inode = file->inode();
-
     _services->inode_service()->SetOwner(inode, _current_user->id());
     _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
-
     _services->inode_service()->Save(inode);
-    _services->directory_service()->AddToDirectory(directory, new DEntry(inode->id(), name));
+
+    _services->directory_service()->AddToDirectory(at, file);
     return file;
 }
-
-void FileSystem::RemoveFile(int inode_id)
-{
-    _services->file_service()->Remove(inode_id);
-    _services->directory_service()->RemoveFromDirectory(_current_directory, inode_id);
-}
-
 void FileSystem::RemoveFile(DEntry* dentry)
 {
-    _services->file_service()->Remove(dentry->inode());
-    _services->directory_service()->RemoveFromDirectory(_current_directory, dentry->inode());
+    _services->file_service()->Remove(dentry);
+    _services->directory_service()->RemoveFromDirectory(_current_directory, dentry);
 }
-
 void FileSystem::RemoveFile(DEntry* dentry, Directory* at)
 {
-    _services->file_service()->Remove(dentry->inode());
-    _services->directory_service()->RemoveFromDirectory(at, dentry->inode());
+    _services->file_service()->Remove(dentry);
+    _services->directory_service()->RemoveFromDirectory(at, dentry);
 }
 
-Directory* FileSystem::CreateDirectory(std::string name)
+Directory* FileSystem::CreateDirectory(std::string name, Directory* at)
 {
-    Directory* dir = _services->directory_service()->Create(name, _current_directory);
-    INode* inode = GetInode(dir->inode());
+    Directory* dir = _services->directory_service()->Create(name, at);
+    INode* inode = dir->inode();
+
     _services->inode_service()->SetOwner(inode, _current_user->id());
     _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
-
     _services->inode_service()->Save(inode);
-    _services->directory_service()->AddToDirectory(_current_directory, new DEntry(dir->inode(), name));
 
-    return dir;
-}
-
-Directory* FileSystem::CreateDirectory(std::string name, Directory* directory)
-{
-    Directory* dir = _services->directory_service()->Create(name, directory);
-    INode* inode = GetInode(dir->inode());
-    _services->inode_service()->SetOwner(inode, _current_user->id());
-    _services->inode_service()->SetMode(inode, 0b110100);               // rw-r--
-
-    _services->inode_service()->Save(inode);
-    _services->directory_service()->AddToDirectory(directory, new DEntry(dir->inode(), name));
+    _services->directory_service()->AddToDirectory(at, dir);
 
     return dir;
 }
@@ -163,7 +130,7 @@ User* FileSystem::CreateUser(std::string name, std::string password)
 }
 User* FileSystem::GetUser(int id)
 {
-    char* users = _services->file_service()->Read(USERS_INODE);
+    char* users = _services->file_service()->Read((File*)_root_directory->dentries()[USERS_INODE]);
     char* userc = new char[USER_RECORD_SIZE];
     std::memcpy(userc, users + id*(USER_RECORD_SIZE), USER_RECORD_SIZE);
 
@@ -175,21 +142,18 @@ User* FileSystem::GetUser(int id)
     return user;
 }
 
-void FileSystem::AppendFile(INode* inode, std::string text)
+void FileSystem::AppendFile(File* file, std::string text)
 {
-    _services->file_service()->Append(inode, text);
-    delete inode;
+    _services->file_service()->Append(file, text);
 }
-void FileSystem::WriteFile(int inode_id, std::string text)
+void FileSystem::WriteFile(File* file, std::string text)
 {
-    INode* inode = _services->inode_service()->Get(inode_id);
-    _services->file_service()->Write(inode, text);
-    delete inode;
+    _services->file_service()->Write(file, text);
 }
 
-char* FileSystem::ReadFile(int inode_id)
+char* FileSystem::ReadFile(File* file)
 {
-    return _services->file_service()->Read(inode_id);
+    return _services->file_service()->Read(file);
 }
 std::vector<DEntry*> FileSystem::ls()
 {
@@ -274,11 +238,14 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     fs->_root_directory = fs->_services->directory_service()->CreateRoot();
     fs->_current_directory = fs->_root_directory;
 
-    INode* users_inode = fs->services()->file_service()->Create("usr")->inode();
+    File* users_file = fs->services()->file_service()->Create("usr", fs->_root_directory);
+
+    INode* users_inode = users_file->inode();
     users_inode->SetSystemFlag();
-    fs->services()->inode_service()->SetOwner(users_inode, 0);
+    users_inode->set_uid(0);
     fs->services()->inode_service()->Save(users_inode);
-    fs->_services->directory_service()->AddToDirectory(fs->_root_directory, new DEntry(users_inode->id(), "usr"));
+
+    fs->_services->directory_service()->AddToDirectory(fs->_root_directory, users_file);
 
     std::string username;
     std::string pass;

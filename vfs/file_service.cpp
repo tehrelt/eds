@@ -5,35 +5,29 @@ int FileService::get_eof(INode* inode)
 	return _storage->GetEOF(inode);
 }
 
-File* FileService::Create(std::string name)
+File* FileService::Create(std::string name, DEntry* parent)
 {
 	INode* inode = _storage->AllocateInode();
-
-	return new File(inode);
+	return new File(inode, parent, name);
 }
 
-void FileService::Remove(int inode_id)
+void FileService::Remove(DEntry* dentry)
 {
-	_storage->FreeINode(inode_id);
+	_storage->FreeINode(dentry->inode());
 }
 
-void FileService::Remove(INode* inode)
+void FileService::Write(File* file, std::string text)
 {
-	_storage->FreeINode(inode);
+	_storage->ClearBlocks(file->inode());
+	_storage->WriteBytes(file->inode(), 0, text.c_str(), text.size());
 }
 
-void FileService::Write(INode* inode, std::string text)
+void FileService::Append(File* file, std::string text)
 {
-	_storage->ClearBlocks(inode);
-	_storage->WriteBytes(inode, 0, text.c_str(), text.size());
+	_storage->WriteBytes(file->inode(), get_eof(file->inode()), text.c_str(), text.size());
 }
 
-void FileService::Append(INode* inode, std::string text)
+char* FileService::Read(File* file)
 {
-	_storage->WriteBytes(inode, get_eof(inode), text.c_str(), text.size());
-}
-
-char* FileService::Read(int inode_id)
-{
-	return _storage->ReadINodeContent(inode_id);
+	return _storage->ReadINodeContent(file->inode());
 }

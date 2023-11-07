@@ -3,7 +3,7 @@
 #include "inode.h"
 #include "dentry.h"
 
-class File : DEntry
+class File : public DEntry
 {
 	int position;
 public:
