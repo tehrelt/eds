@@ -309,9 +309,10 @@ FileSystem* FileSystem::Mount(std::string name)
     }
 
     stream.close();
-    Storage* storage = new Storage(name, &sb, &fat, &imap);
-    Service* service = new Service(storage);
-    FileSystem* fs = new FileSystem(service);
+
+    Storage::INIT_STORAGE(name, &sb, &fat, &imap);
+
+    FileSystem* fs = new FileSystem();
 
     fs->_root_directory = fs->_services->directory_service()->ReadRoot();
     fs->_current_directory = fs->_root_directory;

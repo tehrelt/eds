@@ -176,12 +176,6 @@
     <ClInclude Include="service.h">
       <Filter>Файлы заголовков\service</Filter>
     </ClInclude>
-    <ClInclude Include="file.h">
-      <Filter>Файлы заголовков\service\models</Filter>
-    </ClInclude>
-    <ClInclude Include="directory.h">
-      <Filter>Файлы заголовков\service\models</Filter>
-    </ClInclude>
     <ClInclude Include="block_service.h">
       <Filter>Файлы заголовков\service\services</Filter>
     </ClInclude>
@@ -209,8 +203,14 @@
     <ClInclude Include="user_service.h">
       <Filter>Файлы заголовков\service\services</Filter>
     </ClInclude>
+    <ClInclude Include="directory.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="file.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
     <ClInclude Include="dentry.h">
-      <Filter>Файлы заголовков\service\models</Filter>
+      <Filter>Файлы заголовков\io</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

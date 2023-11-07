@@ -392,3 +392,13 @@ int Storage::GetEOF(INode* inode)
 	int bytes_offset = block_offset * _superblock.block_size() + strlen(content);
 	return bytes_offset;
 }
+
+void Storage::INIT_STORAGE(std::string name, Superblock* sb, FAT* fat, IMap* imap)
+{
+	_INSTANCE = new Storage(name, sb, fat, imap);
+}
+
+Storage* Storage::STORAGE()
+{
+	return _INSTANCE;
+}

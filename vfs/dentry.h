@@ -1,13 +1,15 @@
 #pragma once
 #include <string>
 #include "inode.h"
+#include "storage.h"
 
 class DEntry
 {
 protected:
-	INode*	_inode;
-	DEntry* _parent;
-	char	_name[12];
+	INode*	 _inode;
+	DEntry*  _parent;
+	char	 _name[12];
+	Storage* _storage;
 
 public:
 	DEntry();

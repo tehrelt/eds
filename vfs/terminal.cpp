@@ -449,7 +449,6 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     _file_system->AppendFile((File*)dentry, text);
 }
 
-
 void Terminal::move(std::vector<std::string> args, Directory* dir)
 {
     throw std::exception("NOT IMPLEMENTED");

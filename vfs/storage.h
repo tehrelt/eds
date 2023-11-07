@@ -41,6 +41,7 @@ private:
 	void write(char* source, int offset, int size);
 	void read(char* destination, int offset, int size);
 
+	static Storage* _INSTANCE;
 public:
 	Storage();
 	Storage(std::string name, Superblock* sb, FAT* fat, IMap* imap);
@@ -78,5 +79,8 @@ public:
 	void WriteByte(INode* inode, int pos, char byte);
 
 	int GetEOF(INode* inode);
+
+	static void INIT_STORAGE(std::string name, Superblock* sb, FAT* fat, IMap* imap);
+	static Storage* STORAGE();
 };
 
