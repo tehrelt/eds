@@ -88,7 +88,7 @@ Directory* DirectoryService::read_directory(INode* inode, char* content, Directo
 
 	dir->clear();
 
-    char* entry = content + 20;
+    char* entry = content + 16;
     for (int i = 0; i < size; i++) {
 
         std::memcpy(&entry_inode_id,	entry,      4);

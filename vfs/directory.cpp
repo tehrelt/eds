@@ -60,7 +60,7 @@ char* Directory::ToChar()
     int size = _dentries.size();
     std::memcpy(c + 12, &size, sizeof(int));
 
-    char* current_entry = c + 20;
+    char* current_entry = c + 16;
 
     for (int i = 0; i < _dentries.size(); i++) {
         int entry_inode_id = _dentries[i]->inode()->id();
