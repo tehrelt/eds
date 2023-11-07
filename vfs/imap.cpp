@@ -64,7 +64,7 @@ bool IMap::IsLocked(int index)
 	}
 
 	int part = get_part_index(index);
-	int i = index % sizeof(uint_fast64_t);
+	int i = index % (sizeof(uint_fast64_t) * 8);
 
 	return (_parts[part] & 1 << i) != 0;
 }

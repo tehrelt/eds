@@ -27,34 +27,30 @@ public:
 
 	char* GetBlockContent(int inode_id);
 
-	Directory* GetDirectory(int inode_id);
+	Directory* GetDirectory(INode*, Directory*);
 	Directory* GetParentDirectory();
 	Directory* GetParentDirectory(Directory* at);
 
+	void GoBack();
+
 	Block* GetBlock(int id);
 	INode* GetInode(int id);
-	INode* GetInode(DEntry* dentry);
 
-	File* CreateFile(std::string name);
 	File* CreateFile(std::string name, Directory* dir);
 
-	void RemoveFile(int inode_id);
 	void RemoveFile(DEntry*);
 	void RemoveFile(DEntry*, Directory*);
 
 	void Move(DEntry* source, DEntry* destination);
 
-	Directory* CreateDirectory(std::string name);
 	Directory* CreateDirectory(std::string name, Directory* directory);
-
 
 	User* CreateUser(std::string name, std::string password);
 	User* GetUser(int id);
 
-
-	void AppendFile(INode* inode, std::string text);
-	void WriteFile(int inode_id, std::string text);
-	char* ReadFile(int inode_id);
+	void AppendFile(File* file, std::string text);
+	void WriteFile(File* file, std::string text);
+	char* ReadFile(File* file);
 
 	std::vector<DEntry*> ls();
 	Superblock* sb();

@@ -4,15 +4,18 @@
 
 class DEntry
 {
-	int		_inode_id;
-	char	_name[16];
+protected:
+	INode*	_inode;
+	DEntry* _parent;
+	char	_name[12];
 
 public:
 	DEntry();
-	DEntry(INode* inode, std::string name);
-	DEntry(int inode_id, std::string name);
+	DEntry(INode* inode, DEntry* parent, const std::string& name);
 
-	uint_fast32_t inode_id()	{ return _inode_id; }
-	char* name()				{ return _name; }
+	INode* inode()		{ return _inode;	}
+	DEntry* parent()	{ return _parent;	}
+	char* name()		{ return _name;		}
+
 };
 

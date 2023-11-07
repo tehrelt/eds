@@ -161,9 +161,6 @@
     <ClInclude Include="inode.h">
       <Filter>Файлы заголовков\core</Filter>
     </ClInclude>
-    <ClInclude Include="dentry.h">
-      <Filter>Файлы заголовков\core</Filter>
-    </ClInclude>
     <ClInclude Include="superblock.h">
       <Filter>Файлы заголовков\core</Filter>
     </ClInclude>
@@ -211,6 +208,9 @@
     </ClInclude>
     <ClInclude Include="user_service.h">
       <Filter>Файлы заголовков\service\services</Filter>
+    </ClInclude>
+    <ClInclude Include="dentry.h">
+      <Filter>Файлы заголовков\service\models</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

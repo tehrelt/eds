@@ -1,12 +1,13 @@
 #pragma once
 #include <string>
 #include "inode.h"
+#include "dentry.h"
 
-class File
+class File : public DEntry
 {
-	INode* _inode;
+	int position;
 public:
-	File(INode* inode);
+	File(INode* inode, DEntry* parent, const std::string& name);
 
 	void Open(std::string path, uint_fast8_t flags);
 	void Close();

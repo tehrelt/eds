@@ -4,31 +4,28 @@
 #include <vector>
 #include "path.h"
 
-class Directory
+#define DIRECTORY_ENTRY_SIZE sizeof(int) + 12
+#define DIRECTORY_RECORD_CHAR_SIZE 12 + sizeof(int) + (DIRECTORY_ENTRY_SIZE)*_dentries.size()
+
+class Directory : public DEntry
 {
-	int						_parent_id;
-	int						_inode_id;
 	std::vector<DEntry*>	_dentries;
-
-	static bool				_ROOT_EXISTS;
-
 public:
 	Directory(INode*);
-	Directory(INode*, std::string name);
-	Directory(char* content);
-	Directory(INode* inode, std::string name, INode* parent);
+	Directory(INode* inode, DEntry* parent, const std::string& name);
 
-	int parent()					{ return _parent_id; }
-	int inode_id()					{ return _inode_id; }
-	std::vector<DEntry*> dentry()	{ return _dentries; }
+	std::vector<DEntry*> dentries()	{ return _dentries; }
 
 	DEntry* exists(const std::string& name);
 
 	void add(DEntry* dentry);
+
 	void remove(int);
 	void remove(DEntry* dentry);
 
-	char* ConvertToChar();
-	int CharSize();
+	void clear();
+
+	char* ToChar();
+	int CharSize() { return DIRECTORY_RECORD_CHAR_SIZE; }
 };
 

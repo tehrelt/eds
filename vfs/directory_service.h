@@ -4,8 +4,9 @@
 
 class DirectoryService : public BaseService
 {
-	void save_directory(Directory* directory);
-	Directory* read_directory();
+	void		save_directory(Directory* directory);
+	Directory*	read_directory(INode* inode, char* dir, Directory* parent);
+
 public:
 	DirectoryService() : BaseService() { }
 	DirectoryService(Storage* storage) : BaseService(storage) { }
@@ -15,12 +16,11 @@ public:
 
 	Directory* Create(std::string name, Directory* parent);
 
-	Directory* AddToDirectory(Directory* d, DEntry* dentry);
-	Directory* RemoveFromDirectory(Directory* d, int inode_id);
-	Directory* RemoveFromDirectory(Directory* d, DEntry* dentry);
+	void AddToDirectory(Directory* d, DEntry* dentry);
+	void RemoveFromDirectory(Directory* d, DEntry* dentry);
 
 	std::vector<DEntry*> GetInfo(Directory* dir);
 
-	Directory* Get(int inode_id);
+	Directory* Get(INode* inode, Directory* parent);
 };
 

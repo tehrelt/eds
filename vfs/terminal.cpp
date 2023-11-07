@@ -91,46 +91,9 @@ bool Terminal::find_arg(std::vector<std::string> args, const std::string& arg)
     return (std::find(args.begin(), args.end(), arg) != args.end());
 }
 
-DEntry* Terminal::exists(std::string name)
-{
-    for (auto dentry : _file_system->current_directory()->dentry()) {
-        if (name == dentry->name()) {
-            return dentry;
-        }
-    }
-    return nullptr;
-}
-DEntry* Terminal::exists(int inode_id)
-{
-    for (auto dentry : _file_system->current_directory()->dentry()) {
-        if (inode_id == dentry->inode_id()) {
-            return dentry;
-        }
-    }
-    return nullptr;
-}
-DEntry* Terminal::exists(std::string name, Directory* dir)
-{
-    for (auto dentry : dir->dentry()) {
-        if (name == dentry->name()) {
-            return dentry;
-        }
-    }
-    return nullptr;
-}
-DEntry* Terminal::exists(int inode_id, Directory* dir)
-{
-    for (auto dentry : dir->dentry()) {
-        if (inode_id == dentry->inode_id()) {
-            return dentry;
-        }
-    }
-    return nullptr;
-}
-
 void Terminal::mkfile(std::vector<std::string> args, Directory* dir)
 {
-    if (args.size() < 1) {
+    if (args.size() < 2) {
         throw execution_exception("Enter an args", "mkfile");
     }
 
@@ -140,12 +103,10 @@ void Terminal::mkfile(std::vector<std::string> args, Directory* dir)
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
     }
-
-    if (exists(name)) {
-        std::cout << "ERROR! Element with this name already exists" << std::endl;
-        return;
+    if (dir->exists(name)) {
+        throw std::exception("Element with this name already exists");
     }
-
+    
     _file_system->CreateFile(name, dir);
 }
 void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
@@ -161,12 +122,11 @@ void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
         return;
     }
 
-    if (exists(name)) {
-        std::cout << "ERROR! Element with this name already exists" << std::endl;
-        return;
+    if (dir->exists(name)) {
+        throw std::exception("Element with this name already exists");
     }
-
-    _file_system->CreateDirectory(name, dir);
+    
+    _file_system->CreateDirectory(name, dir);    
 }
 void Terminal::rm(std::vector<std::string> args, Directory* dir)
 {    
@@ -180,7 +140,7 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
     try
     {
         DEntry* dentry = dir->exists(name);
-        INode* inode = _file_system->GetInode(dentry);
+        INode* inode = dentry->inode();
 
         if (inode->IsDirectoryFlag()) {
             std::cout << "ERROR! cannot remove a directory" << std::endl;
@@ -190,7 +150,6 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
         _file_system->RemoveFile(dentry);
 
         delete dentry;
-        delete inode;
     }
     catch (const std::exception& e)
     {
@@ -286,14 +245,14 @@ void Terminal::get_chain(std::vector<std::string> args, Directory* dir)
     
     std::string name = args[1];
 
-    auto dentry = exists(name);
+    auto dentry = dir->exists(name);
 
     if (!dentry) {
         std::cout << "ERROR! cannot find a file" << std::endl;
         return;
     }
 
-    INode* inode = _file_system->services()->inode_service()->Get(dentry->inode_id());
+    INode* inode = dentry->inode();
 
     auto chain = _file_system->services()->block_service()->GetBlockchain(inode);
 
@@ -311,7 +270,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
     std::cout << "id\tflags\tmode\tsize\tcreation date\t\towner\tname" << std::endl;
 
     for (int i = 0; i < vector.size(); i++) {
-        INode* inode = _file_system->GetInode(vector[i]->inode_id());
+        INode* inode = vector[i]->inode();
         User* user = _file_system->GetUser(inode->uid());
         std::cout << *inode << "\t" << user->name() << "\t" << vector[i]->name() << std::endl;
 
@@ -328,9 +287,8 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
     if (name == "..") {
         try
         {
-            dir = _file_system->GetParentDirectory(dir);
-            _file_system->ChangeDirectory(dir);
-            path = get_path(_file_system->current_directory());
+            _file_system->ChangeDirectory(_file_system->GetParentDirectory(dir));
+            path = get_path();
             return;
         }
         catch (const std::exception& e)
@@ -348,17 +306,21 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
     try
     {
         DEntry* dentry = dir->exists(name);
-        INode* inode = _file_system->GetInode(dentry);
+
+        if (dentry == nullptr) {
+            throw std::exception("Directory wasnt found");
+        }
+
+        INode* inode = dentry->inode();
 
         if (inode->IsDirectoryFlag() == false) {
             throw std::exception("ERROR! not a directory");
         }
 
-        Directory* d = _file_system->GetDirectory(inode->id());
-        _file_system->ChangeDirectory(d);
-        path = get_path(_file_system->current_directory());
+        _file_system->ChangeDirectory((Directory*)dentry);
 
-        delete inode;
+        path = get_path();
+
         return;
     }
     catch (const std::exception& e)
@@ -383,13 +345,13 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
     try
     {
         DEntry* dentry = dir->exists(name);
-        INode* inode = _file_system->GetInode(dentry->inode_id());
+        INode* inode = dentry->inode();
 
         if (inode->IsDirectoryFlag() == true) {
             throw std::exception("ERROR! cannot open a directory");
         }
 
-        char* content = _file_system->ReadFile(inode->id());
+        char* content = _file_system->ReadFile((File*)dentry);
 
         std::cout << content << std::endl;
         return;
@@ -420,7 +382,7 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
         dentry = dir->exists(name);
     } 
 
-    INode* inode = _file_system->GetInode(dentry);
+    INode* inode = dentry->inode();
 
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
@@ -441,7 +403,7 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
-    _file_system->WriteFile(inode->id(), text);
+    _file_system->WriteFile((File*)dentry, text);
 }
 void Terminal::write_append(std::vector<std::string> args, Directory* dir)
 {
@@ -463,7 +425,7 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
         dentry = dir->exists(name);
     }
 
-    INode* inode = _file_system->GetInode(dentry);
+    INode* inode = dentry->inode();
 
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
@@ -484,7 +446,7 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
-    _file_system->AppendFile(inode, text);
+    _file_system->AppendFile((File*)dentry, text);
 }
 
 
@@ -530,12 +492,12 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
         std::string dir_name = path[i];
 
         if (dir_name.compare("..") == 0) {
-            current_directory = _file_system->GetParentDirectory(current_directory);
+            current_directory = (Directory*) current_directory->parent();
         }
         else {
-            auto dentry = exists(dir_name, current_directory);
+            auto dentry = current_directory->exists(dir_name);
             if (dentry != nullptr) {
-                current_directory = _file_system->GetDirectory(dentry->inode_id());
+                current_directory = _file_system->GetDirectory(dentry->inode(), current_directory);
             }
             else {
                 current_directory = _file_system->CreateDirectory(dir_name, current_directory);
@@ -546,26 +508,37 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
     return current_directory;
 }
 
+Path Terminal::get_path()
+{
+    Path path = Path();
+    bool fl = true;
+
+    Directory* dir = _file_system->current_directory();
+
+    while (dir != nullptr) {
+        std::string name = dir->name();
+        path.add(name);
+
+        dir = (Directory*)dir->parent();
+    }
+
+
+    return path.reverse();
+}
 Path Terminal::get_path(Directory* directory)
 {
     Path path = Path();
     bool fl = true;
-    int inode_id = directory->inode_id();
 
-    if (directory->parent() != -1) {
-        Directory* dir = _file_system->GetParentDirectory(directory);
+    Directory* dir = directory;
 
-        while (fl) {
-            fl = !(dir->parent() == -1);
-            std::string name = exists(inode_id, dir)->name();
-            path.add(name);
-            inode_id = dir->inode_id();
-            if (fl) {
-                dir = _file_system->GetParentDirectory(dir);
-            }
-        }
+    while (dir != nullptr) {
+        std::string name = dir->name();
+        path.add(name);
+
+        dir = (Directory*)dir->parent();
     }
-    path.add("");
+        
 
     return path.reverse();
 }

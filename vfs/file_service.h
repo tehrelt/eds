@@ -9,13 +9,13 @@ public:
 	FileService() : BaseService() { }
 	FileService(Storage* storage) : BaseService(storage) { }
 
-	File* Create(std::string name);
-	void Remove(int inode_id);
-	void Remove(INode* inode);
+	File* Create(std::string name, DEntry* parent);
+	
+	void Remove(DEntry* dentry);
 
-	void Write(INode* inode, std::string text);
-	void Append(INode* inode, std::string text);
+	void Write(File* dentry, std::string text);
+	void Append(File* inode, std::string text);
 
-	char* Read(int inode_id);
+	char* Read(File* file);
 };
 
