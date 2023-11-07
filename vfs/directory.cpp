@@ -56,9 +56,9 @@ char* Directory::ToChar()
 
     int inode_id = _inode->id();
 
-    std::memcpy(c, _name, 16);
+    std::memcpy(c, _name, 12);
     int size = _dentries.size();
-    std::memcpy(c + 16, &size, sizeof(int));
+    std::memcpy(c + 12, &size, sizeof(int));
 
     char* current_entry = c + 20;
 
@@ -66,7 +66,7 @@ char* Directory::ToChar()
         int entry_inode_id = _dentries[i]->inode()->id();
 
         std::memcpy(current_entry, &entry_inode_id, sizeof(int));
-        std::memcpy(current_entry + 4, _dentries[i]->name(), 16);
+        std::memcpy(current_entry + 4, _dentries[i]->name(), 12);
 
         current_entry += DIRECTORY_ENTRY_SIZE;
     }

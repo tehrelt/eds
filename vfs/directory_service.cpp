@@ -24,10 +24,10 @@ Directory* DirectoryService::CreateRoot()
 Directory* DirectoryService::ReadRoot()
 {
 	INode* root_inode = _storage->GetINode(0);
-	Block* block = _storage->GetBlock(root_inode->block_num());
-	Directory* root = read_directory(root_inode, block->data(), nullptr);
-	
-	delete block;
+	char* data = _storage->ReadINodeContent(root_inode);
+	Directory* root = read_directory(root_inode, data, nullptr);
+
+	delete data;
 	return root;
 }
 
@@ -62,8 +62,7 @@ std::vector<DEntry*> DirectoryService::GetInfo(Directory* dir)
 
 Directory* DirectoryService::Get(INode* inode, Directory* parent)
 {
-	Block* block = _storage->GetBlock(inode->block_num());
-	char* content = block->data();
+	char* content = _storage->ReadINodeContent(inode);
 
 	return read_directory(inode, content, parent);
 }
@@ -72,9 +71,9 @@ Directory* DirectoryService::read_directory(INode* inode, char* content, Directo
 {
 	int size, entry_inode_id;
 	
-    char* name = new char[16];
+    char* name = new char[12];
 
-    std::memcpy(&size, content + 16, 4);
+    std::memcpy(&size, content + 12, 4);
 
 
 	Directory* dir = nullptr;
@@ -82,8 +81,8 @@ Directory* DirectoryService::read_directory(INode* inode, char* content, Directo
 		dir = new Directory(inode);
 	}
 	else {
-		char* dir_name = new char[16];
-		std::memcpy(dir_name, content, 16);
+		char* dir_name = new char[12];
+		std::memcpy(dir_name, content, 12);
 		dir = new Directory(inode, parent, dir_name);
 	}
 
@@ -93,7 +92,7 @@ Directory* DirectoryService::read_directory(INode* inode, char* content, Directo
     for (int i = 0; i < size; i++) {
 
         std::memcpy(&entry_inode_id,	entry,      4);
-        std::memcpy(name,				entry + 4, 16);
+        std::memcpy(name,				entry + 4, 12);
 
 		INode* entry_inode = _storage->GetINode(entry_inode_id);
 

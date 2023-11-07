@@ -7,7 +7,7 @@ class DEntry
 protected:
 	INode*	_inode;
 	DEntry* _parent;
-	char	_name[16];
+	char	_name[12];
 
 public:
 	DEntry();

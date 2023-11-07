@@ -150,7 +150,6 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
         _file_system->RemoveFile(dentry);
 
         delete dentry;
-        delete inode;
     }
     catch (const std::exception& e)
     {
@@ -317,7 +316,6 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
 
         path = get_path();
 
-        delete inode;
         return;
     }
     catch (const std::exception& e)

@@ -4,8 +4,8 @@
 #include <vector>
 #include "path.h"
 
-#define DIRECTORY_RECORD_CHAR_SIZE 16 + sizeof(int) + (sizeof(int) + 16)*_dentries.size()
-#define DIRECTORY_ENTRY_SIZE sizeof(int) + 16
+#define DIRECTORY_ENTRY_SIZE sizeof(int) + 12
+#define DIRECTORY_RECORD_CHAR_SIZE 12 + sizeof(int) + (DIRECTORY_ENTRY_SIZE)*_dentries.size()
 
 class Directory : public DEntry
 {
