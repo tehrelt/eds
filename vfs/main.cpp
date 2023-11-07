@@ -2,7 +2,6 @@
 #include <fstream>
 #include "file_system.h"
 #include "terminal.h"
-#include "service.h"
 
 int main()
 {
@@ -28,13 +27,13 @@ int main()
             std::cout << "Enter a size in kb: ";
             std::cin >> size_in_kb;
 
-            fs = FileSystem::Create(name + ".eds", size_in_kb << 10);
+            FileSystem::Create(name + ".eds", size_in_kb << 10);
         }
         else if (choice == 2) {
             std::cout << "Mounting fs" << std::endl;
             std::cout << "Enter a file name of existing fs: ";
             std::cin >> name;
-            fs = FileSystem::Mount(name + ".eds");
+            FileSystem::Mount(name + ".eds");
         }
         else {
             std::cout << "INVALID OPTION" << std::endl;
@@ -42,12 +41,12 @@ int main()
             return -1;
         }
 
-        if (fs == nullptr) {
+        if (FileSystem::FILE_SYSTEM() == nullptr) {
             std::cout << "File system not initialized" << std::endl;
             return -1;
         }
 
-        Terminal terminal = Terminal(fs);
+        Terminal terminal = Terminal();
 
         return terminal.Listen();
     }

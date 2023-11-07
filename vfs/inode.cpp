@@ -101,7 +101,9 @@ std::ostream& operator<<(std::ostream& os, const INode& inode)
 	os << flags << "\t";
 	os << mode << "\t";
 	os << inode._size << "\t";
-	os << timeToString(inode._create_date);
+	os << timeToString(inode._create_date) << "\t";
+	os << timeToString(inode._modify_date) << "\t";
+	os << timeToString(inode._access_date);
 
 	return os;
 }

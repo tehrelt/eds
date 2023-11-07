@@ -1,6 +1,6 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "dentry.h"
-
+#include "file.h"
 
 DEntry::DEntry()
 {

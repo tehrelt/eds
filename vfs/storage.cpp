@@ -2,6 +2,8 @@
 #include <fstream>
 #include "tools.h"
 
+Storage* Storage::_INSTANCE = nullptr;
+
 Block* Storage::read_block(int id)
 {
 	Block* block = new Block(id, _superblock.block_size());
@@ -64,7 +66,7 @@ void Storage::save_block(Block* block)
 	char* content = block->data();
 	write(content, block->id() * _superblock.block_size(), _superblock.block_size());
 }
-void Storage::save_inode(INode* inode)
+void Storage::saveINode(INode* inode)
 {
 	write((char*)inode, 
 		_superblock.num_of_first_imap_block() * _superblock.block_size() + inode->id() * sizeof(INode),
@@ -164,26 +166,36 @@ Storage::Storage(std::string name, Superblock* sb, FAT* fat, IMap* imap)
 	_superblock = *sb;
 }
 
-int Storage::GetNextUserId()
+int Storage::getNextUID()
 {
 	return _superblock.users_count();
 }
 
-INode* Storage::AllocateInode()
+void Storage::addUser()
+{
+	_superblock.add_user();
+	save_superblock();
+}
+
+INode* Storage::allocateINode()
 {
 	INode* inode = find_free_inode();
-	Block* free_block = AllocateBlock();
+	Block* free_block = allocateBlock();
 
-	inode->set_create_date(getCurrentDate());
+	auto current_datetime = getCurrentDate();
+	inode->set_create_date(current_datetime);
+	inode->set_modify_date(current_datetime);
+	inode->set_access_date(current_datetime);
+
 	inode->set_block_num(free_block->id());
 
 	lock_inode(inode);
 
-	save_inode(inode);
+	saveINode(inode);
 
 	return inode;
 }
-Block* Storage::AllocateBlock()
+Block* Storage::allocateBlock()
 {
 	Block* block = find_free_block();
 	block->set_char(0, '\0');
@@ -197,7 +209,7 @@ Block* Storage::AllocateBlock()
 
 	return block;
 }
-Block* Storage::AllocateBlock(int prev_id)
+Block* Storage::allocateBlock(int prev_id)
 {
 	Block* block = find_free_block();
 	block->set_char(0, '\0');
@@ -213,23 +225,23 @@ Block* Storage::AllocateBlock(int prev_id)
 	return block;
 }
 
-void Storage::FreeINode(INode* inode)
+void Storage::freeINode(INode* inode)
 {
 	unlock_inode(inode);
 }
-void Storage::FreeINode(int inode_id)
+void Storage::freeINode(int inode_id)
 {
 	unlock_inode(inode_id);
 }
 
-void Storage::ClearBlocks(INode* inode)
+void Storage::clearBlocks(INode* inode)
 {
 	Block* clear_block = new Block(0, _superblock.block_size());
 	Block* block = nullptr;
 	
 	int id = inode->block_num();
 	while (id != -2) {
-		block = GetBlock(id);
+		block = getBlock(id);
 		std::memcpy(block->data(), clear_block->data(), _superblock.block_size());
 		
 		save_block(block);
@@ -254,23 +266,8 @@ void Storage::ClearBlocks(INode* inode)
 
 	save_superblock();
 }
-void Storage::SaveINode(INode* inode)
-{
-	save_inode(inode);
-}
 
-void Storage::SaveUser(char* user)
-{
-	int id = 0;
-	std::memcpy(&id, user, 4);
-	INode* inode = GetINode(USERS_INODE);
-	WriteBytes(inode, (4 + 16 + 64)*id, user, 4 + 16 + 64);
-
-	_superblock.add_user();
-	save_superblock();
-}
-
-std::vector<int> Storage::GetBlockchain(int block_id)
+std::vector<int> Storage::getBlockchain(int block_id)
 {
 	int id = block_id;
 	std::vector<int> chain = std::vector<int>();
@@ -285,7 +282,7 @@ std::vector<int> Storage::GetBlockchain(int block_id)
 	return chain;
 }
 
-Block* Storage::GetBlock(int id)
+Block* Storage::getBlock(int id)
 {
 	if (id < _superblock.num_of_first_data_block()) {
 		throw new std::exception("Ќельз€ просмотреть блоки зарезервированные под систему");
@@ -297,7 +294,7 @@ Block* Storage::GetBlock(int id)
 	return read_block(id);
 }
 
-INode* Storage::GetINode(int id)
+INode* Storage::getINode(int id)
 {
 	if (id >= _superblock.imap_capacity()) {
 		throw std::exception("«аданный id уходит за пределы IMap");
@@ -305,31 +302,39 @@ INode* Storage::GetINode(int id)
 	return read_inode(id);
 }
 
-char* Storage::ReadINodeContent(INode* inode)
+char* Storage::readBytes(INode* inode)
 {
-	char* content = new char[(GetBlockchain(inode->block_num()).size() - 1) * _superblock.block_size()];
+	int total_bytes = inode->size();
+	char* content = new char[total_bytes];
 
 	int p = 0;
 	int id = inode->block_num();
-	while (id != -2) {
 
-		char* bc = new char[_superblock.block_size()];
+	while (total_bytes > 0) {
+		int to_read = total_bytes > _superblock.block_size()
+								? _superblock.block_size()
+								: total_bytes;
 
-		read(bc, id * _superblock.block_size(), _superblock.block_size());
+		
+		char* bc = new char[to_read];
 
-		std::memcpy(content + p, bc, _superblock.block_size());
+		read(bc, id * _superblock.block_size(), to_read);
+		std::memcpy(content + p, bc, to_read);
 
-		p += _superblock.block_size();
-
+		total_bytes -= to_read;
+		p += to_read;
 		id = _fat[id];
 
 		delete[] bc;
 	}
 
+	inode->set_access_date(getCurrentDate());
+	saveINode(inode);
+
 	return content;
 }
 
-void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
+void Storage::writeBytes(INode* inode, int pos, const char* content, int size)
 {
 	Block* block = find_relative_block(inode, pos);
 	
@@ -358,7 +363,7 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 		save_block(block);
 
 		if (i != blocks_affected - 1) {
-			block = AllocateBlock(block->id());
+			block = allocateBlock(block->id());
 		}
 	}
 
@@ -367,28 +372,22 @@ void Storage::WriteBytes(INode* inode, int pos, const char* content, int size)
 		inode->set_size(blocks_affected * _superblock.block_size());
 	}
 
-	save_inode(inode);
+	auto current_datetime = getCurrentDate();
+	inode->set_modify_date(current_datetime);
+	inode->set_access_date(current_datetime);
+	saveINode(inode);
 
 	delete block;
-}
-void Storage::WriteByte(INode* inode, int pos, char byte)
-{
-	Block* block = find_relative_block(inode, pos);
-
-	pos %= _superblock.block_size();
-	block->set_char(pos, byte);
-
-	save_block(block);
 }
 
 int Storage::GetEOF(INode* inode)
 {
-	auto chain = GetBlockchain(inode->block_num());
+	auto chain = getBlockchain(inode->block_num());
 
 	int block_offset = chain.size() - 2;
 	int last_block = chain.at(block_offset);
 
-	char* content = GetBlock(last_block)->data();
+	char* content = getBlock(last_block)->data();
 	int bytes_offset = block_offset * _superblock.block_size() + strlen(content);
 	return bytes_offset;
 }

@@ -40,30 +40,6 @@
     <Filter Include="Исходные файлы\fs">
       <UniqueIdentifier>{e2c36ed9-e940-470a-8e49-b1af388ebfc8}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Исходные файлы\service">
-      <UniqueIdentifier>{a0567c54-7052-49ea-b3dc-bc21a453062c}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\service">
-      <UniqueIdentifier>{eb2849cf-043a-439f-b8e3-7b1a9652bf1f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\service\models">
-      <UniqueIdentifier>{5dccce64-4eb8-4041-ab88-9c8a4478e469}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\service\models">
-      <UniqueIdentifier>{62a97c20-faa6-4e3e-abcf-57563e1c07f9}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\service\services">
-      <UniqueIdentifier>{ad5c59ea-3e91-4d87-b134-68c973c77501}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Файлы заголовков\service\services\base">
-      <UniqueIdentifier>{06547843-467e-4f82-a48c-26f9f26b87ff}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\service\services">
-      <UniqueIdentifier>{c22edc65-68b5-4664-aaf8-fd088771505a}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Исходные файлы\service\services\base">
-      <UniqueIdentifier>{e3ff4a41-3056-4951-8229-1ff33cf17cec}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Исходные файлы\storage">
       <UniqueIdentifier>{c8d56e65-30a8-4b93-9e82-25b78e03a6c7}</UniqueIdentifier>
     </Filter>
@@ -90,9 +66,6 @@
     <ClCompile Include="superblock.cpp">
       <Filter>Исходные файлы\core</Filter>
     </ClCompile>
-    <ClCompile Include="dentry.cpp">
-      <Filter>Исходные файлы\core</Filter>
-    </ClCompile>
     <ClCompile Include="terminal.cpp">
       <Filter>Исходные файлы\io</Filter>
     </ClCompile>
@@ -105,41 +78,26 @@
     <ClCompile Include="storage.cpp">
       <Filter>Исходные файлы\storage</Filter>
     </ClCompile>
-    <ClCompile Include="service.cpp">
-      <Filter>Исходные файлы\service</Filter>
-    </ClCompile>
-    <ClCompile Include="file.cpp">
-      <Filter>Исходные файлы\service\models</Filter>
-    </ClCompile>
-    <ClCompile Include="directory.cpp">
-      <Filter>Исходные файлы\service\models</Filter>
-    </ClCompile>
-    <ClCompile Include="base_service.cpp">
-      <Filter>Исходные файлы\service\services\base</Filter>
-    </ClCompile>
-    <ClCompile Include="block_service.cpp">
-      <Filter>Исходные файлы\service\services</Filter>
-    </ClCompile>
-    <ClCompile Include="inode_service.cpp">
-      <Filter>Исходные файлы\service\services</Filter>
-    </ClCompile>
-    <ClCompile Include="path.cpp">
-      <Filter>Исходные файлы\service\models</Filter>
-    </ClCompile>
-    <ClCompile Include="directory_service.cpp">
-      <Filter>Исходные файлы\service\services</Filter>
-    </ClCompile>
-    <ClCompile Include="file_service.cpp">
-      <Filter>Исходные файлы\service\services</Filter>
-    </ClCompile>
     <ClCompile Include="sha256.cpp">
       <Filter>Исходные файлы\tools</Filter>
     </ClCompile>
-    <ClCompile Include="user_service.cpp">
-      <Filter>Исходные файлы\service\services</Filter>
+    <ClCompile Include="directory.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="file.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="dentry.cpp">
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="path.cpp">
+      <Filter>Исходные файлы\io</Filter>
     </ClCompile>
     <ClCompile Include="user.cpp">
-      <Filter>Исходные файлы\service\models</Filter>
+      <Filter>Исходные файлы\io</Filter>
+    </ClCompile>
+    <ClCompile Include="dentry_factory.cpp">
+      <Filter>Исходные файлы</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -173,35 +131,8 @@
     <ClInclude Include="storage.h">
       <Filter>Файлы заголовков\storage</Filter>
     </ClInclude>
-    <ClInclude Include="service.h">
-      <Filter>Файлы заголовков\service</Filter>
-    </ClInclude>
-    <ClInclude Include="block_service.h">
-      <Filter>Файлы заголовков\service\services</Filter>
-    </ClInclude>
-    <ClInclude Include="directory_service.h">
-      <Filter>Файлы заголовков\service\services</Filter>
-    </ClInclude>
-    <ClInclude Include="file_service.h">
-      <Filter>Файлы заголовков\service\services</Filter>
-    </ClInclude>
-    <ClInclude Include="inode_service.h">
-      <Filter>Файлы заголовков\service\services</Filter>
-    </ClInclude>
-    <ClInclude Include="base_service.h">
-      <Filter>Файлы заголовков\service\services\base</Filter>
-    </ClInclude>
-    <ClInclude Include="path.h">
-      <Filter>Файлы заголовков\service\models</Filter>
-    </ClInclude>
-    <ClInclude Include="user.h">
-      <Filter>Файлы заголовков\service\models</Filter>
-    </ClInclude>
     <ClInclude Include="sha256.h">
       <Filter>Файлы заголовков\tools</Filter>
-    </ClInclude>
-    <ClInclude Include="user_service.h">
-      <Filter>Файлы заголовков\service\services</Filter>
     </ClInclude>
     <ClInclude Include="directory.h">
       <Filter>Файлы заголовков\io</Filter>
@@ -211,6 +142,15 @@
     </ClInclude>
     <ClInclude Include="dentry.h">
       <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="user.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="path.h">
+      <Filter>Файлы заголовков\io</Filter>
+    </ClInclude>
+    <ClInclude Include="dentry_factory.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -3,13 +3,17 @@
 #include "inode.h"
 #include "storage.h"
 
+#define DENTRY		0
+#define FILE		1
+#define DIRECTORY	2
+
 class DEntry
 {
 protected:
 	INode*	 _inode;
 	DEntry*  _parent;
 	char	 _name[12];
-	Storage* _storage;
+
 
 public:
 	DEntry();
@@ -19,5 +23,6 @@ public:
 	DEntry* parent()	{ return _parent;	}
 	char* name()		{ return _name;		}
 
+	virtual int getType() { return DENTRY; }
 };
 

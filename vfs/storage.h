@@ -30,12 +30,13 @@ private:
 	Block* find_relative_block(INode* inode, int pos);
 
 	void save_block(Block* block);
-	void save_inode(INode* inode);
 
 	void unlock_inode(INode* inode);
 	void unlock_inode(int inode_id);
+
 	void lock_inode(INode* inode);
 	void lock_inode(int inode_id);
+
 	void set_fat_record(int idx, int value);
 
 	void write(char* source, int offset, int size);
@@ -51,32 +52,31 @@ public:
 	FAT*		fat()			{ return &_fat; }
 	IMap*		imap()			{ return &_imap; }
 
-	int GetNextUserId();
+	int getNextUID();
+	void addUser();
 
 	int_fast32_t	get_fat_record(int i)	{ return _fat[i]; }
 	INode*			get_imap_record(int i)	{ return &_imap[i]; }
 
-	INode* AllocateInode();
-	Block* AllocateBlock();
-	Block* AllocateBlock(int prev_block_id);
+	INode* allocateINode();
+	Block* allocateBlock();
+	Block* allocateBlock(int prev_block_id);
 
-	void FreeINode(INode* inode);
-	void FreeINode(int inode_id);
+	void freeINode(INode* inode);
+	void freeINode(int inode_id);
 
-	void ClearBlocks(INode* inode);
+	void clearBlocks(INode* inode);
 
-	void SaveINode(INode* inode);
-	void SaveUser(char* user);
+	void saveINode(INode* inode);
 
-	std::vector<int> GetBlockchain(int block_id);
+	std::vector<int> getBlockchain(int block_id);
 
-	Block* GetBlock(int id);
-	INode* GetINode(int id);
+	Block* getBlock(int id);
+	INode* getINode(int id);
 
-	char* ReadINodeContent(INode* inode);
 
-	void WriteBytes(INode* inode, int pos, const char* content, int size);
-	void WriteByte(INode* inode, int pos, char byte);
+	void writeBytes(INode* inode, int pos, const char* content, int size);
+	char* readBytes(INode* inode);
 
 	int GetEOF(INode* inode);
 
