@@ -12,7 +12,8 @@ public:
 	Path(std::string path);
 	Path(std::vector<std::string> parts);
 
-	void add(std::string part);
+	void push(std::string part);
+	void pop();
 	void remove();
 	Path reverse();
 	

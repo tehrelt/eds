@@ -24,7 +24,7 @@ Directory* Directory::parse(INode* inode, char* content, Directory* parent)
     else {
         char* dir_name = new char[12];
         std::memcpy(dir_name, content, 12);
-        dir = new Directory(inode, parent, dir_name);
+        dir = (Directory*)DEntryFactory::CREATE(DIRECTORY, inode, parent, dir_name);
     }
 
     char* entry = content + 16;
@@ -35,7 +35,7 @@ Directory* Directory::parse(INode* inode, char* content, Directory* parent)
 
         INode* entry_inode = Storage::STORAGE()->getINode(entry_inode_id);
 
-        dir->add(new DEntry(entry_inode, dir, name));
+        dir->add(DEntryFactory::CREATE(entry_inode->IsDirectoryFlag() ? DIRECTORY : FILE, entry_inode, dir, name));
 
         entry += DIRECTORY_ENTRY_SIZE;
     }
@@ -64,7 +64,7 @@ Directory::Directory(INode* inode)
     : DEntry(inode, nullptr, "")
 {
     _dentries = std::vector<DEntry*>();
-    _dentries.push_back(new DEntry(inode, this, "./"));
+    _dentries.push_back(new DEntry(inode, this, "."));
 }
 Directory::Directory(INode* inode, DEntry* parent, const std::string& name)
     : DEntry(inode, parent, name)
@@ -78,8 +78,8 @@ Directory::Directory(INode* inode, DEntry* parent, const std::string& name)
 
 void Directory::init()
 {
-    _dentries.push_back(new Directory(_inode, this, "./"));
-    _dentries.push_back(new Directory(_parent->inode(), this, "../"));
+    _dentries.push_back(new Directory(_inode, this, "."));
+    _dentries.push_back(new Directory(_parent->inode(), this, ".."));
     save();
 }
 
@@ -156,11 +156,20 @@ Directory* Directory::createDirectory(std::string name, int uid)
     Directory* dir = (Directory*)DEntryFactory::CREATE(DIRECTORY, inode, this, name);
     _dentries.push_back(dir);
 
+    this->save();
+
     return dir;
 }
 Directory* Directory::getDirectory(std::string name)
 {
-    DEntry* dentry = find_by_name(name);
+    DEntry* dentry = nullptr;
+
+    if (name == "..") {
+        dentry = _parent;
+    }
+    else {
+        dentry = find_by_name(name);
+    }
 
     if (!exists(name)) {
         throw std::exception("no such directory");
@@ -228,7 +237,7 @@ Directory* Directory::READ(DEntry* dentry)
     INode* inode = dentry->inode();
 
     char* data = Storage::STORAGE()->readBytes(inode);
-    Directory* root = Directory::parse(inode, data, nullptr);
+    Directory* root = Directory::parse(inode, data, (Directory*)dentry->parent());
     delete data;
 
     return root;

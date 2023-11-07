@@ -19,6 +19,8 @@ public:
 
 	void init();
 
+	Directory* forwardTo(Directory* to);
+
 	User* CreateUser(const std::string& username, const std::string& pass);
 	User* getUserById(int id);
 	User* findUserByName(const std::string& username);

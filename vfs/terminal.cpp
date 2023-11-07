@@ -7,7 +7,7 @@ Terminal::Terminal(FileSystem* fs)
 {
     _fs = fs;
     path = Path();
-    path.add("");
+    path.push("");
 
     _commands = std::map<std::string, std::function<void(std::vector<std::string>, Directory*)>>();
 
@@ -16,7 +16,7 @@ Terminal::Terminal(FileSystem* fs)
     _commands["mkfile"]     = std::bind(&Terminal::mkfile, this, std::placeholders::_1, std::placeholders::_2);
     _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1, std::placeholders::_2);
     //_commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1, std::placeholders::_2);
-    //_commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1, std::placeholders::_2);
+    _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1, std::placeholders::_2);
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1, std::placeholders::_2);
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1, std::placeholders::_2);
@@ -34,7 +34,7 @@ int Terminal::Listen()
     std::cin.ignore(1);
 
     while (true) {
-        std::cout << _fs->current_user()->name() << "@eds " << path.ToString() << ": ";
+        std::cout << _fs->current_user()->name() << "@eds " << _fs->current_directory()->path()->ToString() << ": ";
         std::getline(std::cin, line);
         try
         {
@@ -181,59 +181,40 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
 
     }
 }
-//void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
-//{
-//    if (args.size() < 1) {
-//        throw execution_exception("Enter an args. Try execute help cd", "cd");
-//    }
-//    
-//    std::string name = args[1];
-//
-//    if (name == "..") {
-//        try
-//        {
-//             _fs->ChangeDirectory( _fs->GetParentDirectory(dir));
-//            path = get_path();
-//            return;
-//        }
-//        catch (const std::exception& e)
-//        {
-//            throw e;
-//        }
-//    }
-//    else if (name == "") {
-//         _fs->ChangeToRootDirectory();
-//        path = Path();
-//        path.add("");
-//        return;
-//    }
-//
-//    try
-//    {
-//        DEntry* dentry = dir->exists(name);
-//
-//        if (dentry == nullptr) {
-//            throw std::exception("Directory wasnt found");
-//        }
-//
-//        INode* inode = dentry->inode();
-//
-//        if (inode->IsDirectoryFlag() == false) {
-//            throw std::exception("ERROR! not a directory");
-//        }
-//
-//         _fs->ChangeDirectory((Directory*)dentry);
-//
-//        path = get_path();
-//
-//        return;
-//    }
-//    catch (const std::exception& e)
-//    {
-//        throw e;
-//    }
-//    throw std::exception("ERROR! cannot find a directory");
-//}
+void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
+{
+    if (args.size() < 1) {
+        throw execution_exception("Enter an args. Try execute help cd", "cd");
+    }
+    
+    std::string name = args[1];
+
+    if (name == "") {
+         _fs->forwardTo(_fs->root_directory());
+        path = Path();
+        path.push("");
+        return;
+    }
+
+    try
+    {
+        Directory* d = dir->getDirectory(name);
+
+        if (d == nullptr) {
+            throw std::exception("Directory wasnt found");
+        }
+
+         _fs->forwardTo(d);
+        path = get_path();
+
+        return;
+    }
+    catch (const std::exception& e)
+    {
+        throw e;
+    }
+    throw std::exception("ERROR! cannot find a directory");
+}
 void Terminal::cat(std::vector<std::string> args, Directory* dir)
 {
     if (args.size() == 1) {
@@ -419,7 +400,7 @@ Path Terminal::get_path()
 
     while (dir != nullptr) {
         std::string name = dir->name();
-        path.add(name);
+        path.push(name);
 
         dir = (Directory*)dir->parent();
     }
@@ -436,7 +417,7 @@ Path Terminal::get_path(Directory* directory)
 
     while (dir != nullptr) {
         std::string name = dir->name();
-        path.add(name);
+        path.push(name);
 
         dir = (Directory*)dir->parent();
     }

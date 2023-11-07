@@ -39,7 +39,7 @@ class Terminal
 
 	void ls(std::vector<std::string> args, Directory* dir);
 
-	//void change_directory(std::vector<std::string> args, Directory* dir);
+	void change_directory(std::vector<std::string> args, Directory* dir);
 
 	void cat(std::vector<std::string> args, Directory* dir);
 	void write(std::vector<std::string> args, Directory* dir);

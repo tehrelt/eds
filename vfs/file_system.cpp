@@ -34,6 +34,12 @@ void FileSystem::init()
     _current_user = CreateUser(username, pass);
 }
 
+Directory* FileSystem::forwardTo(Directory* to)
+{
+    _current_directory = to;
+    return _current_directory;
+}
+
 User* FileSystem::CreateUser(const std::string& username, const std::string& pass)
 {
     int id = Storage::STORAGE()->getNextUID();

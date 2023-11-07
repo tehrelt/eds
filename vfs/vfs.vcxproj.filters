@@ -46,6 +46,9 @@
     <Filter Include="Файлы заголовков\storage">
       <UniqueIdentifier>{952c70ae-77ac-4b78-b03b-9c63d06065d2}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Исходные файлы\view">
+      <UniqueIdentifier>{b09f13f1-d29a-4e85-8187-9292574dc261}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="tools.cpp">
@@ -65,9 +68,6 @@
     </ClCompile>
     <ClCompile Include="superblock.cpp">
       <Filter>Исходные файлы\core</Filter>
-    </ClCompile>
-    <ClCompile Include="terminal.cpp">
-      <Filter>Исходные файлы\io</Filter>
     </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Исходные файлы\app</Filter>
@@ -98,6 +98,9 @@
     </ClCompile>
     <ClCompile Include="dentry_factory.cpp">
       <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="terminal.cpp">
+      <Filter>Исходные файлы\view</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

@@ -2,6 +2,7 @@
 #include <string>
 #include "inode.h"
 #include "storage.h"
+#include "path.h"
 
 #define DENTRY		0
 #define FILE		1
@@ -13,6 +14,7 @@ protected:
 	INode*	 _inode;
 	DEntry*  _parent;
 	char	 _name[12];
+	Path	 _path;
 
 
 public:
@@ -22,6 +24,8 @@ public:
 	INode* inode()		{ return _inode;	}
 	DEntry* parent()	{ return _parent;	}
 	char* name()		{ return _name;		}
+	Path* path()		{ return &_path;	}
+
 
 	virtual int getType() { return DENTRY; }
 };
