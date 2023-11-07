@@ -186,6 +186,7 @@ INode* Storage::allocateINode()
 	inode->set_create_date(current_datetime);
 	inode->set_modify_date(current_datetime);
 	inode->set_access_date(current_datetime);
+	inode->set_size(0);
 
 	inode->set_block_num(free_block->id());
 

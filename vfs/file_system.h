@@ -11,8 +11,6 @@ class FileSystem
 	User* _root_user;
 	User* _current_user;
 
-	static FileSystem* _INSTANCE;
-
 public:
 
 	Directory*  root_directory()		{ return _root_directory;	  }
@@ -28,7 +26,6 @@ public:
 
 	Superblock* sb();
 
-	static void Create(std::string name, uint_fast64_t size);
-	static void Mount (std::string name);
-	static FileSystem* FILE_SYSTEM() { return _INSTANCE; }
+	static FileSystem* Create(std::string name, uint_fast64_t size);
+	static FileSystem* Mount (std::string name);
 };

@@ -48,7 +48,7 @@ public:
 	File* getFile(std::string name);
 	void removeFile(std::string name);
 
-	Directory* createDirectory(std::string name);
+	Directory* createDirectory(std::string name, int uid);
 	Directory* getDirectory(std::string name);
 	Directory* removeDirectory(std::string name);
 

@@ -27,13 +27,13 @@ int main()
             std::cout << "Enter a size in kb: ";
             std::cin >> size_in_kb;
 
-            FileSystem::Create(name + ".eds", size_in_kb << 10);
+            fs = FileSystem::Create(name + ".eds", size_in_kb << 10);
         }
         else if (choice == 2) {
             std::cout << "Mounting fs" << std::endl;
             std::cout << "Enter a file name of existing fs: ";
             std::cin >> name;
-            FileSystem::Mount(name + ".eds");
+            fs = FileSystem::Mount(name + ".eds");
         }
         else {
             std::cout << "INVALID OPTION" << std::endl;
@@ -41,12 +41,12 @@ int main()
             return -1;
         }
 
-        if (FileSystem::FILE_SYSTEM() == nullptr) {
+        if (fs == nullptr) {
             std::cout << "File system not initialized" << std::endl;
             return -1;
         }
 
-        Terminal terminal = Terminal();
+        Terminal terminal = Terminal(fs);
 
         return terminal.Listen();
     }

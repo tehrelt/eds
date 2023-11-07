@@ -46,6 +46,9 @@ void Directory::remove(DEntry* dentry)
 {
     auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
     _dentries.erase(it);
+
+    INode* inode = dentry->inode();
+    Storage::STORAGE()->freeINode(inode);
 }
 DEntry* Directory::find_by_name(const std::string& name)
 {
@@ -137,16 +140,17 @@ void Directory::removeFile(std::string name)
     }
 
     this->remove(dentry);
+
     delete dentry;
 
     this->save();
 }
 
-Directory* Directory::createDirectory(std::string name)
+Directory* Directory::createDirectory(std::string name, int uid)
 {
     INode* inode = Storage::STORAGE()->allocateINode();
     inode->SetDirectoryFlag();
-    inode->set_uid(FileSystem::FILE_SYSTEM()->current_user()->id());
+    inode->set_uid(uid);
     Storage::STORAGE()->saveINode(inode);
 
     Directory* dir = (Directory*)DEntryFactory::CREATE(DIRECTORY, inode, this, name);

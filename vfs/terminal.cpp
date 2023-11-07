@@ -3,8 +3,9 @@
 #include <sstream>
 
 
-Terminal::Terminal()
+Terminal::Terminal(FileSystem* fs)
 {
+    _fs = fs;
     path = Path();
     path.add("");
 
@@ -19,7 +20,7 @@ Terminal::Terminal()
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1, std::placeholders::_2);
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1, std::placeholders::_2);
-    //_commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1, std::placeholders::_2);
 
     _commands.emplace("cls", [](std::vector<std::string> args, Directory*) { system("cls"); });
     _commands.emplace("shutdown", [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
@@ -33,7 +34,7 @@ int Terminal::Listen()
     std::cin.ignore(1);
 
     while (true) {
-        std::cout << FileSystem::FILE_SYSTEM()->current_user()->name() << "@eds " << path.ToString() << ": ";
+        std::cout << _fs->current_user()->name() << "@eds " << path.ToString() << ": ";
         std::getline(std::cin, line);
         try
         {
@@ -63,7 +64,7 @@ void Terminal::execute_command(const std::string& line) {
     auto tokens = split(line, ' ');
 
     std::string cmd = tokens[0];
-    Directory* dir =  FileSystem::FILE_SYSTEM()->current_directory();
+    Directory* dir =  _fs->current_directory();
     if (tokens.size() > 1) {
         if (tokens[1].find('/') != std::string::npos) {
             dir = traverse_to_dir(tokens[1]);
@@ -99,7 +100,7 @@ void Terminal::mkfile(std::vector<std::string> args, Directory* dir)
         throw std::exception("Element with this name already exists");
     }
     
-    dir->createFile(name, FileSystem::FILE_SYSTEM()->current_user()->id());
+    dir->createFile(name, _fs->current_user()->id());
 }
 void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
 {
@@ -114,7 +115,7 @@ void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
         return;
     }
     
-    dir->createDirectory(name);
+    dir->createDirectory(name, _fs->current_user()->id());
 }
 void Terminal::rm(std::vector<std::string> args, Directory* dir)
 {    
@@ -127,12 +128,9 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
 
     dir->removeFile(name);
 }
-//void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
-//{
-//}
 void Terminal::sb(std::vector<std::string> args, Directory* dir)
 {
-    Superblock* sb =  FileSystem::FILE_SYSTEM()->sb();
+    Superblock* sb =  _fs->sb();
 
     std::cout << "######## SUPERBLOCK ########" << std::endl;
     std::cout << "\tfile system name: " << sb->fs_name() << std::endl;
@@ -161,7 +159,7 @@ void Terminal::sb(std::vector<std::string> args, Directory* dir)
 //
 //    INode* inode = dentry->inode();
 //
-//    auto chain =  FileSystem::FILE_SYSTEM()->services()->block_service()->GetBlockchain(inode);
+//    auto chain =  _fs->services()->block_service()->GetBlockchain(inode);
 //
 //    for (int el : chain) {
 //        std::cout << el;
@@ -173,12 +171,12 @@ void Terminal::sb(std::vector<std::string> args, Directory* dir)
 //}
 void Terminal::ls(std::vector<std::string> args, Directory* dir)
 {
-    auto dentries =  FileSystem::FILE_SYSTEM()->current_directory()->dentries();
+    auto dentries =  _fs->current_directory()->dentries();
     std::cout << "id\tflags\tmode\tsize\tcreation\t\tmodify\t\t\tlast access\t\towner\tname" << std::endl;
 
     for (int i = 0; i < dentries.size(); i++) {
         INode* inode = dentries[i]->inode();
-        User* user =  FileSystem::FILE_SYSTEM()->getUserById(inode->uid());
+        User* user =  _fs->getUserById(inode->uid());
         std::cout << *inode << "\t" << user->name() << "\t" << dentries[i]->name() << std::endl;
 
     }
@@ -194,7 +192,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
 //    if (name == "..") {
 //        try
 //        {
-//             FileSystem::FILE_SYSTEM()->ChangeDirectory( FileSystem::FILE_SYSTEM()->GetParentDirectory(dir));
+//             _fs->ChangeDirectory( _fs->GetParentDirectory(dir));
 //            path = get_path();
 //            return;
 //        }
@@ -204,7 +202,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
 //        }
 //    }
 //    else if (name == "") {
-//         FileSystem::FILE_SYSTEM()->ChangeToRootDirectory();
+//         _fs->ChangeToRootDirectory();
 //        path = Path();
 //        path.add("");
 //        return;
@@ -224,7 +222,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
 //            throw std::exception("ERROR! not a directory");
 //        }
 //
-//         FileSystem::FILE_SYSTEM()->ChangeDirectory((Directory*)dentry);
+//         _fs->ChangeDirectory((Directory*)dentry);
 //
 //        path = get_path();
 //
@@ -267,7 +265,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
     {
         throw e;
     }
-     dir->createFile(name, FileSystem::FILE_SYSTEM()->current_user()->id());
+     dir->createFile(name, _fs->current_user()->id());
 }
 void Terminal::write(std::vector<std::string> args, Directory* dir)
 {
@@ -382,14 +380,14 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
 
     Directory* current_directory = nullptr;
     if (path.size() == 1) {
-        current_directory =  FileSystem::FILE_SYSTEM()->root_directory();
+        current_directory =  _fs->root_directory();
     }
     else if (path[0].compare("") == 0) {
         path.erase(path.begin());
-        current_directory =  FileSystem::FILE_SYSTEM()->root_directory();
+        current_directory =  _fs->root_directory();
     }
     else {
-        current_directory =  FileSystem::FILE_SYSTEM()->current_directory();
+        current_directory =  _fs->current_directory();
     }
 
     for (int i = 0; i < path.size() - 1; i++) {
@@ -404,7 +402,7 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
                 current_directory = current_directory->getDirectory(dir_name);
             }
             else {
-                current_directory = current_directory->createDirectory(dir_name);
+                current_directory = current_directory->createDirectory(dir_name, _fs->current_user()->id());
             }
         }
     }
@@ -417,7 +415,7 @@ Path Terminal::get_path()
     Path path = Path();
     bool fl = true;
 
-    Directory* dir =  FileSystem::FILE_SYSTEM()->current_directory();
+    Directory* dir =  _fs->current_directory();
 
     while (dir != nullptr) {
         std::string name = dir->name();

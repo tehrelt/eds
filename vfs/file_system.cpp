@@ -11,8 +11,6 @@
 #include "storage.h"
 #include "sha256.h"
 
-FileSystem* FileSystem::_INSTANCE = nullptr;
-
 void FileSystem::init()
 {
     _root_directory = Directory::CREATE_ROOT();
@@ -117,7 +115,7 @@ Superblock* FileSystem::sb()
     return Storage::STORAGE()->superblock();
 }
 
-void FileSystem::Create(std::string name, uint_fast64_t size)
+FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
 {
     std::ofstream stream;
 
@@ -190,9 +188,9 @@ void FileSystem::Create(std::string name, uint_fast64_t size)
 
     fs->init();
     
-    _INSTANCE = fs;
+    return fs;
 }
-void FileSystem::Mount(std::string name)
+FileSystem* FileSystem::Mount(std::string name)
 {
     Superblock sb = Superblock();
 
@@ -270,5 +268,5 @@ void FileSystem::Mount(std::string name)
         fs->Login(username, pass);
     } while (fs->_current_user == nullptr);
 
-    _INSTANCE = fs;
+    return fs;
 }

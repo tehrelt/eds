@@ -18,6 +18,7 @@ public:
 
 class Terminal
 {
+	FileSystem* _fs;
 	Path path;
 
 	std::map<std::string, std::function<void(std::vector<std::string> args, Directory* dir)>> _commands;
@@ -52,7 +53,7 @@ class Terminal
 	Path get_path(Directory* dir);
 
 public:
-	Terminal();
+	Terminal(FileSystem*);
 
 	int Listen();
 
