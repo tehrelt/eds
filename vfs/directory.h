@@ -29,7 +29,7 @@ class Directory : public DEntry
 
 	void save();
 	void remove(DEntry* dentry);
-	DEntry* find_by_name(const std::string& name);
+	
 	
 	static Directory* parse(INode* inode, char* content, Directory* parent);
 
@@ -44,9 +44,12 @@ public:
 
 	bool exists(const std::string& name);
 
+	DEntry* findByName(const std::string& name);
+
 	File* createFile(std::string name, int uid);
 	File* getFile(std::string name);
 	void removeFile(std::string name);
+	void moveTo(DEntry* dentry, Directory* to);
 
 	Directory* createDirectory(std::string name, int uid);
 	Directory* getDirectory(std::string name);

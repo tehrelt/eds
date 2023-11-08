@@ -6,21 +6,24 @@
 Terminal::Terminal(FileSystem* fs)
 {
     _fs = fs;
-    path = Path();
-    path.push("");
 
     _commands = std::map<std::string, std::function<void(std::vector<std::string>, Directory*)>>();
 
-    _commands["ls"]         = std::bind(&Terminal::ls, this, std::placeholders::_1, std::placeholders::_2);
-    _commands["mkdir"]      = std::bind(&Terminal::mkdir, this, std::placeholders::_1, std::placeholders::_2);
-    _commands["mkfile"]     = std::bind(&Terminal::mkfile, this, std::placeholders::_1, std::placeholders::_2);
+    _commands["ls"]     = std::bind(&Terminal::ls,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["mkdir"]  = std::bind(&Terminal::mkdir,            this, std::placeholders::_1, std::placeholders::_2);
+    _commands["mkfile"] = std::bind(&Terminal::mkfile,           this, std::placeholders::_1, std::placeholders::_2);
     _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1, std::placeholders::_2);
-    //_commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1, std::placeholders::_2);
+  //_commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1, std::placeholders::_2);
     _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1, std::placeholders::_2);
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1, std::placeholders::_2);
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1, std::placeholders::_2);
     _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["mv"]     = std::bind(&Terminal::move,             this, std::placeholders::_1, std::placeholders::_2);
+    _commands["su"]     = std::bind(&Terminal::switch_user,      this, std::placeholders::_1, std::placeholders::_2);
+    _commands["cu"]     = std::bind(&Terminal::create_user,      this, std::placeholders::_1, std::placeholders::_2);
+    _commands["users"]  = std::bind(&Terminal::users,            this, std::placeholders::_1, std::placeholders::_2);
+    _commands["who"]    = std::bind(&Terminal::who,              this, std::placeholders::_1, std::placeholders::_2);
 
     _commands.emplace("cls", [](std::vector<std::string> args, Directory*) { system("cls"); });
     _commands.emplace("shutdown", [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
@@ -36,6 +39,9 @@ int Terminal::Listen()
     while (true) {
         std::cout << _fs->current_user()->name() << "@eds " << _fs->current_directory()->path()->ToString() << ": ";
         std::getline(std::cin, line);
+
+        line = trim(line);
+
         try
         {
             this->execute_command(line);
@@ -183,7 +189,7 @@ void Terminal::ls(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
 {
-    if (args.size() < 1) {
+    if (args.size() < 2) {
         throw execution_exception("Enter an args. Try execute help cd", "cd");
     }
     
@@ -191,8 +197,6 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
 
     if (name == "") {
          _fs->forwardTo(_fs->root_directory());
-        path = Path();
-        path.push("");
         return;
     }
 
@@ -205,8 +209,6 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
         }
 
          _fs->forwardTo(d);
-        path = get_path();
-
         return;
     }
     catch (const std::exception& e)
@@ -217,7 +219,7 @@ void Terminal::change_directory(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::cat(std::vector<std::string> args, Directory* dir)
 {
-    if (args.size() == 1) {
+    if (args.size() < 2) {
         throw execution_exception("Enter an args. Try execute help cat", "cat");
     }
 
@@ -250,7 +252,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::write(std::vector<std::string> args, Directory* dir)
 {
-    if (args.size() < 1) {
+    if (args.size() < 2) {
         throw execution_exception("Enter an args. Try execute help cat", "cat");
     }
    
@@ -292,7 +294,7 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::write_append(std::vector<std::string> args, Directory* dir)
 {
-    if (args.size() < 1) {
+    if (args.size() < 2) {
         throw execution_exception("Enter an args. Try execute help wa", "wa");
     }
 
@@ -333,37 +335,91 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     file->write(text.c_str(), file->length() - 1, text.size());
 }
 
-//void Terminal::move(std::vector<std::string> args, Directory* dir)
-//{
-//    throw std::exception("NOT IMPLEMENTED");
-//
-//    if (args.size() < 2) {
-//        throw execution_exception("Enter an args. Try execute help wa", "wa");
-//    }
-//
-//    Directory* source = dir;
-//    Directory* target = traverse_to_dir(args[2]);
-//    std::string source_name = Path::GetLastSegment(args[1]);
-//    std::string target_name = Path::GetLastSegment(args[2]);
-//
-//    
-//    DEntry* source_dentry = source->exists(source_name);
-//    
-//    
-//    source->remove(source_dentry);
-//
-//   
-//}
+void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
+{
+    std::string username;
+    std::string password;
+    if (args.size() == 1) {
+        username = "root";
+    }
+    else {
+        username = args[1];
+    }
+
+    if (_fs->userExists(username) == false) {
+        throw std::exception(std::string("user " + username + " not found").c_str());
+    }
+
+    std::cout << "SWITCHING TO " << username << std::endl;
+    std::cout << "ENTER A PASSWORD: "; std::cin >> password;
+
+    if (!_fs->Login(username, password)) {
+        throw std::exception("invalid credentials");
+    }
+    std::cout << "Successfully login" << std::endl;
+}
+
+void Terminal::create_user(std::vector<std::string> args, Directory* dir)
+{
+    std::string username;
+    std::string password;
+
+    std::cout << "ENTER A USERNAME: "; std::cin >> username;
+
+    if (username.size() > 10) {
+        throw std::exception("username is too long");
+    }
+
+    std::cout << "ENTER A PASSWORD: "; std::cin >> password;
+
+    _fs->CreateUser(username, password);
+}
+
+void Terminal::users(std::vector<std::string> args, Directory* dir)
+{
+    int users_count = Storage::STORAGE()->getNextUID();
+
+    std::cout << "List of users: " << std::endl;
+    for (int i = 0; i < users_count; i++) {
+        std::cout << _fs->getUserById(i)->name() << std::endl;
+    }
+}
+
+void Terminal::who(std::vector<std::string> args, Directory* dir)
+{
+    std::cout << _fs->current_user()->name() << std::endl;
+}
+
+void Terminal::move(std::vector<std::string> args, Directory* dir)
+{
+    if (args.size() < 3) {
+        throw execution_exception("Enter an args. Try execute help mv", "wa");
+    }
+
+
+    Directory* source = dir;
+    Directory* target = traverse_to_dir(args[2]);
+    std::string source_name = Path::GetLastSegment(args[1]);
+
+    if (args[2][args[2].size() - 1] == '/') {
+        throw std::exception("TARGET DESTINATION must include file name as last segment of path");
+    }
+
+    std::string target_name = Path::GetLastSegment(args[2]);
+
+    
+    DEntry* source_dentry = source->findByName(source_name);
+    source_dentry->set_name(target_name);
+
+    source->moveTo(source_dentry, target);
+}
 
 Directory* Terminal::traverse_to_dir(std::string path_string)
 {
     auto path = Path(path_string).parts();
 
     Directory* current_directory = nullptr;
-    if (path.size() == 1) {
-        current_directory =  _fs->root_directory();
-    }
-    else if (path[0].compare("") == 0) {
+    if (path[0].compare("") == 0) {
         path.erase(path.begin());
         current_directory =  _fs->root_directory();
     }

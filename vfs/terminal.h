@@ -19,7 +19,6 @@ public:
 class Terminal
 {
 	FileSystem* _fs;
-	Path path;
 
 	std::map<std::string, std::function<void(std::vector<std::string> args, Directory* dir)>> _commands;
 	
@@ -45,7 +44,12 @@ class Terminal
 	void write(std::vector<std::string> args, Directory* dir);
 	void write_append(std::vector<std::string> args, Directory* dir);
 
-	//void move(std::vector<std::string> args, Directory* dir);
+	void switch_user(std::vector<std::string> args, Directory* dir);
+	void create_user(std::vector<std::string> args, Directory* dir);
+	void users(std::vector<std::string> args, Directory* dir);
+	void who(std::vector<std::string> args, Directory* dir);
+
+	void move(std::vector<std::string> args, Directory* dir);
 
 	Directory* traverse_to_dir(std::string path);
 	

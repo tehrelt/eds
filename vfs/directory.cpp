@@ -46,11 +46,8 @@ void Directory::remove(DEntry* dentry)
 {
     auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
     _dentries.erase(it);
-
-    INode* inode = dentry->inode();
-    Storage::STORAGE()->freeINode(inode);
 }
-DEntry* Directory::find_by_name(const std::string& name)
+DEntry* Directory::findByName(const std::string& name)
 {
     for (const auto& dentry : _dentries) {
         if (dentry->name() == name) {
@@ -84,7 +81,11 @@ void Directory::init()
 
 void Directory::add(DEntry* dentry)
 {
+    dentry->inode()->set_modify_date(getCurrentDate());
+    Storage::STORAGE()->saveINode(dentry->inode());
+
     _dentries.push_back(dentry);
+    save();
 }
 
 bool Directory::exists(const std::string& name)
@@ -114,7 +115,7 @@ File* Directory::createFile(std::string name, int uid)
 }
 File* Directory::getFile(std::string name)
 {
-    DEntry* dentry = find_by_name(name);
+    DEntry* dentry = findByName(name);
 
     if (dentry == nullptr) {
         throw no_such_file_exception(name, _name);
@@ -128,7 +129,7 @@ File* Directory::getFile(std::string name)
 }
 void Directory::removeFile(std::string name)
 {
-    DEntry* dentry = find_by_name(name);
+    DEntry* dentry = findByName(name);
 
     if (dentry == nullptr) {
         throw std::exception("no such file in directory");
@@ -140,9 +141,19 @@ void Directory::removeFile(std::string name)
 
     this->remove(dentry);
 
-    delete dentry;
+    INode* inode = dentry->inode();
+    Storage::STORAGE()->freeINode(inode);
 
     this->save();
+}
+
+void Directory::moveTo(DEntry* dentry, Directory* to)
+{
+    this->remove(dentry);
+    to->add(dentry);
+
+    this->save();
+    to->save();
 }
 
 Directory* Directory::createDirectory(std::string name, int uid)
@@ -168,7 +179,7 @@ Directory* Directory::getDirectory(std::string name)
         dentry = _parent;
     }
     else {
-        dentry = find_by_name(name);
+        dentry = findByName(name);
     }
 
     if (!exists(name)) {

@@ -74,6 +74,25 @@ User* FileSystem::getUserById(int id)
 
     return user;
 }
+bool FileSystem::userExists(const std::string& username)
+{
+    char* users = _root_directory->getFile("usr")->read();
+    char* name = new char[16];
+
+    User* user = nullptr;
+
+    for (int i = 0; i < Storage::STORAGE()->getNextUID(); i++)
+    {
+        int offset = i * FULL_USER_RECORD_SIZE;
+        std::memcpy(name, users + offset + 4, 16);
+
+        if (name == username) {
+            return true;
+        }
+    }
+
+    return false;
+}
 User* FileSystem::findUserByName(const std::string& username)
 {
     char* users = _root_directory->getFile("usr")->read();

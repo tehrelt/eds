@@ -183,6 +183,9 @@ INode* Storage::allocateINode()
 	Block* free_block = allocateBlock();
 
 	auto current_datetime = getCurrentDate();
+	inode->set_flags(0);
+	inode->set_uid(0);
+	inode->set_mode(0);
 	inode->set_create_date(current_datetime);
 	inode->set_modify_date(current_datetime);
 	inode->set_access_date(current_datetime);

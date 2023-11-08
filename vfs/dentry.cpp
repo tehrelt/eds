@@ -6,7 +6,7 @@ DEntry::DEntry()
 {
 	_inode = nullptr;
 	_parent = nullptr;
-	strncpy(_name, "", 16);
+	strncpy(_name, "", 12);
 	_path = Path();
 }
 
@@ -14,7 +14,7 @@ DEntry::DEntry(INode* inode, DEntry* parent, const std::string& name)
 {
 	_inode = inode;
 	_parent = parent;
-	strncpy(_name, name.c_str(), 16);
+	strncpy(_name, name.c_str(), 12);
 	if (parent == nullptr) {
 		_path = Path();
 		_path.push("");
@@ -29,4 +29,9 @@ DEntry::DEntry(INode* inode, DEntry* parent, const std::string& name)
 			_path.push(name);
 		}		
 	}
+}
+
+void DEntry::set_name(const std::string& name)
+{
+	strncpy(_name, name.c_str(), 12);
 }
