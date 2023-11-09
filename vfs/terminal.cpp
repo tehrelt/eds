@@ -391,6 +391,10 @@ void Terminal::chmod(std::vector<std::string> args, Directory* dir)
     DEntry* dentry = dir->findByName(name);
     INode* inode = dentry->inode();
 
+    if (!_fs->checkUser(inode)) {
+        throw execution_exception("Permission denied", "chmod");
+    }
+
     for (int i = 0; i < 6; i++) {
         if (i < 3) {
             mode |= (others & (1 << i));

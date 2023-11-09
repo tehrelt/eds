@@ -135,6 +135,11 @@ bool FileSystem::Login(const std::string& username, const std::string& pass)
     return true;
 }
 
+bool FileSystem::checkUser(INode* inode)
+{
+    return inode->uid() == _current_user->id() || _current_user->id() == 0;
+}
+
 Superblock* FileSystem::sb()
 {
     return Storage::STORAGE()->superblock();

@@ -27,6 +27,8 @@ public:
 	User* findUserByName(const std::string& username);
 	bool Login(const std::string& username, const std::string& pass);
 
+	bool checkUser(INode* inode);
+
 	Superblock* sb();
 
 	static FileSystem* Create(std::string name, uint_fast64_t size);
