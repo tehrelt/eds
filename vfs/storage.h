@@ -37,6 +37,8 @@ private:
 	void lock_inode(INode* inode);
 	void lock_inode(int inode_id);
 
+	void free_block(int num);
+
 	void set_fat_record(int idx, int value);
 
 	void write(char* source, int offset, int size);

@@ -110,6 +110,12 @@ void Storage::lock_inode(int inode_id)
 		sizeof(part));
 }
 
+void Storage::free_block(int num)
+{
+	set_fat_record(num, -1);
+	_superblock += _superblock.block_size();
+}
+
 void Storage::set_fat_record(int idx, int value)
 {
 	_fat[idx] = value;
@@ -245,12 +251,15 @@ Block* Storage::allocateBlock(int prev_id)
 void Storage::freeINode(INode* inode)
 {
 	unlock_inode(inode);
-}
-void Storage::freeINode(int inode_id)
-{
-	unlock_inode(inode_id);
-}
 
+	int bn = inode->block_num();
+
+	while (bn != -2) {
+		int t = bn;
+		bn = _fat[bn];
+		free_block(t);
+	}
+}
 void Storage::clearBlocks(INode* inode)
 {
 	Block* clear_block = new Block(0, _superblock.block_size());
