@@ -234,7 +234,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
 void Terminal::write(std::vector<std::string> args, Directory* dir)
 {
     if (args.size() < 2) {
-        throw execution_exception("Enter an args. Try execute help cat", "cat");
+        throw execution_exception("Enter an args. Try execute help wr", "wr");
     }
    
     std::string name = args[1];
@@ -253,15 +253,14 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     INode* inode = file->inode();
 
     if (inode->IsDirectoryFlag()) {
-        std::cout << "ERROR! cannot open a directory" << std::endl;
-        return;
+        throw execution_exception("Cannot open a directory", "wr");
     }
 
     if (!inode->is__w____()) {
-        throw std::exception("Permission denied");
+        throw execution_exception("Permission denied", "wr");
     }
     else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
-        throw std::exception("Permission denied");
+        throw execution_exception("Permission denied", "wr");
     }
 
     std::string text;
@@ -302,15 +301,14 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     INode* inode = file->inode();
 
     if (inode->IsDirectoryFlag()) {
-        std::cout << "ERROR! cannot open a directory" << std::endl;
-        return;
+        throw execution_exception("Cannot open a directory", "wa");
     }
 
     if (!inode->is__w____()) {
-        throw std::exception("Permission denied");
+        throw execution_exception("Permission denied", "wa");
     }
     else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
-        throw std::exception("Permission denied");
+        throw execution_exception("Permission denied", "wa");
     }
 
     std::string text;

@@ -180,6 +180,11 @@ void Storage::addUser()
 INode* Storage::allocateINode()
 {
 	INode* inode = find_free_inode();
+
+	if (inode == nullptr) {
+		throw std::exception("cannot allocate inode");
+	}
+
 	Block* free_block = allocateBlock();
 
 	auto current_datetime = getCurrentDate();
@@ -202,6 +207,9 @@ INode* Storage::allocateINode()
 Block* Storage::allocateBlock()
 {
 	Block* block = find_free_block();
+	if (block == nullptr) {
+		throw std::exception("not enough space");
+	}
 	block->set_char(0, '\0');
 	save_block(block);
 
@@ -216,6 +224,11 @@ Block* Storage::allocateBlock()
 Block* Storage::allocateBlock(int prev_id)
 {
 	Block* block = find_free_block();
+
+	if (block == nullptr) {
+		throw std::exception("not enough space");
+	}
+
 	block->set_char(0, '\0');
 	save_block(block);
 
@@ -367,7 +380,15 @@ void Storage::writeBytes(INode* inode, int pos, const char* content, int size)
 		save_block(block);
 
 		if (i != blocks_affected - 1) {
-			block = allocateBlock(block->id());
+			try
+			{
+				block = allocateBlock(block->id());
+			}
+			catch (const std::exception&)
+			{
+				break;
+			}
+			
 		}
 	}
 
