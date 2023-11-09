@@ -27,7 +27,7 @@ public:
 	User* findUserByName(const std::string& username);
 	bool Login(const std::string& username, const std::string& pass);
 
-	bool checkUser(INode* inode);
+	bool checkOwner(INode* inode);
 
 	Superblock* sb();
 

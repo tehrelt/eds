@@ -216,7 +216,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
         if (!inode->is_r_____()) {
             throw std::exception("Permission denied");
         }
-        else if (!inode->is____r__() && _fs->current_user()->id() != inode->uid()) {
+        else if (!inode->is____r__() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
             throw std::exception("Permission denied");
         }
 
@@ -255,6 +255,13 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
         return;
+    }
+
+    if (!inode->is__w____()) {
+        throw std::exception("Permission denied");
+    }
+    else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
+        throw std::exception("Permission denied");
     }
 
     std::string text;
@@ -297,6 +304,13 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     if (inode->IsDirectoryFlag()) {
         std::cout << "ERROR! cannot open a directory" << std::endl;
         return;
+    }
+
+    if (!inode->is__w____()) {
+        throw std::exception("Permission denied");
+    }
+    else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
+        throw std::exception("Permission denied");
     }
 
     std::string text;
@@ -391,7 +405,7 @@ void Terminal::chmod(std::vector<std::string> args, Directory* dir)
     DEntry* dentry = dir->findByName(name);
     INode* inode = dentry->inode();
 
-    if (!_fs->checkUser(inode)) {
+    if (!_fs->checkOwner(inode)) {
         throw execution_exception("Permission denied", "chmod");
     }
 
