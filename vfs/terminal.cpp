@@ -416,22 +416,20 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
 
 Directory* Terminal::traverse_to_dir(std::string path_string)
 {
-    auto path = Path(path_string).parts();
+    auto path = Path(path_string);
+    auto parts = path.parts();
 
-    Directory* current_directory = nullptr;
-    if (path[0].compare("") == 0) {
-        path.erase(path.begin());
-        current_directory =  _fs->root_directory();
-    }
-    else {
-        current_directory =  _fs->current_directory();
-    }
+    int sp = path.is_absolute() ? 1 : 0;
+    Directory* current_directory  = path.is_absolute() ? _fs->root_directory() : _fs->current_directory();
 
-    for (int i = 0; i < path.size() - 1; i++) {
 
-        std::string dir_name = path[i];
+    for (int i = sp; i < parts.size() - 1; i++) {
+        std::string dir_name = parts[i];
 
         if (dir_name.compare("..") == 0) {
+            if (current_directory->parent() == nullptr) {
+                throw std::exception("CANNOT GET BEYOND ROOT DIRECTORY");
+            }
             current_directory = (Directory*) current_directory->parent();
         }
         else {

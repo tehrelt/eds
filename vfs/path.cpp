@@ -7,10 +7,12 @@ Path::Path()
 }
 Path::Path(std::string path)
 {
+    _is_absolute = path[0] == '/';
     _parts = split(path, '/');
 }
 Path::Path(std::vector<std::string> parts)
 {
+    _is_absolute = parts[0] == "";
     _parts = parts;
 }
 void Path::push(std::string part)
