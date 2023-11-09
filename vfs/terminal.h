@@ -49,6 +49,8 @@ class Terminal
 	void users(std::vector<std::string> args, Directory* dir);
 	void who(std::vector<std::string> args, Directory* dir);
 
+	void chmod(std::vector<std::string> args, Directory* dir);
+
 	void move(std::vector<std::string> args, Directory* dir);
 
 	Directory* traverse_to_dir(std::string path);

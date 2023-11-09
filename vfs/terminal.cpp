@@ -24,6 +24,7 @@ Terminal::Terminal(FileSystem* fs)
     _commands["cu"]     = std::bind(&Terminal::create_user,      this, std::placeholders::_1, std::placeholders::_2);
     _commands["users"]  = std::bind(&Terminal::users,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["who"]    = std::bind(&Terminal::who,              this, std::placeholders::_1, std::placeholders::_2);
+    _commands["chmod"]  = std::bind(&Terminal::chmod, this, std::placeholders::_1, std::placeholders::_2);
 
     _commands.emplace("cls", [](std::vector<std::string> args, Directory*) { system("cls"); });
     _commands.emplace("shutdown", [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
@@ -148,33 +149,6 @@ void Terminal::sb(std::vector<std::string> args, Directory* dir)
     std::cout << "\tSpace\tfree space: " << sb->free_space_in_bytes() << " bytes" << std::endl;
     std::cout << "\t\ttotal space: " << sb->total_space_in_bytes() << " bytes" << std::endl;
 }
-//void Terminal::get_chain(std::vector<std::string> args, Directory* dir)
-//{
-//    if (args.size() < 1) {
-//        throw execution_exception("Enter an args. Try execute help mkdir", "mkdir");
-//    }
-//    
-//    std::string name = args[1];
-//
-//    auto dentry = dir->exists(name);
-//
-//    if (!dentry) {
-//        std::cout << "ERROR! cannot find a file" << std::endl;
-//        return;
-//    }
-//
-//    INode* inode = dentry->inode();
-//
-//    auto chain =  _fs->services()->block_service()->GetBlockchain(inode);
-//
-//    for (int el : chain) {
-//        std::cout << el;
-//        if (el != -2) {
-//            std::cout << " -> ";
-//        }       
-//    }
-//    std::cout << std::endl;
-//}
 void Terminal::ls(std::vector<std::string> args, Directory* dir)
 {
     auto dentries =  _fs->current_directory()->dentries();
@@ -237,6 +211,13 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
 
         if (inode->IsDirectoryFlag() == true) {
             throw std::exception("ERROR! cannot open a directory");
+        }
+
+        if (!inode->is_r_____()) {
+            throw std::exception("Permission denied");
+        }
+        else if (!inode->is____r__() && _fs->current_user()->id() != inode->uid()) {
+            throw std::exception("Permission denied");
         }
 
         char* content =  dentry->read();
@@ -334,7 +315,6 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
 
     file->write(text.c_str(), file->length() - 1, text.size());
 }
-
 void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
 {
     std::string username;
@@ -358,7 +338,6 @@ void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
     }
     std::cout << "Successfully login" << std::endl;
 }
-
 void Terminal::create_user(std::vector<std::string> args, Directory* dir)
 {
     std::string username;
@@ -374,7 +353,6 @@ void Terminal::create_user(std::vector<std::string> args, Directory* dir)
 
     _fs->CreateUser(username, password);
 }
-
 void Terminal::users(std::vector<std::string> args, Directory* dir)
 {
     int users_count = Storage::STORAGE()->getNextUID();
@@ -384,10 +362,47 @@ void Terminal::users(std::vector<std::string> args, Directory* dir)
         std::cout << _fs->getUserById(i)->name() << std::endl;
     }
 }
-
 void Terminal::who(std::vector<std::string> args, Directory* dir)
 {
     std::cout << _fs->current_user()->name() << std::endl;
+}
+void Terminal::chmod(std::vector<std::string> args, Directory* dir)
+{
+    if (args.size() < 3) {
+        throw execution_exception("Enter an args. Try execute help chmod", "chmod");
+    }
+
+    if (args[2].size() < 2) {
+        throw execution_exception("Mode must contain exact two numbers.", "chmod");
+    }
+
+    std::string name = args[1];
+    int mode = std::stoi(args[2]);
+
+    if (mode > 77) {
+        throw execution_exception("Mode is too big. Each number must be in range 0 to 7", "chmod");
+    }
+
+    int owner = mode / 10;
+    int others = mode % 10;
+
+    mode = 0;
+    
+    DEntry* dentry = dir->findByName(name);
+    INode* inode = dentry->inode();
+
+    for (int i = 0; i < 6; i++) {
+        if (i < 3) {
+            mode |= (others & (1 << i));
+        }
+        else {
+            mode |= ((owner & (1 << (i-3))) << 3);
+        }
+    }
+    
+    dentry->set_mode(mode);
+
+    Storage::STORAGE()->saveINode(inode);
 }
 
 void Terminal::move(std::vector<std::string> args, Directory* dir)
@@ -489,3 +504,31 @@ const char* execution_exception::what() noexcept
 {
     return std::string(_command + ": " + _message).c_str();
 }
+
+//void Terminal::get_chain(std::vector<std::string> args, Directory* dir)
+//{
+//    if (args.size() < 1) {
+//        throw execution_exception("Enter an args. Try execute help mkdir", "mkdir");
+//    }
+//    
+//    std::string name = args[1];
+//
+//    auto dentry = dir->exists(name);
+//
+//    if (!dentry) {
+//        std::cout << "ERROR! cannot find a file" << std::endl;
+//        return;
+//    }
+//
+//    INode* inode = dentry->inode();
+//
+//    auto chain =  _fs->services()->block_service()->GetBlockchain(inode);
+//
+//    for (int el : chain) {
+//        std::cout << el;
+//        if (el != -2) {
+//            std::cout << " -> ";
+//        }       
+//    }
+//    std::cout << std::endl;
+//}

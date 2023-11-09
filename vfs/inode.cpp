@@ -18,6 +18,44 @@ void INode::UnsetHiddenFlag() { _flags &= ~HIDDEN; }
 void INode::UnsetArchiveFlag() { _flags &= ~ARCHIVE; }
 void INode::UnsetDirectoryFlag() { _flags &= ~DIRECTORY; }
 
+void INode::set_r_____(bool i) 
+{ 
+	_mode = i ? _mode | R_____ : _mode & ~R_____;
+}
+
+void INode::set__w____(bool i)
+{
+	_mode = i ? _mode | _W____ : _mode & ~_W____;
+}
+
+void INode::set___x___(bool i)
+{
+	_mode = i ? _mode | __X___ : _mode & ~__X___;
+}
+
+void INode::set____r__(bool i)
+{
+	_mode = i ? _mode | ___R__ : _mode & ~___R__;
+}
+
+void INode::set_____w_(bool i)
+{
+	_mode = i ? _mode | ____W_ : _mode & ~____W_;
+}
+
+void INode::set______x(bool i)
+{
+	_mode = i ? _mode | _____X : _mode & ~_____X;
+}
+
+bool INode::is_r_____() { return (_mode & R_____) != 0; }
+bool INode::is__w____() { return (_mode & _W____) != 0; }
+bool INode::is___x___() { return (_mode & __X___) != 0; }
+
+bool INode::is____r__() { return (_mode & ___R__) != 0; }
+bool INode::is_____w_() { return (_mode & ____W_) != 0; }
+bool INode::is______x() { return (_mode & _____X) != 0; }
+
 void INode::set_mode(uint_fast8_t mode) { _mode = mode; }
 void INode::set_flags(uint_fast8_t flags) { _flags = flags; }
 void INode::set_uid(uint_fast16_t uid) { _uid = uid; }

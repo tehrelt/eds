@@ -35,3 +35,8 @@ void DEntry::set_name(const std::string& name)
 {
 	strncpy(_name, name.c_str(), 12);
 }
+
+void DEntry::set_mode(int mode)
+{
+	_inode->set_mode(mode);
+}

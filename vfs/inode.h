@@ -8,6 +8,13 @@ constexpr uint_fast8_t HIDDEN = 0b0010;
 constexpr uint_fast8_t ARCHIVE = 0b0100;
 constexpr uint_fast8_t DIRECTORY = 0b1000;
 
+constexpr uint_fast8_t R_____ = 0b100000;
+constexpr uint_fast8_t _W____ = 0b010000;
+constexpr uint_fast8_t __X___ = 0b001000;
+constexpr uint_fast8_t ___R__ = 0b000100;
+constexpr uint_fast8_t ____W_ = 0b000010;
+constexpr uint_fast8_t _____X = 0b000001;
+
 class INode
 {
 
@@ -61,6 +68,21 @@ public:
 	void UnsetHiddenFlag();
 	void UnsetArchiveFlag();
 	void UnsetDirectoryFlag();
+
+	void set_r_____(bool i);
+	void set__w____(bool i);
+	void set___x___(bool i);
+	void set____r__(bool i);
+	void set_____w_(bool i);
+	void set______x(bool i);
+
+	bool is_r_____();
+	bool is__w____();
+	bool is___x___();
+	bool is____r__();
+	bool is_____w_();
+	bool is______x();
+
 
 	friend std::ostream& operator<<(std::ostream& os, const INode& inode);
 };
