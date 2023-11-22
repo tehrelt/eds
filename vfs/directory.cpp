@@ -42,8 +42,14 @@ Directory* Directory::parse(INode* inode, char* content, Directory* parent)
 
     return dir;
 }
-void Directory::remove(DEntry* dentry)
+void Directory::erase(DEntry* dentry)
 {
+    auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
+    _dentries.erase(it);
+}
+void Directory::erase(const std::string& name)
+{
+    auto dentry = this->findByName(name);
     auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
     _dentries.erase(it);
 }
@@ -139,7 +145,7 @@ void Directory::removeFile(std::string name)
         throw std::exception("cannot remove a directory");
     }
 
-    this->remove(dentry);
+    this->erase(dentry);
 
     INode* inode = dentry->inode();
     Storage::STORAGE()->freeINode(inode);
@@ -149,7 +155,7 @@ void Directory::removeFile(std::string name)
 
 void Directory::moveTo(DEntry* dentry, Directory* to)
 {
-    this->remove(dentry);
+    this->erase(dentry);
     to->add(dentry);
 
     this->save();
@@ -188,18 +194,60 @@ Directory* Directory::getDirectory(std::string name)
         dentry = findByName(name);
     }
 
-    if (!exists(name)) {
+    if (dentry == nullptr) {
         throw std::exception("no such directory");
     }
 
-    if (dentry->inode()->IsDirectoryFlag() == false) {
+    if (dentry->getType() != DIRECTORY) {
         throw std::exception("is not a directory");
     }
 
     return Directory::READ(dentry);
 }
+void Directory::removeDirectory(const std::string& name)
+{
+    Directory* dir = this->getDirectory(name);
 
+    dir->remove();
 
+    this->erase(name);
+
+    INode* inode = dir->inode();
+    Storage::STORAGE()->freeINode(inode);
+
+    this->save();
+}
+
+void Directory::remove()
+{
+    int offset = _inode->id() == 0 ? 1 : 2;
+    int i = 0;
+    while (_dentries.size() > 2)
+    {
+        auto& dentry = _dentries[2];
+
+        auto name = dentry->name();
+
+        if (dentry->getType() == DIRECTORY) {
+
+            Directory* subdir = this->getDirectory(name);
+
+            subdir->remove();
+
+            this->erase(dentry);
+
+            INode* inode = dentry->inode();
+            Storage::STORAGE()->freeINode(inode);
+
+            this->save();
+            
+        }
+        else {
+            this->removeFile(name);
+        }
+        i++;
+    }
+}
 
 char* Directory::to_char()
 {
@@ -255,14 +303,6 @@ void Directory::copyTo(Directory* destination)
         }
         i++;
     }
-}
-
-void Directory::remove()
-{
-}
-
-void Directory::traverse()
-{
 }
 
 Directory* Directory::CREATE_ROOT()

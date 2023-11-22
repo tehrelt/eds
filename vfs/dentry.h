@@ -28,9 +28,6 @@ public:
 
 	void set_name(const std::string& name); //{ strncpy(_name, name.c_str(), 12); }
 	void set_mode(int mode);
-
-	virtual void remove() = 0;
-	virtual void traverse() = 0;
 	
 	virtual int getType() { return DENTRY; }
 };

@@ -45,12 +45,3 @@ time_t File::modifiedAt() { return _inode->modify_date(); }
 time_t File::accessedAt() { return _inode->access_date(); }
 
 bool File::eof() { return _position >= _inode->size(); }
-
-void File::remove()
-{
-	
-}
-
-void File::traverse()
-{
-}

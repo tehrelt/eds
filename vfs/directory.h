@@ -28,9 +28,9 @@ class Directory : public DEntry
 	std::vector<DEntry*>	_dentries;
 
 	void save();
-	void remove(DEntry* dentry);
-	
-	
+	void erase(DEntry* dentry);
+	void erase(const std::string& name);
+
 	static Directory* parse(INode* inode, char* content, Directory* parent);
 
 public:
@@ -49,18 +49,19 @@ public:
 	File* createFile(std::string name, int uid);
 	File* getFile(std::string name);
 	void removeFile(std::string name);
+
 	void moveTo(DEntry* dentry, Directory* destination);
 	void copyTo(File* file, Directory* destination, const std::string& file_name);
 	void copyTo(Directory* destination);
 
 	Directory* createDirectory(std::string name, int uid);
 	Directory* getDirectory(std::string name);
-	Directory* removeDirectory(std::string name);
+	void removeDirectory(const std::string& name);
+
+	void remove();
 	
 	char* to_char();
 
-	void remove() override;
-	void traverse() override;
 	int getType() override { return DIRECTORY; }
 
 	static Directory* CREATE_ROOT();

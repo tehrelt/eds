@@ -30,7 +30,7 @@ class Terminal
 	void mkdir(std::vector<std::string> args, Directory* dir);
 
 	void rm(std::vector<std::string> args, Directory* dir);
-	//void rmdir(std::vector<std::string> args, Directory* dir);
+	void rmdir(std::vector<std::string> args, Directory* dir);
 
 	void sb(std::vector<std::string> args, Directory* dir);
 
@@ -54,7 +54,6 @@ class Terminal
 	void move(std::vector<std::string> args, Directory* dir);
 
 	void cp(std::vector<std::string> args, Directory* dir);
-	void copy();
 
 	Directory* traverse_to_dir(std::string path);
 	

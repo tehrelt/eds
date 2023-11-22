@@ -35,8 +35,6 @@ public:
 
 	bool eof();
 
-	void remove() override;
-	void traverse() override;
 
 	int getType() override { return FILE; }
 };

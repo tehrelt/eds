@@ -18,6 +18,7 @@ Terminal::Terminal(FileSystem* fs)
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["wa"]     = std::bind(&Terminal::write_append,     this, std::placeholders::_1, std::placeholders::_2);
     _commands["rm"]     = std::bind(&Terminal::rm,               this, std::placeholders::_1, std::placeholders::_2);
+    _commands["rmdir"]  = std::bind(&Terminal::rmdir,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["mv"]     = std::bind(&Terminal::move,             this, std::placeholders::_1, std::placeholders::_2);
     _commands["su"]     = std::bind(&Terminal::switch_user,      this, std::placeholders::_1, std::placeholders::_2);
     _commands["cu"]     = std::bind(&Terminal::create_user,      this, std::placeholders::_1, std::placeholders::_2);
@@ -133,6 +134,17 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
     }
 
     dir->removeFile(name);
+}
+void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
+{
+    std::string name = args[1];
+
+    if (name.length() == 0 && name.length() > 16) {
+        std::cout << "invalid name (0 < n < 16)" << std::endl;
+        return;
+    }
+
+    dir->removeDirectory(name);
 }
 void Terminal::sb(std::vector<std::string> args, Directory* dir)
 {
