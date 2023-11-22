@@ -19,10 +19,13 @@ Block* Storage::read_block(int id)
 INode* Storage::read_inode(int id)
 {
 	INode* inode = new INode();
-
+	
 	read((char*)inode,
 		(_superblock.num_of_first_imap_block() * _superblock.block_size()) + (id * sizeof(INode)),
 		sizeof(INode));
+
+	Log log("Storage::read_inode");
+	log.debug("reading inode#" + std::to_string(id));
 
 	return inode;
 }
@@ -31,6 +34,8 @@ INode* Storage::find_free_inode()
 {
 	for (int i = 0; i < _imap.capacity(); i++) {
 		if (!_imap.IsLocked(i)) {
+			Log log("Storage::find_free_inode");
+			log.debug("found free inode#" + std::to_string(i));
 			return &_imap[i];
 		}
 	}
@@ -40,6 +45,8 @@ Block* Storage::find_free_block()
 {
 	for (int i = 0; i < _fat.capacity(); i++) {
 		if (_fat[i] == -1) {
+			Log log("Storage::find_free_block");
+			log.debug("found free block#" + std::to_string(i));
 			return read_block(i);
 		}
 	}
@@ -59,18 +66,24 @@ Block* Storage::find_relative_block(INode* inode, int pos)
 
 void Storage::save_superblock()
 {
+	Log log("Storage::save_superblock");
 	write((char*)&_superblock, 0, sizeof(Superblock));
+	log.debug("superblock saved");
 }
 void Storage::save_block(Block* block)
 {
 	char* content = block->data();
 	write(content, block->id() * _superblock.block_size(), _superblock.block_size());
+	Log log("Storage::save_block");
+	log.debug("saved block#" + std::to_string(block->id()));
 }
 void Storage::saveINode(INode* inode)
 {
 	write((char*)inode, 
 		_superblock.num_of_first_imap_block() * _superblock.block_size() + inode->id() * sizeof(INode),
 		sizeof(INode));
+	Log log("Storage::saveINode");
+	log.debug("saved inode#" + std::to_string(inode->id()));
 }
 
 void Storage::unlock_inode(INode* inode)
@@ -81,6 +94,8 @@ void Storage::unlock_inode(INode* inode)
 	write((char*)&part,
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
+	Log log("Storage::unlock_inode");
+	log.debug("unlocked inode#" + std::to_string(inode->id()));
 }
 void Storage::unlock_inode(int inode_id)
 {
@@ -90,6 +105,8 @@ void Storage::unlock_inode(int inode_id)
 	write((char*)&part,
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
+	Log log("Storage::unlock_inode");
+	log.debug("unlocked inode#" + std::to_string(inode_id));
 }
 void Storage::lock_inode(INode* inode)
 {
@@ -99,6 +116,8 @@ void Storage::lock_inode(INode* inode)
 	write((char*)&part,
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
+	Log log("Storage::lock_inode");
+	log.debug("locked inode#" + std::to_string(inode->id()));
 }
 void Storage::lock_inode(int inode_id)
 {
@@ -108,17 +127,23 @@ void Storage::lock_inode(int inode_id)
 	write((char*)&part,
 		_superblock.num_of_first_part_block() * _superblock.block_size() + part_idx * sizeof(part),
 		sizeof(part));
+	Log log("Storage::lock_inode");
+	log.debug("locked inode#" + std::to_string(inode_id));
 }
 
 void Storage::free_block(int num)
 {
 	set_fat_record(num, -1);
 	_superblock += _superblock.block_size();
+	Log log("Storage::free_block");
+	log.debug("block#" + std::to_string(num) + " is now free");
 }
 
 void Storage::set_fat_record(int idx, int value)
 {
+	Log log("Storage::set_fat_record");
 	_fat[idx] = value;
+	log.debug("fat[" + std::to_string(idx) + "] = " + std::to_string(value));
 	write((char*)&_fat[idx],
 		_superblock.num_of_first_fat_block() * _superblock.block_size() + idx * sizeof(int_fast32_t),
 		sizeof(int_fast32_t));
@@ -185,9 +210,11 @@ void Storage::addUser()
 
 INode* Storage::allocateINode()
 {
+	Log log("Storage::allocateINode");
 	INode* inode = find_free_inode();
 
 	if (inode == nullptr) {
+		log.info("Free inodes is out");
 		throw std::exception("cannot allocate inode");
 	}
 
@@ -212,8 +239,10 @@ INode* Storage::allocateINode()
 }
 Block* Storage::allocateBlock()
 {
+	Log log("Storage::allocateBlock");
 	Block* block = find_free_block();
 	if (block == nullptr) {
+		log.warn("free space is out");
 		throw std::exception("not enough space");
 	}
 	block->set_char(0, '\0');
@@ -229,9 +258,11 @@ Block* Storage::allocateBlock()
 }
 Block* Storage::allocateBlock(int prev_id)
 {
+	Log log("Storage::allocateBlock");
 	Block* block = find_free_block();
 
 	if (block == nullptr) {
+		log.warn("free space is out");
 		throw std::exception("not enough space");
 	}
 
@@ -250,9 +281,19 @@ Block* Storage::allocateBlock(int prev_id)
 
 void Storage::freeINode(INode* inode)
 {
+	Log log("Storage::freeINode");
 	unlock_inode(inode);
 
 	int bn = inode->block_num();
+
+	auto blockchain = getBlockchain(bn);
+	std::stringstream ss;
+	for (auto& i : blockchain)
+	{
+		ss << i << " ";
+	}
+
+	log.debug("inode#" + std::to_string(inode->id()) + " has blockchain - " + ss.str());
 
 	while (bn != -2) {
 		int t = bn;
@@ -362,6 +403,7 @@ char* Storage::readBytes(INode* inode)
 
 void Storage::writeBytes(INode* inode, int pos, const char* content, int size)
 {
+	Log log("Storage::writeBytes");
 	Block* block = find_relative_block(inode, pos);
 	
 	int start_pos = pos % _superblock.block_size();
@@ -410,6 +452,8 @@ void Storage::writeBytes(INode* inode, int pos, const char* content, int size)
 	inode->set_modify_date(current_datetime);
 	inode->set_access_date(current_datetime);
 	saveINode(inode);
+
+	log.debug("written a " + std::to_string(written_bytes) + " to inode#" + std::to_string(inode->id()));
 
 	delete block;
 }

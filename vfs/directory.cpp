@@ -155,17 +155,22 @@ void Directory::removeFile(std::string name)
 
 void Directory::moveTo(DEntry* dentry, Directory* to)
 {
+    Log log("Directory::moveTo");
     this->erase(dentry);
     to->add(dentry);
 
     this->save();
     to->save();
+
+    log.info("moved '" + dentry->path()->ToString() + "' to '" + to->path()->ToString() + "'");
 }
 
 void Directory::copyTo(File* file, Directory* destination, const std::string& file_name)
 {
+    Log log("Directory::copyTo");
     File* cp_file = destination->createFile(file_name, file->inode()->uid());
     cp_file->write(file->read(), file->length());
+    log.info("copied '" + file->path()->ToString() + "' to '" + cp_file->path()->ToString() + "'");
 }
 
 Directory* Directory::createDirectory(std::string name, int uid)
@@ -206,12 +211,13 @@ Directory* Directory::getDirectory(std::string name)
 }
 void Directory::removeDirectory(const std::string& name)
 {
+    Log log = Log("Directory::removeDirectory");
     Directory* dir = this->getDirectory(name);
 
     dir->remove();
 
     this->erase(name);
-
+    log.info("removing '" + name + "' at " + _path.ToString());
     INode* inode = dir->inode();
     Storage::STORAGE()->freeINode(inode);
 
@@ -220,13 +226,17 @@ void Directory::removeDirectory(const std::string& name)
 
 void Directory::remove()
 {
+    Log log = Log("Directory::remove");
+
     int offset = _inode->id() == 0 ? 1 : 2;
     int i = 0;
     while (_dentries.size() > 2)
     {
         auto& dentry = _dentries[2];
 
-        auto name = dentry->name();
+        std::string name = dentry->name();
+        
+        
 
         if (dentry->getType() == DIRECTORY) {
 
@@ -245,6 +255,7 @@ void Directory::remove()
         else {
             this->removeFile(name);
         }
+        log.info("removing '" + name + "' at " + _path.ToString());
         i++;
     }
 }
@@ -278,6 +289,7 @@ char* Directory::to_char()
 
 void Directory::copyTo(Directory* destination)
 {
+    Log log("Directory::copyTo");
     int offset = _inode->id() == 0 ? 1 : 2;
     int i = 0;
     for (auto& dentry : _dentries)
@@ -293,12 +305,12 @@ void Directory::copyTo(Directory* destination)
 
             Directory* subdir = this->getDirectory(name);
             Directory* cp_subdir = destination->createDirectory(name, dentry->inode()->uid());
+            log.info("copy '" + subdir->path()->ToString() + "' to '" + cp_subdir->path()->ToString() + "'");
             subdir->copyTo(cp_subdir);
+
         }
         else {
             File* file = this->getFile(name);
-            //File* cp_file = destination->createFile(name, dentry->inode()->uid());
-            //cp_file->write(file->read(), file->length());
             this->copyTo(file, destination, file->name());
         }
         i++;

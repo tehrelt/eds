@@ -149,13 +149,17 @@ Superblock* FileSystem::sb()
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
 {
-    std::ofstream stream;
+    std::ofstream stream; 
+
+    auto log = Log("FileSystem::Create");
 
     stream.open(name, std::ios::binary | std::ios::out);
+    
 
     if (!stream.is_open()) {
         throw std::exception("Cannot create a file");
     }
+    log.debug("opened a stream at " + name);
 
     Superblock sb = Superblock(size);
 

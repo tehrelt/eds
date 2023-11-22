@@ -3,6 +3,7 @@
 #include "Superblock.h"
 #include "fat.h"
 #include "imap.h"
+#include "tools.h"
 
 Superblock::Superblock()
 {
@@ -26,10 +27,14 @@ Superblock::Superblock()
 }
 Superblock::Superblock(uint_fast64_t size) : Superblock()
 {
+	Log log = Log("Superblock::Superblock(size)");
+
 	if (size < 64 << 20)		{ _block_size = 512;  }
 	else if (size < 128 << 20)  { _block_size = 1024; }
 	else if (size < 256 << 20)  { _block_size = 2048; }
 	else						{ _block_size = 4096; }
+
+	log.debug("block size = " + std::to_string(_block_size));
 
 	int block_reserved = (sizeof(Superblock) + _block_size - 1) / _block_size;
 
@@ -39,17 +44,32 @@ Superblock::Superblock(uint_fast64_t size) : Superblock()
 	_fat_size = sizeof(uint_fast32_t) * _fat_capacity;
 	block_reserved += (_fat_size + _block_size - 1) / _block_size;
 
-	// INode list allocation
+	log.debug("FAT allocation");
+	log.debug("FAT first block " + std::to_string(_num_of_first_fat_block));
+	log.debug("FAT capacity = " + std::to_string(_fat_capacity));
+	log.debug("FAT size = " + std::to_string(_fat_size));
+
+	// IMAP allocation
 	_num_of_first_imap_block = block_reserved;
 	_imap_capacity = size / 1000;
 	_imap_size = sizeof(INode) * _imap_capacity;
 	block_reserved += (_imap_size + _block_size - 1) / _block_size;
+
+	log.debug("IMAP allocation");
+	log.debug("IMAP first block " + std::to_string(_num_of_first_imap_block));
+	log.debug("IMAP capacity = " + std::to_string(_imap_capacity));
+	log.debug("IMAP size = " + std::to_string(_imap_size));
 	
 	// INode bitmap allocation
 	_num_of_first_part_block = block_reserved;
 	_imap_parts_count = (_imap_capacity + (8 * sizeof(uint_fast64_t)) - 1) / (sizeof(uint_fast64_t) * 8);
 	_imap_parts_size = sizeof(uint_fast64_t) * _imap_parts_count;
 	block_reserved += (_imap_parts_size + _block_size - 1) / _block_size;
+
+	log.debug("BITMAP allocation");
+	log.debug("BITMAP first block " + std::to_string(_num_of_first_part_block));
+	log.debug("BITMAP capacity = " + std::to_string(_imap_parts_count));
+	log.debug("BITMAP size = " + std::to_string(_imap_parts_size));
 
 	_num_of_first_data_block = block_reserved;
 
@@ -58,6 +78,13 @@ Superblock::Superblock(uint_fast64_t size) : Superblock()
 	_data_blocks_count = _total_space_in_bytes / _block_size;
 
 	_fs_size_in_blocks = size / _block_size;
+
+	log.debug("SUPERBLOCK _num_of_first_data_block = " + std::to_string(_num_of_first_data_block));
+	log.debug("SUPERBLOCK _total_space_in_bytes = " + std::to_string(_total_space_in_bytes));
+	log.debug("SUPERBLOCK _free_space_in_bytes = " + std::to_string(_free_space_in_bytes));
+	log.debug("SUPERBLOCK _data_blocks_count = " + std::to_string(_data_blocks_count));
+	log.debug("SUPERBLOCK _fs_size_in_blocks = " + std::to_string(_fs_size_in_blocks));
+
 
 	_users_count = 0;
 

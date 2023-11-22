@@ -1,10 +1,36 @@
 ﻿#include <iostream>
 #include <fstream>
+#include <string>
 #include "file_system.h"
 #include "terminal.h"
+#include "tools.h"
 
 int main()
 {
+    bool debug = false;
+
+    std::ifstream config_stream;
+
+    config_stream.open(".cfg");
+
+    if (config_stream.is_open()) {
+        std::string key;
+        while (config_stream >> key)
+        {
+            std::string value;
+            config_stream >> value;
+
+            if (key == "debug") {
+                debug = value == "true";
+            }
+        }
+    }
+    Log::IS_DEBUG = debug;
+
+    Log log = Log("main");
+    log.info("Logger initialized");
+    log.debug("DEBUG MODE");
+
     FileSystem* fs = nullptr;
     std::string name;
 

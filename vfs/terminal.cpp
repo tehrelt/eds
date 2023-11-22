@@ -1,6 +1,7 @@
 #include "terminal.h"
 #include "tools.h"
 #include <sstream>
+#include <iomanip>
 
 
 Terminal::Terminal(FileSystem* fs)
@@ -26,6 +27,7 @@ Terminal::Terminal(FileSystem* fs)
     _commands["users"]  = std::bind(&Terminal::users,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["who"]    = std::bind(&Terminal::who,              this, std::placeholders::_1, std::placeholders::_2);
     _commands["chmod"]  = std::bind(&Terminal::chmod,            this, std::placeholders::_1, std::placeholders::_2);
+    _commands["tree"]   = std::bind(&Terminal::tree,             this, std::placeholders::_1, std::placeholders::_2);
     _commands.emplace("cls", [](std::vector<std::string> args, Directory*) { system("cls"); });
     _commands.emplace("shutdown", [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
 
@@ -51,8 +53,6 @@ int Terminal::Listen()
         {
             std::cout << "Executing error: " << e.what() << std::endl;
         }
-
-        std::cout << std::endl;
 
         if (line == "shutdown") {
             return 0;
@@ -288,6 +288,9 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
+    dir->removeFile(name);
+    dir->createFile(name, inode->uid());
+
     file->write(text.c_str(), text.size());
 }
 void Terminal::write_append(std::vector<std::string> args, Directory* dir)
@@ -463,19 +466,18 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
         throw execution_exception("Enter an args. Try execute help сp", "cp");
     }
 
-    std::string target_name = args[2];
+    Directory* source = dir;
+    Directory* target = traverse_to_dir(args[2]);
+
+    std::string source_name = Path::GetLastSegment(args[1]);
+    std::string target_name = Path::GetLastSegment(args[2]);
 
     if (dir->exists(target_name)) {
         throw execution_exception("target already exists", "cp");
     }
-    else if (target_name[args[2].size() - 1] == '/') {
+    else if (target_name[target_name.size() - 1] == '/') {
         throw std::exception("TARGET DESTINATION must include file name as last segment of path");
     }
-
-    Directory* source = dir;
-    Directory* target = traverse_to_dir(target_name);
-
-    std::string source_name = Path::GetLastSegment(args[1]);
 
     int type = source->findByName(source_name)->getType();
 
@@ -512,6 +514,36 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
     // 5. Когда файлы закончились перехожу в первую поддиректорию и повторяю с пункта 1.
     // 6. Если не нахожу больше директорий, то всё
     //
+}
+
+void Terminal::tree(std::vector<std::string> args, Directory* dir)
+{
+    std::cout << dir->name() << std::endl;
+    _tree(dir, 1);
+}
+
+#define indentX 2
+#define prevLines for (int i = 0; i < indent; i++) { \
+                    std::cout << "|" << std::setw(indentX); \
+                  }
+void Terminal::_tree(Directory* directory, int indent)
+{
+    auto dentires = directory->dentries();
+
+    for (int i = directory->inode()->id() == 0 ? 1 : 2; i < dentires.size(); i++) {
+        
+        auto dentry = dentires[i];
+        auto name = dentry->name();
+
+        prevLines;
+
+        std::cout << "---" << name << std::endl;
+
+        if (dentry->getType() == DIRECTORY) {
+            Directory* dir = directory->getDirectory(name);
+            _tree(dir, indent + 1);
+        }
+    }
 }
 
 Directory* Terminal::traverse_to_dir(std::string path_string)
