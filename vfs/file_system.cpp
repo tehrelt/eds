@@ -53,7 +53,9 @@ User* FileSystem::CreateUser(const std::string& username, const std::string& pas
     std::memcpy(user_record, user->to_char(), USER_RECORD_SIZE);
     std::memcpy(user_record + USER_RECORD_SIZE, hash_password.c_str(), 64);
 
-    _root_directory->getFile("usr")->write(user_record, id * FULL_USER_RECORD_SIZE, FULL_USER_RECORD_SIZE);
+    File* usersFile = _root_directory->getFile("usr");
+    usersFile->seek(id * FULL_USER_RECORD_SIZE);
+    usersFile->write(user_record, FULL_USER_RECORD_SIZE);
 
     Storage::STORAGE()->addUser();
 

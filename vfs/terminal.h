@@ -53,6 +53,9 @@ class Terminal
 
 	void move(std::vector<std::string> args, Directory* dir);
 
+	void cp(std::vector<std::string> args, Directory* dir);
+	void copy();
+
 	Directory* traverse_to_dir(std::string path);
 	
 	Path get_path();

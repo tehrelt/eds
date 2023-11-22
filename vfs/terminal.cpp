@@ -13,7 +13,6 @@ Terminal::Terminal(FileSystem* fs)
     _commands["mkdir"]  = std::bind(&Terminal::mkdir,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["mkfile"] = std::bind(&Terminal::mkfile,           this, std::placeholders::_1, std::placeholders::_2);
     _commands["sb"]     = std::bind(&Terminal::sb,               this, std::placeholders::_1, std::placeholders::_2);
-  //_commands["chain"]  = std::bind(&Terminal::get_chain,        this, std::placeholders::_1, std::placeholders::_2);
     _commands["cd"]     = std::bind(&Terminal::change_directory, this, std::placeholders::_1, std::placeholders::_2);
     _commands["cat"]    = std::bind(&Terminal::cat,              this, std::placeholders::_1, std::placeholders::_2);
     _commands["wr"]     = std::bind(&Terminal::write,            this, std::placeholders::_1, std::placeholders::_2);
@@ -22,10 +21,10 @@ Terminal::Terminal(FileSystem* fs)
     _commands["mv"]     = std::bind(&Terminal::move,             this, std::placeholders::_1, std::placeholders::_2);
     _commands["su"]     = std::bind(&Terminal::switch_user,      this, std::placeholders::_1, std::placeholders::_2);
     _commands["cu"]     = std::bind(&Terminal::create_user,      this, std::placeholders::_1, std::placeholders::_2);
+    _commands["cp"]     = std::bind(&Terminal::cp,               this, std::placeholders::_1, std::placeholders::_2);
     _commands["users"]  = std::bind(&Terminal::users,            this, std::placeholders::_1, std::placeholders::_2);
     _commands["who"]    = std::bind(&Terminal::who,              this, std::placeholders::_1, std::placeholders::_2);
-    _commands["chmod"]  = std::bind(&Terminal::chmod, this, std::placeholders::_1, std::placeholders::_2);
-
+    _commands["chmod"]  = std::bind(&Terminal::chmod,            this, std::placeholders::_1, std::placeholders::_2);
     _commands.emplace("cls", [](std::vector<std::string> args, Directory*) { system("cls"); });
     _commands.emplace("shutdown", [](std::vector<std::string> args, Directory*) { std::cout << "Shutdowning..."; });
 
@@ -325,7 +324,8 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
-    file->write(text.c_str(), file->length() - 1, text.size());
+    file->seek(file->length() - 1);
+    file->write(text.c_str(), text.size());
 }
 void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
 {
@@ -443,6 +443,63 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
     source_dentry->set_name(target_name);
 
     source->moveTo(source_dentry, target);
+}
+
+void Terminal::cp(std::vector<std::string> args, Directory* dir)
+{
+    if (args.size() < 3) {
+        throw execution_exception("Enter an args. Try execute help сp", "cp");
+    }
+
+    std::string target_name = args[2];
+
+    if (dir->exists(target_name)) {
+        throw execution_exception("target already exists", "cp");
+    }
+    else if (target_name[args[2].size() - 1] == '/') {
+        throw std::exception("TARGET DESTINATION must include file name as last segment of path");
+    }
+
+    Directory* source = dir;
+    Directory* target = traverse_to_dir(target_name);
+
+    std::string source_name = Path::GetLastSegment(args[1]);
+
+    int type = source->findByName(source_name)->getType();
+
+    if (type == DIRECTORY) {
+        Directory* source_dir = source->getDirectory(source_name);
+        Directory* target_dir = nullptr;
+
+        try
+        {
+            target_dir = target->getDirectory(target_name);
+        }
+        catch (const std::exception&)
+        {
+            target_dir = target->createDirectory(target_name, source_dir->inode()->uid());
+        }
+        
+        source_dir->copyTo(target_dir);
+    }
+    else {
+        File* source_file = source->getFile(source_name);
+        source->copyTo(source_file, target, target_name);
+    }
+
+    //
+    // 0. cp dir1 dir2     dir1/ 
+    //                      | - subdir/
+    //                      |      |  - subfile
+    //                      | - file
+    //                      | - file2
+    // 1. Создаю папку dir2
+    // 2. Начинаю с самого корня исходной папки (dir1/)
+    // 3. Получаю список указателей на файлы из dir1
+    // 4. Циклично создаю файлы из списка в dir2, перенося содержимое
+    // 5. Когда файлы закончились перехожу в первую поддиректорию и повторяю с пункта 1.
+    // 6. Если не нахожу больше директорий, то всё
+    //
 }
 
 Directory* Terminal::traverse_to_dir(std::string path_string)

@@ -49,14 +49,18 @@ public:
 	File* createFile(std::string name, int uid);
 	File* getFile(std::string name);
 	void removeFile(std::string name);
-	void moveTo(DEntry* dentry, Directory* to);
+	void moveTo(DEntry* dentry, Directory* destination);
+	void copyTo(File* file, Directory* destination, const std::string& file_name);
+	void copyTo(Directory* destination);
 
 	Directory* createDirectory(std::string name, int uid);
 	Directory* getDirectory(std::string name);
 	Directory* removeDirectory(std::string name);
-
+	
 	char* to_char();
 
+	void remove() override;
+	void traverse() override;
 	int getType() override { return DIRECTORY; }
 
 	static Directory* CREATE_ROOT();

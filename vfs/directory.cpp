@@ -61,7 +61,7 @@ Directory::Directory(INode* inode)
     : DEntry(inode, nullptr, "")
 {
     _dentries = std::vector<DEntry*>();
-    _dentries.push_back(new DEntry(inode, this, "."));
+    _dentries.push_back(new Directory(inode, this, "."));
 }
 Directory::Directory(INode* inode, DEntry* parent, const std::string& name)
     : DEntry(inode, parent, name)
@@ -136,7 +136,7 @@ void Directory::removeFile(std::string name)
     }
 
     if (dentry->getType() != FILE) {
-
+        throw std::exception("cannot remove a directory");
     }
 
     this->remove(dentry);
@@ -154,6 +154,12 @@ void Directory::moveTo(DEntry* dentry, Directory* to)
 
     this->save();
     to->save();
+}
+
+void Directory::copyTo(File* file, Directory* destination, const std::string& file_name)
+{
+    File* cp_file = destination->createFile(file_name, file->inode()->uid());
+    cp_file->write(file->read(), file->length());
 }
 
 Directory* Directory::createDirectory(std::string name, int uid)
@@ -220,6 +226,43 @@ char* Directory::to_char()
     }
 
     return c;
+}
+
+void Directory::copyTo(Directory* destination)
+{
+    int offset = _inode->id() == 0 ? 1 : 2;
+    int i = 0;
+    for (auto& dentry : _dentries)
+    {
+        if (i < offset) {
+            i++;
+            continue;
+        }
+
+        auto name = dentry->name();
+
+        if (dentry->getType() == DIRECTORY) {
+
+            Directory* subdir = this->getDirectory(name);
+            Directory* cp_subdir = destination->createDirectory(name, dentry->inode()->uid());
+            subdir->copyTo(cp_subdir);
+        }
+        else {
+            File* file = this->getFile(name);
+            //File* cp_file = destination->createFile(name, dentry->inode()->uid());
+            //cp_file->write(file->read(), file->length());
+            this->copyTo(file, destination, file->name());
+        }
+        i++;
+    }
+}
+
+void Directory::remove()
+{
+}
+
+void Directory::traverse()
+{
 }
 
 Directory* Directory::CREATE_ROOT()
