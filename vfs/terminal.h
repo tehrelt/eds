@@ -43,7 +43,6 @@ class Terminal
 	void cat(std::vector<std::string> args, Directory* dir);
 	void write(std::vector<std::string> args, Directory* dir);
 	void write_append(std::vector<std::string> args, Directory* dir);
-
 	void switch_user(std::vector<std::string> args, Directory* dir);
 	void create_user(std::vector<std::string> args, Directory* dir);
 	void users(std::vector<std::string> args, Directory* dir);
@@ -63,6 +62,5 @@ public:
 	Terminal(FileSystem*);
 
 	int Listen();
-
 };
 

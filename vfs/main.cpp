@@ -1,12 +1,23 @@
 ﻿#include <iostream>
 #include <fstream>
 #include <string>
+#include <cstdlib>
+#include <sys/types.h>
+#include <sys/stat.h>
 #include "file_system.h"
 #include "terminal.h"
 #include "tools.h"
 
+#define LOGS_DIR "logs"
+
+
 int main()
 {
+    struct stat info;
+    if (stat(LOGS_DIR, &info) != 0) {
+        system("mkdir logs");
+    }
+
     bool debug = false;
 
     std::ifstream config_stream;

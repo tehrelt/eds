@@ -6,6 +6,8 @@
 #include "block.h"
 #include <vector>
 
+#define storage Storage::STORAGE()
+
 constexpr auto ROOT_INODE	= 0;
 constexpr auto USERS_INODE	= 1;
 

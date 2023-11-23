@@ -35,6 +35,7 @@ Terminal::Terminal(FileSystem* fs)
 
 int Terminal::Listen()
 {
+    Log log = Log("Terminal::Listen");
     std::string line;
 
     std::cin.ignore(1);
@@ -51,6 +52,7 @@ int Terminal::Listen()
         }
         catch (const std::exception& e)
         {
+            log.warn("EXECUTION ERROR: " + std::string(e.what()));
             std::cout << "Executing error: " << e.what() << std::endl;
         }
 
@@ -163,7 +165,7 @@ void Terminal::sb(std::vector<std::string> args, Directory* dir)
 void Terminal::ls(std::vector<std::string> args, Directory* dir)
 {
     auto dentries =  _fs->current_directory()->dentries();
-    std::cout << "id\tflags\tmode\tsize\tcreation\t\tmodify\t\t\tlast access\t\towner\tname" << std::endl;
+    std::cout << "id\tflags\tmode\tsize\tcreation\t\tmodify\t\t\tlast access\t\tbn\towner\tname" << std::endl;
 
     for (int i = 0; i < dentries.size(); i++) {
         INode* inode = dentries[i]->inode();
@@ -435,7 +437,6 @@ void Terminal::chmod(std::vector<std::string> args, Directory* dir)
 
     Storage::STORAGE()->saveINode(inode);
 }
-
 void Terminal::move(std::vector<std::string> args, Directory* dir)
 {
     if (args.size() < 3) {
@@ -459,7 +460,6 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
 
     source->moveTo(source_dentry, target);
 }
-
 void Terminal::cp(std::vector<std::string> args, Directory* dir)
 {
     if (args.size() < 3) {
@@ -515,7 +515,6 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
     // 6. Если не нахожу больше директорий, то всё
     //
 }
-
 void Terminal::tree(std::vector<std::string> args, Directory* dir)
 {
     std::cout << dir->name() << std::endl;
@@ -558,14 +557,10 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
     for (int i = sp; i < parts.size() - 1; i++) {
         std::string dir_name = parts[i];
 
-        if (dir_name.compare(".") == 0) {
-            current_directory = current_directory;
-        }
-        else if (dir_name.compare("..") == 0) {
-            if (current_directory->parent() == nullptr) {
-                throw std::exception("CANNOT GET BEYOND ROOT DIRECTORY");
+        if (dir_name.compare("..") == 0) {
+            if (current_directory->parent() != nullptr) {
+                current_directory = (Directory*)current_directory->parent();
             }
-            current_directory = (Directory*) current_directory->parent();
         }
         else {
             if (current_directory->exists(dir_name)) {

@@ -141,7 +141,8 @@ std::ostream& operator<<(std::ostream& os, const INode& inode)
 	os << inode._size << "\t";
 	os << timeToString(inode._create_date) << "\t";
 	os << timeToString(inode._modify_date) << "\t";
-	os << timeToString(inode._access_date);
+	os << timeToString(inode._access_date) << "\t";
+	os << inode._block_num;
 
 	return os;
 }

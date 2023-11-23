@@ -181,7 +181,7 @@ Directory* Directory::createDirectory(std::string name, int uid)
     Storage::STORAGE()->saveINode(inode);
 
     Directory* dir = (Directory*)DEntryFactory::CREATE(DIRECTORY, inode, this, name);
-    _dentries.push_back(dir);
+    _dentries.insert(_dentries.begin() + 2, dir);
 
     this->save();
     dir->save();
@@ -220,10 +220,10 @@ void Directory::removeDirectory(const std::string& name)
     dir->remove();
 
     this->erase(name);
-    log.info("removing '" + name + "' at " + _path.ToString());
-    INode* inode = dir->inode();
-    Storage::STORAGE()->freeINode(inode);
+    log.info("removing '" + name + "'(" + std::to_string(dir->inode()->block_num()) + ") at " + _path.ToString());
 
+
+    storage->freeINode(dir->inode());
     this->save();
 }
 
@@ -236,29 +236,22 @@ void Directory::remove()
     while (_dentries.size() > 2)
     {
         auto& dentry = _dentries[2];
-
-        std::string name = dentry->name();
-        
-        
+        std::string name = dentry->name();        
 
         if (dentry->getType() == DIRECTORY) {
-
             Directory* subdir = this->getDirectory(name);
-
             subdir->remove();
 
-            this->erase(dentry);
-
-            INode* inode = dentry->inode();
-            Storage::STORAGE()->freeINode(inode);
-
+            this->erase(name);
+            storage->freeINode(subdir->inode());
             this->save();
-            
+            delete subdir;
         }
         else {
             this->removeFile(name);
         }
-        log.info("removing '" + name + "' at " + _path.ToString());
+
+        log.info("removing '" + name + "'(" + std::to_string(dentry->inode()->block_num()) + ") at " + _path.ToString());
         i++;
     }
 }

@@ -79,7 +79,7 @@ void Log::log(const std::string& message, LOG_LEVEL level)
     std::cout << "\x1b[0m" << std::endl;
 
     std::ofstream out;
-    out.open(timeToString(LAUNCH_TIME, "%Y_%m_%d__%H_%M_%S") + ".log", std::ios_base::app);
+    out.open("logs/" + timeToString(LAUNCH_TIME, "%Y_%m_%d__%H_%M_%S") + ".log", std::ios_base::app);
     out << "[" << timeToString(time) << "]" << message;
     if (IS_DEBUG) {
         out << " at " << "[" << _component << "]";
