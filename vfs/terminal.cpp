@@ -558,7 +558,10 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
     for (int i = sp; i < parts.size() - 1; i++) {
         std::string dir_name = parts[i];
 
-        if (dir_name.compare("..") == 0) {
+        if (dir_name.compare(".") == 0) {
+            current_directory = current_directory;
+        }
+        else if (dir_name.compare("..") == 0) {
             if (current_directory->parent() == nullptr) {
                 throw std::exception("CANNOT GET BEYOND ROOT DIRECTORY");
             }
@@ -575,41 +578,6 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
     }
 
     return current_directory;
-}
-
-Path Terminal::get_path()
-{
-    Path path = Path();
-    bool fl = true;
-
-    Directory* dir =  _fs->current_directory();
-
-    while (dir != nullptr) {
-        std::string name = dir->name();
-        path.push(name);
-
-        dir = (Directory*)dir->parent();
-    }
-
-
-    return path.reverse();
-}
-Path Terminal::get_path(Directory* directory)
-{
-    Path path = Path();
-    bool fl = true;
-
-    Directory* dir = directory;
-
-    while (dir != nullptr) {
-        std::string name = dir->name();
-        path.push(name);
-
-        dir = (Directory*)dir->parent();
-    }
-        
-
-    return path.reverse();
 }
 
 execution_exception::execution_exception(const std::string& message, const std::string& command) : std::exception(message.c_str())

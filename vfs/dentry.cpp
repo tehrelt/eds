@@ -40,3 +40,8 @@ void DEntry::set_mode(int mode)
 {
 	_inode->set_mode(mode);
 }
+
+void DEntry::set_mode(int owner, int others)
+{
+	_inode->set_mode((others & 0b111) | ((owner & 0b111) << 3));
+}

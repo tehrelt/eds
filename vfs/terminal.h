@@ -58,9 +58,6 @@ class Terminal
 	void _tree(Directory* directory, int indent);
 
 	Directory* traverse_to_dir(std::string path);
-	
-	Path get_path();
-	Path get_path(Directory* dir);
 
 public:
 	Terminal(FileSystem*);

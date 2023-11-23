@@ -192,7 +192,10 @@ Directory* Directory::getDirectory(std::string name)
 {
     DEntry* dentry = nullptr;
 
-    if (name == "..") {
+    if (name == ".") {
+        dentry = this;
+    }
+    else if (name == "..") {
         dentry = _parent;
     }
     else {
