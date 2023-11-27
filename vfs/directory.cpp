@@ -83,7 +83,6 @@ void Directory::init()
     _dentries.push_back(new Directory(_inode, this, "."));
     _dentries.push_back(new Directory(_parent->inode(), this, ".."));
 }
-
 void Directory::add(DEntry* dentry)
 {
     dentry->inode()->set_modify_date(getCurrentDate());
@@ -92,7 +91,6 @@ void Directory::add(DEntry* dentry)
     _dentries.push_back(dentry);
     save();
 }
-
 bool Directory::exists(const std::string& name)
 {
     for (auto dentry : _dentries) {
@@ -164,6 +162,35 @@ void Directory::moveTo(DEntry* dentry, Directory* to)
     log.info("moved '" + dentry->path()->ToString() + "' to '" + to->path()->ToString() + "'");
 }
 
+void Directory::copyTo(Directory* destination)
+{
+    Log log("Directory::copyTo");
+    int offset = _inode->id() == 0 ? 1 : 2;
+    int i = 0;
+    for (auto& dentry : _dentries)
+    {
+        if (i < offset) {
+            i++;
+            continue;
+        }
+
+        auto name = dentry->name();
+
+        if (dentry->getType() == DIRECTORY) {
+
+            Directory* subdir = this->getDirectory(name);
+            Directory* cp_subdir = destination->createDirectory(name, dentry->inode()->uid());
+            log.info("copy '" + subdir->path()->ToString() + "' to '" + cp_subdir->path()->ToString() + "'");
+            subdir->copyTo(cp_subdir);
+
+        }
+        else {
+            File* file = this->getFile(name);
+            this->copyTo(file, destination, file->name());
+        }
+        i++;
+    }
+}
 void Directory::copyTo(File* file, Directory* destination, const std::string& file_name)
 {
     Log log("Directory::copyTo");
@@ -282,36 +309,6 @@ char* Directory::to_char()
     return c;
 }
 
-void Directory::copyTo(Directory* destination)
-{
-    Log log("Directory::copyTo");
-    int offset = _inode->id() == 0 ? 1 : 2;
-    int i = 0;
-    for (auto& dentry : _dentries)
-    {
-        if (i < offset) {
-            i++;
-            continue;
-        }
-
-        auto name = dentry->name();
-
-        if (dentry->getType() == DIRECTORY) {
-
-            Directory* subdir = this->getDirectory(name);
-            Directory* cp_subdir = destination->createDirectory(name, dentry->inode()->uid());
-            log.info("copy '" + subdir->path()->ToString() + "' to '" + cp_subdir->path()->ToString() + "'");
-            subdir->copyTo(cp_subdir);
-
-        }
-        else {
-            File* file = this->getFile(name);
-            this->copyTo(file, destination, file->name());
-        }
-        i++;
-    }
-}
-
 Directory* Directory::CREATE_ROOT()
 {
     INode* root_inode = Storage::STORAGE()->allocateINode();
@@ -343,30 +340,6 @@ Directory* Directory::READ(DEntry* dentry)
 
     return root;
 }
-
-
-
-//Directory::Directory(char* content)
-//{
-//    int size, idid;
-//    char* name = new char[16];
-//    int entry_size = 4 + 16;
-//
-//    std::memcpy(&_parent_id, content,     4);   
-//    std::memcpy(&_inode_id,  content + 4, 4);
-//    std::memcpy(&size,       content + 8, 4);
-//
-//    _dentries = std::vector<DEntry*>();
-//
-//    char* entry = content + 12;
-//    for (int i = 0; i < size; i++) {
-//        std::memcpy(&idid, entry,     4);
-//        std::memcpy(name,  entry + 4, 16);
-//
-//        _dentries.push_back(new DEntry(idid, name));
-//        entry += entry_size;
-//    }
-//}
 
 std::ostream& operator<<(std::ostream& os, Directory* d)
 {

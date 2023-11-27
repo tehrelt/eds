@@ -1,129 +1,129 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
-  <Class Name="Block" Collapsed="true">
-    <Position X="8.5" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAEAAAEBAAAAAAAAABAAAAAAAEAAAAAAAAQAAgAAgA=</HashCode>
-      <FileName>block.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="DEntry" Collapsed="true">
-    <Position X="5" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAIAAAAAACAABAAAACAAAQAQAEAAAAAAAACABAAgA=</HashCode>
-      <FileName>dentry.h</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="DEntryFactory" Collapsed="true">
-    <Position X="10.25" Y="1" Width="1.5" />
+    <Position X="12" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>dentry_factory.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Directory">
-    <Position X="6" Y="2.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAYAABAAIACAIAEUAABAAAAAAQAQAEYAARAAAAACKAA=</HashCode>
-      <FileName>directory.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="execution_exception" Collapsed="true">
-    <Position X="12" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAABAAAAAAAAAEAAAABAAAAA=</HashCode>
-      <FileName>terminal.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="FAT" Collapsed="true">
-    <Position X="13.75" Y="1" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAACAAAAAAAAAAIAAAQAEAEAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>fat.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="File">
-    <Position X="3.75" Y="2.25" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AEEACAAAAAAIAAAAAGAEIAAAAQAMAAAACYAAACBAAAA=</HashCode>
-      <FileName>file.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="FileSystem" Collapsed="true">
-    <Position X="8.5" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAgAAAEAAcAAAAACASQAQAAAIAAAAEIAEAAQAAAAAEA=</HashCode>
-      <FileName>file_system.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="IMap" Collapsed="true">
-    <Position X="10.25" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>gAAQCAAAAAIIQCgBBAIAAAQAAAEQAAAAAAAAAACAAAA=</HashCode>
-      <FileName>imap.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="imap_exception" Collapsed="true">
-    <Position X="12" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAEAAAAAIAAAA=</HashCode>
-      <FileName>imap.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="INode" Collapsed="true">
-    <Position X="13.75" Y="2" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>CgCAAgLIgCABECCggsBAAAAABAQBCAABKAAAAAMgSgw=</HashCode>
-      <FileName>inode.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="no_such_file_exception" Collapsed="true">
-    <Position X="8.5" Y="3" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAABAAACQAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
-      <FileName>directory.h</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="Path" Collapsed="true">
-    <Position X="10.25" Y="3" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAEAoEAAAAAIAAAAAABAIAAAAoAAAAAgA=</HashCode>
-      <FileName>path.h</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="SHA256" Collapsed="true">
-    <Position X="12" Y="3" Width="1.5" />
+    <Position X="13.75" Y="2.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAQASBAAAAAAAAQAAAAAAAQAgEQAIAAAAAAAAEAAA=</HashCode>
       <FileName>sha256.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Storage" Collapsed="true">
-    <Position X="13.75" Y="3" Width="1.5" />
+  <Class Name="Block" Collapsed="true">
+    <Position X="10.25" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AQiAAQAAEAABwAAQgChAAAASAAAAIRIBSQBENQAYBiI=</HashCode>
-      <FileName>storage.h</FileName>
+      <HashCode>AAAEAAAEBAAAAAAAAABAAAAAAAEAAAAAAAAQAAgAAgA=</HashCode>
+      <FileName>block.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FAT" Collapsed="true">
+    <Position X="15.5" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAACAAAAAAAAAAIAAAQAEAEAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>fat.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="INode" Collapsed="true">
+    <Position X="15.5" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>SgCAAgLIgiABFCCggsBAQABARgQBSABBKAIAAAMgSgw=</HashCode>
+      <FileName>inode.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="imap_exception" Collapsed="true">
+    <Position X="13.75" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAAAAAAAAAAAAEAAAAAIAAAA=</HashCode>
+      <FileName>imap.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="IMap" Collapsed="true">
+    <Position X="12" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>gAAQCAAAAAIIQCgBBAIAAAQAAAEQAAAAAAAAAACAAAA=</HashCode>
+      <FileName>imap.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="Superblock" Collapsed="true">
-    <Position X="8.5" Y="4" Width="1.5" />
+    <Position X="10.25" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>EAgACgAAQghCBAhQQBBxAQMMAAAAQAAJAQQAICMCQQg=</HashCode>
       <FileName>superblock.h</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="Terminal" Collapsed="true">
-    <Position X="10.25" Y="4" Width="1.5" />
+  <Class Name="DEntry">
+    <Position X="6.75" Y="0.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AACABAAAAIIGBECCAAAAEgAAAAAAABAAAQoAABAACAA=</HashCode>
+      <HashCode>AAAAIAAAAAACAABAAAACAAAQAQAECAAAAAAACABAAgA=</HashCode>
+      <FileName>dentry.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="no_such_file_exception" Collapsed="true">
+    <Position X="10.25" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAABAAACQAAAAAAAAAAAAAAAAAAABAAAAAAAAAAA=</HashCode>
+      <FileName>directory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Directory">
+    <Position X="5.25" Y="4.5" Width="2.25" />
+    <TypeIdentifier>
+      <HashCode>AAYgABAAIACAIAEUAABIAAAAAQAQAEYACRAAAAACKAA=</HashCode>
+      <FileName>directory.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="File">
+    <Position X="7.75" Y="4.5" Width="2" />
+    <TypeIdentifier>
+      <HashCode>AEEACAAAAAAIAAAAAGAEAAAAAQAMAAAACYAAgCBAAAA=</HashCode>
+      <FileName>file.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Path" Collapsed="true">
+    <Position X="12" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAIAAAAAEAoEAAAAAICAAAAABAIAAAAoAIAAQgA=</HashCode>
+      <FileName>path.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="execution_exception" Collapsed="true">
+    <Position X="13.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAACAAAAAAAAAAABAAAAAAAAAEAAAABAAAAA=</HashCode>
+      <FileName>terminal.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Terminal" Collapsed="true">
+    <Position X="12" Y="3.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>IACABAAAACIHBECCgABCEgAAAAAAABgAAYoABBAACAA=</HashCode>
       <FileName>terminal.h</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="User" Collapsed="true">
-    <Position X="12" Y="4" Width="1.5" />
+    <Position X="13.75" Y="3.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAABIAAAAAAAAAAAAABAAAAAAAAEAEAAAAAAAAAAAgA=</HashCode>
       <FileName>user.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="FileSystem" Collapsed="true">
+    <Position X="10.25" Y="1.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAgAAAEBAMAAAAACASQAQQAAIAAAAEIAEAABAAAAEEA=</HashCode>
+      <FileName>file_system.h</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="Storage" Collapsed="true">
+    <Position X="15.5" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>EQiAAQAAEAABwAAQgChAAAASAAAAIRIBSQBENQAYBiI=</HashCode>
+      <FileName>storage.h</FileName>
     </TypeIdentifier>
   </Class>
   <Font Name="Segoe UI" Size="9" />

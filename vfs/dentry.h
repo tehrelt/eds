@@ -30,6 +30,6 @@ public:
 	void set_mode(int mode);
 	void set_mode(int owner, int others);
 	
-	virtual int getType() { return DENTRY; }
+	virtual int getType() = 0;
 };
 
