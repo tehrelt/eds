@@ -26,12 +26,12 @@ void FileSystem::init()
     std::string pass;
     std::cout << "CREATE A ROOT USER: " << std::endl;
     std::cout << "password: ";  std::cin >> pass;
-    _root_user = CreateUser("root", pass);
+    _root_user = createUser("root", pass);
 
     std::cout << "CREATE A REGULAR USER: " << std::endl;
     std::cout << "name: ";      std::cin >> username;
     std::cout << "password: ";  std::cin >> pass;
-    _current_user = CreateUser(username, pass);
+    _current_user = createUser(username, pass);
 }
 
 Directory* FileSystem::forwardTo(Directory* to)
@@ -40,7 +40,7 @@ Directory* FileSystem::forwardTo(Directory* to)
     return _current_directory;
 }
 
-User* FileSystem::CreateUser(const std::string& username, const std::string& pass)
+User* FileSystem::createUser(const std::string& username, const std::string& pass)
 {
     int id = Storage::STORAGE()->getNextUID();
 
@@ -117,7 +117,7 @@ User* FileSystem::findUserByName(const std::string& username)
 
     return user;
 }
-bool FileSystem::Login(const std::string& username, const std::string& pass)
+bool FileSystem::login(const std::string& username, const std::string& pass)
 {
     char* users = _root_directory->getFile("usr")->read();
 
@@ -301,7 +301,7 @@ FileSystem* FileSystem::Mount(std::string name)
         std::cout << "password: ";      
         std::cin >> pass;
 
-        fs->Login(username, pass);
+        fs->login(username, pass);
     } while (fs->_current_user == nullptr);
 
     return fs;

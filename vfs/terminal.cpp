@@ -41,7 +41,7 @@ int Terminal::Listen()
     std::cin.ignore(1);
 
     while (true) {
-        std::cout << _fs->current_user()->name() << "@eds " << _fs->current_directory()->path()->ToString() << ": ";
+        std::cout << _fs->current_user()->name() << "@eds " << _fs->current_directory() << ": ";
         std::getline(std::cin, line);
 
         line = trim(line);
@@ -102,10 +102,10 @@ void Terminal::mkfile(std::vector<std::string> args, Directory* dir)
     std::string name = args[1];
     
     if (name.length() == 0 && name.length() > 16) {
-        std::cout << "invalid name (0 < n < 16)" << std::endl;
-        return;
-    }
-    if (dir->exists(name)) {
+        throw std::exception("invalid name (0 < n < 16)");
+    } else if (isForbiddenName(name)) {
+        throw std::exception("forbidden name");
+    } else if (dir->exists(name)) {
         throw std::exception("Element with this name already exists");
     }
     
@@ -122,6 +122,10 @@ void Terminal::mkdir(std::vector<std::string> args, Directory* dir)
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
+    } else if (isForbiddenName(name)) {
+        throw std::exception("forbidden name");
+    } else if (dir->exists(name)) {
+        throw std::exception("Element with this name already exists");
     }
     
     dir->createDirectory(name, _fs->current_user()->id());
@@ -135,6 +139,10 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
         return;
     }
 
+    if (!_fs->checkOwner(dir->getFile(name)->inode())) {
+        throw execution_exception("you are not a owner or root", "rm");
+    }
+
     dir->removeFile(name);
 }
 void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
@@ -144,6 +152,10 @@ void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
     if (name.length() == 0 && name.length() > 16) {
         std::cout << "invalid name (0 < n < 16)" << std::endl;
         return;
+    }
+
+    if (!_fs->checkOwner(dir->getDirectory(name)->inode())) {
+        throw execution_exception("you are not a owner or root", "rm");
     }
 
     dir->removeDirectory(name);
@@ -219,12 +231,8 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
 
     try
     {
-        File* dentry = dir->getFile(name);
-        INode* inode = dentry->inode();
-
-        if (inode->IsDirectoryFlag() == true) {
-            throw std::exception("ERROR! cannot open a directory");
-        }
+        File* file = dir->getFile(name);
+        INode* inode = file->inode();
 
         if (!inode->is_r_____()) {
             throw std::exception("Permission denied");
@@ -233,7 +241,7 @@ void Terminal::cat(std::vector<std::string> args, Directory* dir)
             throw std::exception("Permission denied");
         }
 
-        char* content =  dentry->read();
+        char* content =  file->read();
 
         std::cout << content << std::endl;
         return;
@@ -265,10 +273,6 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     
     INode* inode = file->inode();
 
-    if (inode->IsDirectoryFlag()) {
-        throw execution_exception("Cannot open a directory", "wr");
-    }
-
     if (!inode->is__w____()) {
         throw execution_exception("Permission denied", "wr");
     }
@@ -290,9 +294,8 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
-    dir->removeFile(name);
-    dir->createFile(name, inode->uid());
-
+    file->seek(0, 0);
+    file->clear();
     file->write(text.c_str(), text.size());
 }
 void Terminal::write_append(std::vector<std::string> args, Directory* dir)
@@ -327,13 +330,21 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
         throw execution_exception("Permission denied", "wa");
     }
 
+    bool first_line = true;
+
     std::string text;
     for (std::string line; std::getline(std::cin, line); ) {
-        if (line.at(0) == '\x4') {
+        if (line.size() == 0) {
+            text += "\n";
+            continue;
+        }
+        else if (line.at(0) == '\x4') {
             break;
         }
-        if (text == "") {
+
+        if (first_line) {
             text += line;
+            first_line = false;
         }
         else {
             text += "\n" + line;
@@ -341,7 +352,8 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     }
     text += '\0';
 
-    file->seek(file->length() - 1);
+    
+    file->seek(file->length() - 1, 0);
     file->write(text.c_str(), text.size());
 }
 void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
@@ -362,7 +374,7 @@ void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
     std::cout << "SWITCHING TO " << username << std::endl;
     std::cout << "ENTER A PASSWORD: "; std::cin >> password;
 
-    if (!_fs->Login(username, password)) {
+    if (!_fs->login(username, password)) {
         throw std::exception("invalid credentials");
     }
     std::cout << "Successfully login" << std::endl;
@@ -380,7 +392,7 @@ void Terminal::create_user(std::vector<std::string> args, Directory* dir)
 
     std::cout << "ENTER A PASSWORD: "; std::cin >> password;
 
-    _fs->CreateUser(username, password);
+    _fs->createUser(username, password);
 }
 void Terminal::users(std::vector<std::string> args, Directory* dir)
 {
@@ -443,21 +455,26 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
         throw execution_exception("Enter an args. Try execute help mv", "wa");
     }
 
-
     Directory* source = dir;
     Directory* target = traverse_to_dir(args[2]);
-    std::string source_name = Path::GetLastSegment(args[1]);
 
     if (args[2][args[2].size() - 1] == '/') {
         throw std::exception("TARGET DESTINATION must include file name as last segment of path");
     }
 
+    std::string source_name = Path::GetLastSegment(args[1]);
     std::string target_name = Path::GetLastSegment(args[2]);
 
-    
-    DEntry* source_dentry = source->findByName(source_name);
-    source_dentry->set_name(target_name);
+    Path target_path = *target->path();
+    target_path.push(target_name);
 
+    DEntry* source_dentry = source->findByName(source_name);
+
+    if (target_path.isPart(*source_dentry->path())) {
+        throw std::exception("unable move a part of path upper");
+    }
+
+    source_dentry->set_name(target_name);
     source->moveTo(source_dentry, target);
 }
 void Terminal::cp(std::vector<std::string> args, Directory* dir)

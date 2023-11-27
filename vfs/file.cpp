@@ -38,6 +38,12 @@ int File::tell()
 	return _position;
 }
 
+void File::clear()
+{
+	storage->clearBlocks(_inode);
+	_position = 0;
+}
+
 int File::length()		  { return _inode->size();		  }
 
 time_t File::creationAt() { return _inode->create_date(); }

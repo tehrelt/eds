@@ -57,6 +57,37 @@ std::string Path::ToString()
     return path;
 }
 
+bool Path::compare(const Path& other)
+{
+    if (_parts.size() != other._parts.size()) {
+        return false;
+    }
+
+    for (int i = 1; i < _parts.size(); i++) {
+        if (_parts[i].compare(other._parts[i]) != 0) {
+            return false;
+        }
+    }
+    return true;
+}
+
+bool Path::isPart(const Path& part)
+{
+    if (_parts.size() == part._parts.size()) {
+        return compare(part);
+    }
+
+    // this: /dir/sub    
+    // part: /dir     
+    // return true
+    for (int i = 1; i < part._parts.size(); i++) {
+        if (_parts[i] != part._parts[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+
 std::string Path::GetLastSegment(std::string path)
 {
     return Path(path)._parts.back();

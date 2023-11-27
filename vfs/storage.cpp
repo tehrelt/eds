@@ -266,7 +266,6 @@ Block* Storage::allocateBlock(int prev_id)
 		throw std::exception("not enough space");
 	}
 
-	block->set_char(0, '\0');
 	save_block(block);
 
 	_superblock -= _superblock.block_size();
@@ -371,8 +370,9 @@ INode* Storage::getINode(int id)
 
 char* Storage::readBytes(INode* inode)
 {
-	int total_bytes = inode->size();
+	int total_bytes = inode->size() == 0 ? 1 : inode->size();
 	char* content = new char[total_bytes];
+	content[total_bytes - 1] = '\0';
 
 	int p = 0;
 	int id = inode->block_num();

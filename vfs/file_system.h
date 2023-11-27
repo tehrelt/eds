@@ -21,11 +21,11 @@ public:
 
 	Directory* forwardTo(Directory* to);
 
-	User* CreateUser(const std::string& username, const std::string& pass);
+	User* createUser(const std::string& username, const std::string& pass);
 	User* getUserById(int id);
 	bool userExists(const std::string& username);
 	User* findUserByName(const std::string& username);
-	bool Login(const std::string& username, const std::string& pass);
+	bool login(const std::string& username, const std::string& pass);
 
 	bool checkOwner(INode* inode);
 

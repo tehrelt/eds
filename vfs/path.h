@@ -25,6 +25,9 @@ public:
 	std::vector<std::string> parts() { return _parts;		}
 	bool is_absolute()				 { return _is_absolute; }
 	std::string ToString();
+	
+	bool compare(const Path& other);
+	bool isPart(const Path& other);
 
 	static std::string GetLastSegment(std::string path);
 };

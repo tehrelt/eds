@@ -50,8 +50,7 @@ void Directory::erase(DEntry* dentry)
 void Directory::erase(const std::string& name)
 {
     auto dentry = this->findByName(name);
-    auto it = std::find(_dentries.begin(), _dentries.end(), dentry);
-    _dentries.erase(it);
+    this->erase(dentry);
 }
 DEntry* Directory::findByName(const std::string& name)
 {
@@ -368,3 +367,9 @@ Directory* Directory::READ(DEntry* dentry)
 //        entry += entry_size;
 //    }
 //}
+
+std::ostream& operator<<(std::ostream& os, Directory* d)
+{
+    os << d->_path.ToString();
+    return os;
+}

@@ -67,5 +67,7 @@ public:
 	static Directory* CREATE_ROOT();
 	static Directory* READ_ROOT();
 	static Directory* READ(DEntry*);
+
+	friend std::ostream& operator<<(std::ostream& os, Directory*);
 };
 

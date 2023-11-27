@@ -59,6 +59,20 @@ std::string join(std::vector<std::string> const& strings, std::string delim)
     return ss.str();
 }
 
+bool isForbiddenName(const std::string& name)
+{
+    if (name.compare(".") == 0) {
+        return true;
+    } else if (name.compare("..") == 0) {
+        return true;
+    } else if (name.compare("/") == 0) {
+        return true;
+    } else if (name.find('/') != std::string::npos) {
+        return true;
+    }
+    return false;
+}
+
 void Log::log(const std::string& message, LOG_LEVEL level)
 {
     std::string color;

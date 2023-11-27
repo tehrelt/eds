@@ -24,6 +24,8 @@ std::string& trim(std::string& s);
 
 std::string join(std::vector<std::string> const& strings, std::string delim);
 
+bool isForbiddenName(const std::string& name);
+
 enum LOG_LEVEL { DEBUG, INFO, WARN, ERROR };
 
 class Log 
