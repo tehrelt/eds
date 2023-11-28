@@ -7,10 +7,10 @@
 
 class execution_exception : public std::exception
 {
-private:
-	std::string _message;
-	std::string _command;
 public:
+	std::string message;
+	std::string command;
+
 	execution_exception(const std::string& message, const std::string& command);
 
 	const char* what() noexcept;
@@ -21,6 +21,7 @@ class Terminal
 	FileSystem* _fs;
 
 	std::map<std::string, std::function<void(std::vector<std::string> args, Directory* dir)>> _commands;
+	std::map<std::string, std::string> _guide;
 	
 	void execute_command(const std::string& cmd);
 

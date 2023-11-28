@@ -39,6 +39,7 @@ int Terminal::Listen()
     std::string line;
 
     std::cin.ignore(1);
+   
 
     while (true) {
         std::cout << _fs->current_user()->name() << "@eds " << _fs->current_directory() << ": ";
@@ -49,6 +50,10 @@ int Terminal::Listen()
         try
         {
             this->execute_command(line);
+        }
+        catch (const execution_exception& e) {
+            log.warn("cmd: " + e.command + "; error: " + e.message);
+            std::cout << _guide[e.command] << std::endl;
         }
         catch (const std::exception& e)
         {
@@ -139,11 +144,17 @@ void Terminal::rm(std::vector<std::string> args, Directory* dir)
         return;
     }
 
-    if (!_fs->checkOwner(dir->getFile(name)->inode())) {
+    File* file = dir->getFile(name);
+
+    if (file->inode()->IsSystemFlag()) {
+        throw execution_exception("cannot delete a system components", "rm");
+    }
+
+    if (!_fs->checkOwner(file->inode())) {
         throw execution_exception("you are not a owner or root", "rm");
     }
 
-    dir->removeFile(name);
+    dir->removeFile(name, _fs->current_user()->id());
 }
 void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
 {
@@ -154,11 +165,17 @@ void Terminal::rmdir(std::vector<std::string> args, Directory* dir)
         return;
     }
 
+    Directory* d = dir->getDirectory(name);
+
+    if (d->inode()->IsSystemFlag()) {
+        throw execution_exception("cannot delete a system components", "rm");
+    }
+
     if (!_fs->checkOwner(dir->getDirectory(name)->inode())) {
         throw execution_exception("you are not a owner or root", "rm");
     }
 
-    dir->removeDirectory(name);
+    dir->removeDirectory(name, _fs->current_user()->id());
 }
 void Terminal::sb(std::vector<std::string> args, Directory* dir)
 {
@@ -378,6 +395,8 @@ void Terminal::switch_user(std::vector<std::string> args, Directory* dir)
         throw std::exception("invalid credentials");
     }
     std::cout << "Successfully login" << std::endl;
+
+    std::cin.ignore(1);
 }
 void Terminal::create_user(std::vector<std::string> args, Directory* dir)
 {
@@ -393,10 +412,12 @@ void Terminal::create_user(std::vector<std::string> args, Directory* dir)
     std::cout << "ENTER A PASSWORD: "; std::cin >> password;
 
     _fs->createUser(username, password);
+
+    std::cin.ignore(1);
 }
 void Terminal::users(std::vector<std::string> args, Directory* dir)
 {
-    int users_count = Storage::STORAGE()->getNextUID();
+    int users_count = storage->getNextUID();
 
     std::cout << "List of users: " << std::endl;
     for (int i = 0; i < users_count; i++) {
@@ -410,15 +431,26 @@ void Terminal::who(std::vector<std::string> args, Directory* dir)
 void Terminal::chmod(std::vector<std::string> args, Directory* dir)
 {
     if (args.size() < 3) {
-        throw execution_exception("Enter an args. Try execute help chmod", "chmod");
+        throw execution_exception("", "chmod");
     }
 
     if (args[2].size() < 2) {
         throw execution_exception("Mode must contain exact two numbers.", "chmod");
     }
 
-    std::string name = args[1];
-    int mode = std::stoi(args[2]);
+    std::string name; 
+    int mode; 
+
+    name = args[1];
+    try
+    {
+        mode = std::stoi(args[2]);
+    }
+    catch (const std::exception&)
+    {
+        throw execution_exception("", "chmod");
+    }
+   
 
     if (mode > 77) {
         throw execution_exception("Mode is too big. Each number must be in range 0 to 7", "chmod");
@@ -447,7 +479,7 @@ void Terminal::chmod(std::vector<std::string> args, Directory* dir)
     
     dentry->set_mode(mode);
 
-    Storage::STORAGE()->saveINode(inode);
+    storage->saveINode(inode);
 }
 void Terminal::move(std::vector<std::string> args, Directory* dir)
 {
@@ -489,10 +521,14 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
     std::string source_name = Path::GetLastSegment(args[1]);
     std::string target_name = Path::GetLastSegment(args[2]);
 
-    if (dir->exists(target_name)) {
-        throw execution_exception("target already exists", "cp");
-    }
-    else if (target_name[target_name.size() - 1] == '/') {
+    if (target->exists(target_name)) {
+        DEntry* dentry = target->findByName(target_name);
+        if (dentry->getType() == FILE) {
+            throw execution_exception("target already exists", "cp");
+        }
+    } 
+    
+    if (target_name[target_name.size() - 1] == '/') {
         throw std::exception("TARGET DESTINATION must include file name as last segment of path");
     }
 
@@ -508,14 +544,20 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
         }
         catch (const std::exception&)
         {
-            target_dir = target->createDirectory(target_name, source_dir->inode()->uid());
+            if (source_dir->inode()->is____r__()) {
+                target_dir = target->createDirectory(target_name, _fs->current_user()->id());
+            }
+            else {
+                throw execution_exception("cannot copy a directory; permission denied", "cp");
+            }
+            
         }
         
-        source_dir->copyTo(target_dir);
+        source_dir->copyTo(target_dir, _fs->current_user()->id());
     }
     else {
         File* source_file = source->getFile(source_name);
-        source->copyTo(source_file, target, target_name);
+        source->copyTo(source_file, target, target_name, _fs->current_user()->id());
     }
 
     //
@@ -594,12 +636,12 @@ Directory* Terminal::traverse_to_dir(std::string path_string)
 
 execution_exception::execution_exception(const std::string& message, const std::string& command) : std::exception(message.c_str())
 {
-    _message = message;
-    _command = command;
+    this->message = message;
+    this->command = command;
 }
 const char* execution_exception::what() noexcept
 {
-    return std::string(_command + ": " + _message).c_str();
+    return std::string(command + ": " + message).c_str();
 }
 
 //void Terminal::get_chain(std::vector<std::string> args, Directory* dir)

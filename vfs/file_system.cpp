@@ -20,7 +20,7 @@ void FileSystem::init()
     INode* users_inode = users_file->inode();
     users_inode->SetSystemFlag();
     users_inode->set_uid(0);
-    Storage::STORAGE()->saveINode(users_inode);
+    storage->saveINode(users_inode);
 
     std::string username;
     std::string pass;
@@ -42,7 +42,7 @@ Directory* FileSystem::forwardTo(Directory* to)
 
 User* FileSystem::createUser(const std::string& username, const std::string& pass)
 {
-    int id = Storage::STORAGE()->getNextUID();
+    int id = storage->getNextUID();
 
     std::string hash_password = sha256(pass);
 
@@ -54,10 +54,10 @@ User* FileSystem::createUser(const std::string& username, const std::string& pas
     std::memcpy(user_record + USER_RECORD_SIZE, hash_password.c_str(), 64);
 
     File* usersFile = _root_directory->getFile("usr");
-    usersFile->seek(id * FULL_USER_RECORD_SIZE);
+    usersFile->seek(id * FULL_USER_RECORD_SIZE, 0);
     usersFile->write(user_record, FULL_USER_RECORD_SIZE);
 
-    Storage::STORAGE()->addUser();
+    storage->addUser();
 
     return user;
 }
@@ -83,7 +83,7 @@ bool FileSystem::userExists(const std::string& username)
 
     User* user = nullptr;
 
-    for (int i = 0; i < Storage::STORAGE()->getNextUID(); i++)
+    for (int i = 0; i < storage->getNextUID(); i++)
     {
         int offset = i * FULL_USER_RECORD_SIZE;
         std::memcpy(name, users + offset + 4, 16);
@@ -104,7 +104,7 @@ User* FileSystem::findUserByName(const std::string& username)
 
     User* user = nullptr;
 
-    for (int i = 0; i < Storage::STORAGE()->getNextUID(); i++)
+    for (int i = 0; i < storage->getNextUID(); i++)
     {
         int offset = i * FULL_USER_RECORD_SIZE;
         std::memcpy(name, users + offset + 4, 16);
@@ -144,7 +144,7 @@ bool FileSystem::checkOwner(INode* inode)
 
 Superblock* FileSystem::sb()
 {
-    return Storage::STORAGE()->superblock();
+    return storage->superblock();
 }
 
 FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)

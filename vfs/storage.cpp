@@ -223,7 +223,7 @@ INode* Storage::allocateINode()
 	auto current_datetime = getCurrentDate();
 	inode->set_flags(0);
 	inode->set_uid(0);
-	inode->set_mode(0);
+	inode->set_mode(0b110100);
 	inode->set_create_date(current_datetime);
 	inode->set_modify_date(current_datetime);
 	inode->set_access_date(current_datetime);
@@ -475,7 +475,7 @@ void Storage::INIT_STORAGE(std::string name, Superblock* sb, FAT* fat, IMap* ima
 	_INSTANCE = new Storage(name, sb, fat, imap);
 }
 
-Storage* Storage::STORAGE()
+Storage* Storage::INSTANCE()
 {
 	return _INSTANCE;
 }

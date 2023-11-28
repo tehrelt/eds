@@ -12,7 +12,6 @@ class FileSystem
 	User* _current_user;
 
 public:
-
 	Directory*  root_directory()		{ return _root_directory;	  }
 	Directory*	current_directory()		{ return _current_directory;  }
 	User*		current_user()			{ return _current_user;		  }

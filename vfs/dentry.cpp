@@ -1,6 +1,5 @@
 #define _CRT_SECURE_NO_WARNINGS
 #include "dentry.h"
-#include "file.h"
 
 DEntry::DEntry()
 {
@@ -9,7 +8,6 @@ DEntry::DEntry()
 	strncpy(_name, "", 12);
 	_path = Path();
 }
-
 DEntry::DEntry(INode* inode, DEntry* parent, const std::string& name)
 {
 	_inode = inode;
@@ -35,13 +33,11 @@ void DEntry::set_name(const std::string& name)
 {
 	strncpy(_name, name.c_str(), 12);
 }
-
-void DEntry::set_mode(int mode)
+void DEntry::set_mode(uint_fast8_t mode)
 {
 	_inode->set_mode(mode);
 }
-
-void DEntry::set_mode(int owner, int others)
+void DEntry::set_mode(uint_fast8_t owner, uint_fast8_t others)
 {
 	_inode->set_mode((others & 0b111) | ((owner & 0b111) << 3));
 }

@@ -6,7 +6,7 @@
 #include "block.h"
 #include <vector>
 
-#define storage Storage::STORAGE()
+#define storage Storage::INSTANCE()
 
 constexpr auto ROOT_INODE	= 0;
 constexpr auto USERS_INODE	= 1;
@@ -85,6 +85,6 @@ public:
 	int GetEOF(INode* inode);
 
 	static void INIT_STORAGE(std::string name, Superblock* sb, FAT* fat, IMap* imap);
-	static Storage* STORAGE();
+	static Storage* INSTANCE();
 };
 

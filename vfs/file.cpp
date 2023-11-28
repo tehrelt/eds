@@ -8,16 +8,12 @@ File::File(INode* inode, DEntry* parent, const std::string& name)
 
 void File::write(const char* bytes, int length)
 {
-	Storage::STORAGE()->writeBytes(_inode, _position, bytes, length);
+	storage->writeBytes(_inode, _position, bytes, length);
 }
-//void File::write(const char* bytes, int offset, int length)
-//{
-//	Storage::STORAGE()->writeBytes(_inode, offset, bytes, length);
-//}
 
 char* File::read()
 {
-	return  Storage::STORAGE()->readBytes(_inode);
+	return  storage->readBytes(_inode);
 }
 char* File::read(int length)
 {

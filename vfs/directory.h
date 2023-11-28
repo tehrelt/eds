@@ -25,7 +25,7 @@ public:
 
 class Directory : public DEntry
 {
-	std::vector<DEntry*>	_dentries;
+	std::vector<DEntry*> _dentries;
 
 	void save();
 	void erase(DEntry* dentry);
@@ -48,17 +48,17 @@ public:
 
 	File* createFile(std::string name, int uid);
 	File* getFile(std::string name);
-	void removeFile(std::string name);
+	void removeFile(std::string name, int uid);
 
 	void moveTo(DEntry* dentry, Directory* destination);
-	void copyTo(File* file, Directory* destination, const std::string& file_name);
-	void copyTo(Directory* destination);
+	void copyTo(File* file, Directory* destination, const std::string& file_name, int uid);
+	void copyTo(Directory* destination, int uid);
 
 	Directory* createDirectory(std::string name, int uid);
 	Directory* getDirectory(std::string name);
-	void removeDirectory(const std::string& name);
+	void removeDirectory(const std::string& name, int uid);
 
-	void remove();
+	void remove(int uid);
 	
 	char* to_char();
 

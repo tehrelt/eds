@@ -26,9 +26,9 @@ public:
 	char* name()		{ return _name;		}
 	Path* path()		{ return &_path;	}
 
-	void set_name(const std::string& name); //{ strncpy(_name, name.c_str(), 12); }
-	void set_mode(int mode);
-	void set_mode(int owner, int others);
+	void set_name(const std::string& name);
+	void set_mode(uint_fast8_t mode);
+	void set_mode(uint_fast8_t owner, uint_fast8_t others);
 	
 	virtual int getType() = 0;
 };
