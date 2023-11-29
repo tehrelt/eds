@@ -50,7 +50,7 @@ public:
 	File* getFile(std::string name);
 	void removeFile(std::string name, int uid);
 
-	void moveTo(DEntry* dentry, Directory* destination);
+	void moveTo(DEntry* dentry, Directory* destination, int uid);
 	void copyTo(File* file, Directory* destination, const std::string& file_name, int uid);
 	void copyTo(Directory* destination, int uid);
 

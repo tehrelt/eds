@@ -104,12 +104,17 @@ bool Directory::exists(const std::string& name)
 
 File* Directory::createFile(std::string name, int uid)
 {
+    if (_inode->uid() != uid && !_inode->is_____w_() && uid != 0) {
+        throw std::exception("you cannot create files in this directory");
+    }
+
     INode* inode = storage->allocateINode();
 
     inode->set_uid(uid);
     storage->saveINode(inode);
 
     File* file = (File*)DEntryFactory::CREATE(FILE, inode, this, name);
+
     _dentries.push_back(file);
 
     save();
@@ -152,13 +157,13 @@ void Directory::removeFile(std::string name, int uid)
     this->save();
 }
 
-void Directory::moveTo(DEntry* dentry, Directory* to)
+void Directory::moveTo(DEntry* dentry, Directory* to, int uid)
 {
     Log log("Directory::moveTo");
 
     if (dentry->inode()->IsSystemFlag()) {
         throw std::exception("cannot copy system component");
-    }
+    } 
 
     this->erase(dentry);
     to->add(dentry);
@@ -186,7 +191,7 @@ void Directory::copyTo(Directory* destination, int uid)
             continue;
         }
 
-        auto name = dentry->name();
+        std::string name = dentry->name();
 
         if (dentry->getType() == DIRECTORY) {
 
@@ -198,7 +203,14 @@ void Directory::copyTo(Directory* destination, int uid)
         }
         else {
             File* file = this->getFile(name);
-            this->copyTo(file, destination, file->name(), uid);
+            try
+            {
+                this->copyTo(file, destination, file->name(), uid);
+            }
+            catch (const std::exception&)
+            {
+                log.warn("cannot copy '" + name + "' to '" + destination->path()->ToString() + "'");
+            }
         }
         i++;
     }
@@ -213,6 +225,10 @@ void Directory::copyTo(File* file, Directory* destination, const std::string& fi
         }
     }
 
+    if (destination->exists(file_name)) {
+        throw std::exception("copy: element already exists");
+    }
+
     File* cp_file = destination->createFile(file_name, uid);
     cp_file->write(file->read(), file->length());
     log.info("copied '" + file->path()->ToString() + "' to '" + cp_file->path()->ToString() + "'");
@@ -220,6 +236,10 @@ void Directory::copyTo(File* file, Directory* destination, const std::string& fi
 
 Directory* Directory::createDirectory(std::string name, int uid)
 {
+    if (_inode->uid() != uid && !_inode->is_____w_() && uid != 0) {
+        throw std::exception("you cannot create files in this directory");
+    }
+
     INode* inode = storage->allocateINode();
     inode->SetDirectoryFlag();
     inode->set_uid(uid);
@@ -261,6 +281,19 @@ void Directory::removeDirectory(const std::string& name, int uid)
 {
     Log log = Log("Directory::removeDirectory");
     Directory* dir = this->getDirectory(name);
+
+    if (dir == nullptr) {
+        throw std::exception("no such file in directory");
+    }
+    else if (dir->getType() != DIRECTORY) {
+        throw std::exception("cannot remove a file with this command");
+    }
+    else if (dir->inode()->IsSystemFlag()) {
+        throw std::exception("cannot remove system component");
+    }
+    else if (dir->inode()->uid() != uid && uid != 0) {
+        throw std::exception("cannot remove a component because you're not a owner or root-user");
+    }
 
     dir->remove(uid);
 

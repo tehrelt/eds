@@ -193,7 +193,14 @@ void Terminal::sb(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::ls(std::vector<std::string> args, Directory* dir)
 {
-    auto dentries =  _fs->current_directory()->dentries();
+    Directory* directory = dir;
+
+    if (args.size() > 1) {
+        directory = directory->getDirectory(args[1]);
+    }
+
+    auto dentries = directory->dentries();
+
     std::cout << "id\tflags\tmode\tsize\tcreation\t\tmodify\t\t\tlast access\t\tbn\towner\tname" << std::endl;
 
     for (int i = 0; i < dentries.size(); i++) {
@@ -489,9 +496,13 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
 
     Directory* source = dir;
     Directory* target = traverse_to_dir(args[2]);
+    INode* target_inode = target->inode();
 
     if (args[2][args[2].size() - 1] == '/') {
         throw std::exception("TARGET DESTINATION must include file name as last segment of path");
+    }
+    else if (target_inode->uid() != _fs->current_user()->id() && !target_inode->is_____w_() && _fs->current_user()->id() != 0) {
+        throw std::exception("unable move a dentry because you aren't owner of dest directory");
     }
 
     std::string source_name = Path::GetLastSegment(args[1]);
@@ -506,8 +517,14 @@ void Terminal::move(std::vector<std::string> args, Directory* dir)
         throw std::exception("unable move a part of path upper");
     }
 
+    
+
+    if (!_fs->checkOwner(source_dentry->inode())) {
+        throw std::exception("unable move a dentry because you aren't owner");
+    }
+
     source_dentry->set_name(target_name);
-    source->moveTo(source_dentry, target);
+    source->moveTo(source_dentry, target, _fs->current_user()->id());
 }
 void Terminal::cp(std::vector<std::string> args, Directory* dir)
 {
@@ -576,8 +593,14 @@ void Terminal::cp(std::vector<std::string> args, Directory* dir)
 }
 void Terminal::tree(std::vector<std::string> args, Directory* dir)
 {
-    std::cout << dir->name() << std::endl;
-    _tree(dir, 1);
+    Directory* directory = dir;
+
+    if (args.size() > 1) {
+        directory = directory->getDirectory(args[1]);
+    }
+
+    std::cout << directory->name() << std::endl;
+    _tree(directory, 1);
 }
 
 #define indentX 2

@@ -22,6 +22,9 @@ void FileSystem::init()
     users_inode->set_uid(0);
     storage->saveINode(users_inode);
 
+    auto home_inode = _current_directory->createDirectory("home", 0)->inode();
+    
+
     std::string username;
     std::string pass;
     std::cout << "CREATE A ROOT USER: " << std::endl;
@@ -32,6 +35,10 @@ void FileSystem::init()
     std::cout << "name: ";      std::cin >> username;
     std::cout << "password: ";  std::cin >> pass;
     _current_user = createUser(username, pass);
+
+    home_inode->set_uid(0);
+    home_inode->SetSystemFlag();
+    storage->saveINode(home_inode);
 }
 
 Directory* FileSystem::forwardTo(Directory* to)
@@ -42,6 +49,10 @@ Directory* FileSystem::forwardTo(Directory* to)
 
 User* FileSystem::createUser(const std::string& username, const std::string& pass)
 {
+    if (userExists(username)) {
+        throw std::exception("user already exists");
+    }
+
     int id = storage->getNextUID();
 
     std::string hash_password = sha256(pass);
@@ -59,6 +70,15 @@ User* FileSystem::createUser(const std::string& username, const std::string& pas
 
     storage->addUser();
 
+    if (id != 0) {
+        Directory* home_dir = _root_directory->getDirectory("home");
+        Directory* user_dir = home_dir->createDirectory(username, 0);
+        INode* user_node = user_dir->inode();
+        user_node->set_uid(id);
+        user_node->SetSystemFlag();
+        storage->saveINode(user_node);
+    }
+    
     return user;
 }
 User* FileSystem::getUserById(int id)
