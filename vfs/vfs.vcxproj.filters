@@ -102,6 +102,18 @@
     <ClCompile Include="terminal.cpp">
       <Filter>Исходные файлы\view</Filter>
     </ClCompile>
+    <ClCompile Include="block_storage.cpp">
+      <Filter>Исходные файлы\storage</Filter>
+    </ClCompile>
+    <ClCompile Include="fat_storage.cpp">
+      <Filter>Исходные файлы\storage</Filter>
+    </ClCompile>
+    <ClCompile Include="inode_storage.cpp">
+      <Filter>Исходные файлы\storage</Filter>
+    </ClCompile>
+    <ClCompile Include="bitmap_storage.cpp">
+      <Filter>Исходные файлы\storage</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -154,6 +166,18 @@
     </ClInclude>
     <ClInclude Include="dentry_factory.h">
       <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="block_storage.h">
+      <Filter>Файлы заголовков\storage</Filter>
+    </ClInclude>
+    <ClInclude Include="fat_storage.h">
+      <Filter>Файлы заголовков\storage</Filter>
+    </ClInclude>
+    <ClInclude Include="bitmap_storage.h">
+      <Filter>Файлы заголовков\storage</Filter>
+    </ClInclude>
+    <ClInclude Include="inode_storage.h">
+      <Filter>Файлы заголовков\storage</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

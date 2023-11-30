@@ -10,20 +10,16 @@ public:
 	const char* what() const noexcept override;
 };
 
-class IMap
+class Bitmap
 {
-	INode* _inodes;
 	uint_fast32_t _capacity;
-
-	uint_fast64_t* _parts;
-	uint_fast32_t _parts_count;
+	uint_fast64_t* _maps;
+	uint_fast32_t _maps_count;
 
 
 public:
-	IMap();
-	IMap(int capacity);
-
-	INode& operator[](int index);
+	Bitmap();
+	Bitmap(int capacity);
 	
 	void Lock(int index);
 	void Unlock(int index);

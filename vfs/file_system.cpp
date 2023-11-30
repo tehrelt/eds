@@ -164,7 +164,7 @@ FileSystem* FileSystem::Create(std::string name, uint_fast64_t size)
     Superblock sb = Superblock(size);
 
     FAT fat = FAT(sb.fat_capacity());
-    IMap imap = IMap(sb.imap_capacity());
+    Bitmap imap = Bitmap(sb.imap_capacity());
 
 
     for (int i = 0; i < sb.num_of_first_data_block(); i++) {
@@ -249,7 +249,7 @@ FileSystem* FileSystem::Mount(std::string name)
     FAT fat = FAT(sb.fat_capacity());
 
 
-    IMap imap = IMap(sb.imap_capacity());
+    Bitmap imap = Bitmap(sb.imap_capacity());
 
     stream.seekg(sb.num_of_first_fat_block() * block_size);
     int fat_capacity = sb.fat_capacity();
