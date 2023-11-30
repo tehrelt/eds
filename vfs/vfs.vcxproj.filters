@@ -114,6 +114,12 @@
     <ClCompile Include="bitmap_storage.cpp">
       <Filter>Исходные файлы\storage</Filter>
     </ClCompile>
+    <ClCompile Include="ikernel.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
+    <ClCompile Include="kernel.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -178,6 +184,12 @@
     </ClInclude>
     <ClInclude Include="inode_storage.h">
       <Filter>Файлы заголовков\storage</Filter>
+    </ClInclude>
+    <ClInclude Include="ikernel.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="kernel.h">
+      <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

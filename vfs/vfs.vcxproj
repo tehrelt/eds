@@ -140,9 +140,11 @@
     <ClCompile Include="fat_storage.cpp" />
     <ClCompile Include="file.cpp" />
     <ClCompile Include="file_system.cpp" />
+    <ClCompile Include="ikernel.cpp" />
     <ClCompile Include="inode.cpp" />
     <ClCompile Include="imap.cpp" />
     <ClCompile Include="inode_storage.cpp" />
+    <ClCompile Include="kernel.cpp" />
     <ClCompile Include="path.cpp" />
     <ClCompile Include="sha256.cpp" />
     <ClCompile Include="storage.cpp" />
@@ -163,9 +165,11 @@
     <ClInclude Include="fat_storage.h" />
     <ClInclude Include="file.h" />
     <ClInclude Include="file_system.h" />
+    <ClInclude Include="ikernel.h" />
     <ClInclude Include="inode.h" />
     <ClInclude Include="imap.h" />
     <ClInclude Include="inode_storage.h" />
+    <ClInclude Include="kernel.h" />
     <ClInclude Include="path.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="sha256.h" />
