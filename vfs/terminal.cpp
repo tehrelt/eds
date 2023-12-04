@@ -303,6 +303,9 @@ void Terminal::write(std::vector<std::string> args, Directory* dir)
     else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
         throw execution_exception("Permission denied", "wr");
     }
+    else if (inode->IsSystemFlag()) {
+        throw execution_exception("Cannot modify system files", "wr");
+    }
 
     std::string text;
     for (std::string line; std::getline(std::cin, line); ) {
@@ -352,6 +355,9 @@ void Terminal::write_append(std::vector<std::string> args, Directory* dir)
     }
     else if (!inode->is_____w_() && (_fs->current_user()->id() != inode->uid() && _fs->current_user()->id() != 0)) {
         throw execution_exception("Permission denied", "wa");
+    }
+    else if (inode->IsSystemFlag()) {
+        throw execution_exception("Cannot modify system files", "wr");
     }
 
     bool first_line = true;

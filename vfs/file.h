@@ -9,16 +9,10 @@ class File : public DEntry
 public:
 	File(INode* inode, DEntry* parent, const std::string& name);
 
-	void open(std::string path, uint_fast8_t flags);
-	void close();
-	bool isOpen();
-
 	void write(const char* bytes, int length);
-	//void write(const char* bytes, int offset, int length);
 
 	char* read();
 	char* read(int length);
-	//char* read(int offset, int length);
 	
 	void seek(int offset);
 	void seek(int offset, int start);

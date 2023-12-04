@@ -128,12 +128,12 @@ std::ostream& operator<<(std::ostream& os, const INode& inode)
 		mode[i] = '-';
 	}
 
-	if ((inode._mode & 0b100000) != 0) { mode[0] = 'r'; }
-	if ((inode._mode & 0b010000) != 0) { mode[1] = 'w'; }
-	if ((inode._mode & 0b001000) != 0) { mode[2] = 'x'; }
-	if ((inode._mode & 0b000100) != 0) { mode[3] = 'r'; }
-	if ((inode._mode & 0b000010) != 0) { mode[4] = 'w'; }
-	if ((inode._mode & 0b000001) != 0) { mode[5] = 'x'; }
+	if ((inode._mode & R_____) != 0) { mode[0] = 'r'; }
+	if ((inode._mode & _W____) != 0) { mode[1] = 'w'; }
+	if ((inode._mode & __X___) != 0) { mode[2] = 'x'; }
+	if ((inode._mode & ___R__) != 0) { mode[3] = 'r'; }
+	if ((inode._mode & ____W_) != 0) { mode[4] = 'w'; }
+	if ((inode._mode & _____X) != 0) { mode[5] = 'x'; }
 
 	os << inode._id << "\t";
 	os << flags << "\t";

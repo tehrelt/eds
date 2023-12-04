@@ -3,10 +3,10 @@
 #include <time.h>
 #include <iostream>
 
-constexpr uint_fast8_t SYSTEM = 0b0001;
-constexpr uint_fast8_t HIDDEN = 0b0010;
-constexpr uint_fast8_t ARCHIVE = 0b0100;
-constexpr uint_fast8_t DIRECTORY = 0b1000;
+constexpr uint_fast8_t SYSTEM =		0b0001;
+constexpr uint_fast8_t HIDDEN =		0b0010;
+constexpr uint_fast8_t ARCHIVE =	0b0100;
+constexpr uint_fast8_t DIRECTORY =	0b1000;
 
 constexpr uint_fast8_t R_____ = 0b100000;
 constexpr uint_fast8_t _W____ = 0b010000;

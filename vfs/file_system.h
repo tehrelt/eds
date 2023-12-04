@@ -9,7 +9,7 @@ class FileSystem
 	Directory* _current_directory;
 
 	User* _root_user;
-	User* _current_user;
+	User* _current_user;	
 
 public:
 	Directory*  root_directory()		{ return _root_directory;	  }
